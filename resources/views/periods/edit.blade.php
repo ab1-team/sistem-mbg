@@ -37,11 +37,17 @@
             </div>
 
             <div class="pt-4 border-t border-slate-50">
-                <x-form-select label="Status Periode" name="status" required>
-                    <option value="open" {{ old('status', $period->status) == 'open' ? 'selected' : '' }}>OPEN (Aktif Transaksi)</option>
-                    <option value="closed" {{ old('status', $period->status) == 'closed' ? 'selected' : '' }}>CLOSED (Tutup Buku - Siap Audit)</option>
-                    <option value="locked" {{ old('status', $period->status) == 'locked' ? 'selected' : '' }}>LOCKED (Terkunci - Hanya Superadmin)</option>
-                </x-form-select>
+                <x-form-searchable-select 
+                    label="Status Periode" 
+                    name="status" 
+                    :selected="old('status', $period->status)"
+                    :options="[
+                        ['value' => 'open', 'label' => 'OPEN (Aktif Transaksi)'],
+                        ['value' => 'closed', 'label' => 'CLOSED (Tutup Buku - Siap Audit)'],
+                        ['value' => 'locked', 'label' => 'LOCKED (Terkunci - Hanya Superadmin)'],
+                    ]"
+                    required 
+                />
                 <p class="mt-2 text-[11px] text-slate-400 italic">Periode yang sudah CLOSED akan mencatat waktu penutupan dan user yang melakukan aksi.</p>
             </div>
 

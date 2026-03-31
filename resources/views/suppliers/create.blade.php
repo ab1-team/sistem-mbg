@@ -16,14 +16,19 @@
                 <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-4">Identitas Dasar</p>
                 <div class="grid grid-cols-2 gap-5">
                     <x-form-input label="Kode Supplier" name="code" :value="old('code')" placeholder="Contoh: SUP-BMB-01" required />
-                    <x-form-select label="Kategori Vendor" name="category" required>
-                        <option value="" disabled selected>Pilih Kategori</option>
-                        <option value="Sayur" {{ old('category') === 'Sayur' ? 'selected' : '' }}>Sayur & Buah</option>
-                        <option value="Daging" {{ old('category') === 'Daging' ? 'selected' : '' }}>Daging & Ikan</option>
-                        <option value="Bumbu" {{ old('category') === 'Bumbu' ? 'selected' : '' }}>Bumbu & Sembako</option>
-                        <option value="Kering" {{ old('category') === 'Kering' ? 'selected' : '' }}>Barang Kering</option>
-                        <option value="Lainnya" {{ old('category') === 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
-                    </x-form-select>
+                    <x-form-searchable-select 
+                        label="Kategori Vendor" 
+                        name="category" 
+                        :selected="old('category')"
+                        :options="[
+                            ['value' => 'Sayur', 'label' => 'Sayur & Buah'],
+                            ['value' => 'Daging', 'label' => 'Daging & Ikan'],
+                            ['value' => 'Bumbu', 'label' => 'Bumbu & Sembako'],
+                            ['value' => 'Kering', 'label' => 'Barang Kering'],
+                            ['value' => 'Lainnya', 'label' => 'Lainnya'],
+                        ]"
+                        required 
+                    />
                     <div class="col-span-2">
                         <x-form-input label="Nama Perusahaan / Supplier" name="name" :value="old('name')" placeholder="Nama lengkap usaha" required />
                     </div>

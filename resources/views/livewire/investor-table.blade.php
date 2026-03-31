@@ -51,16 +51,12 @@
                             <x-badge variant="error">Non-Aktif</x-badge>
                         @endif
                     </x-table-td>
-                    <x-table-td class="text-right">
-                        <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <x-table-td class="text-right py-3 px-4">
+                        <div class="flex items-center justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200">
                             <x-btn href="{{ route('investors.edit', $investor) }}" variant="secondary" class="py-1.5! px-3! text-[11px]!">Edit</x-btn>
-                            <x-dialog
-                                title="Hapus Investor"
-                                description="Apakah Anda yakin ingin menghapus investor {{ $investor->name }}? Seluruh riwayat dividen mungkin terpengaruh."
-                                action-label="Ya, Hapus"
-                                :action-url="route('investors.destroy', $investor)"
-                                method="DELETE"
-                            >
+                            <x-dialog title="Hapus Investor" 
+                                description="Apakah Anda yakin ingin menghapus {{ $investor->name }}? Saldo investasi yang tersisa mungkin akan terhapus."
+                                action-label="Ya, Hapus" :action-url="route('investors.destroy', $investor)" method="DELETE">
                                 <x-btn variant="danger" class="py-1.5! px-3! text-[11px]!">Hapus</x-btn>
                             </x-dialog>
                         </div>

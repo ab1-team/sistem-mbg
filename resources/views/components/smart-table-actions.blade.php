@@ -1,5 +1,5 @@
-<div class="flex items-center justify-between mb-5 gap-4 px-1">
-    <div class="flex-1 max-w-sm relative group">
+<div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between mb-6 gap-4 px-1">
+    <div class="flex-1 w-full lg:max-w-sm relative group">
         <x-form-input wire:model.live.debounce.300ms="search" placeholder="Cari data..." class="shadow-sm">
             <x-slot name="icon">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">

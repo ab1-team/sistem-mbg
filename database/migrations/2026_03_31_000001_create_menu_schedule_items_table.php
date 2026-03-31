@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('investor_wallets', function (Blueprint $table) {
+        Schema::create('menu_schedule_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('investor_id')->unique()->constrained('investors');
-            $table->decimal('balance', 18, 2)->default(0);
-            $table->timestamp('last_transaction_at')->nullable();
+            $table->foreignId('menu_schedule_id')->constrained('menu_schedules')->onDelete('cascade');
+            $table->foreignId('menu_item_id')->constrained('menu_items')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('investor_wallets');
+        Schema::dropIfExists('menu_schedule_items');
     }
 };

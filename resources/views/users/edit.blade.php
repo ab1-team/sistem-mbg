@@ -33,31 +33,27 @@
             <div class="pt-6 border-t border-slate-50">
                 <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-4">Akses & Peran</p>
                 <div class="grid grid-cols-3 gap-5">
-                    <x-form-select label="Role / Hak Akses" name="role" required>
-                        @foreach($roles as $role)
-                            <option value="{{ $role->name }}" {{ old('role', $user->roles->first()?->name) == $role->name ? 'selected' : '' }}>
-                                {{ $role->name }}
-                            </option>
-                        @endforeach
-                    </x-form-select>
+                    <x-form-searchable-select 
+                        label="Role / Hak Akses" 
+                        name="role" 
+                        :selected="old('role', $user->roles->first()?->name)"
+                        :options="$roles->map(fn($role) => ['value' => $role->name, 'label' => $role->name])"
+                        required 
+                    />
 
-                    <x-form-select label="Akses Dapur" name="dapur_id">
-                        <option value="">Tidak ada kaitan</option>
-                        @foreach($dapurs as $dapur)
-                            <option value="{{ $dapur->id }}" {{ old('dapur_id', $user->dapur_id) == $dapur->id ? 'selected' : '' }}>
-                                {{ $dapur->name }}
-                            </option>
-                        @endforeach
-                    </x-form-select>
+                    <x-form-searchable-select 
+                        label="Akses Dapur" 
+                        name="dapur_id" 
+                        :selected="old('dapur_id', $user->dapur_id)"
+                        :options="$dapurs->map(fn($d) => ['value' => (string)$d->id, 'label' => $d->name])->prepend(['value' => '', 'label' => 'Tidak ada kaitan'])"
+                    />
 
-                    <x-form-select label="Akses Supplier" name="supplier_id">
-                        <option value="">Tidak ada kaitan</option>
-                        @foreach($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}" {{ old('supplier_id', $user->supplier_id) == $supplier->id ? 'selected' : '' }}>
-                                {{ $supplier->name }}
-                            </option>
-                        @endforeach
-                    </x-form-select>
+                    <x-form-searchable-select 
+                        label="Akses Supplier" 
+                        name="supplier_id" 
+                        :selected="old('supplier_id', $user->supplier_id)"
+                        :options="$suppliers->map(fn($s) => ['value' => (string)$s->id, 'label' => $s->name])->prepend(['value' => '', 'label' => 'Tidak ada kaitan'])"
+                    />
                 </div>
             </div>
 

@@ -19,4 +19,9 @@ class Dapur extends Model
         'capacity_portions',
         'is_active',
     ];
+
+    public function wallet(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    {
+        return $this->morphOne(Wallet::class, 'owner');
+    }
 }

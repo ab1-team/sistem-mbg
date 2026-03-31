@@ -43,8 +43,8 @@ class Investor extends Model
     /**
      * Get the wallet associated with the investor.
      */
-    public function wallet(): HasOne
+    public function wallet(): \Illuminate\Database\Eloquent\Relations\MorphOne
     {
-        return $this->hasOne(InvestorWallet::class);
+        return $this->morphOne(Wallet::class, 'owner');
     }
 }

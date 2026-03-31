@@ -1,326 +1,185 @@
 <x-app-layout title="Dashboard">
 
     {{-- PAGE HEADER --}}
-    <div class="flex items-start justify-between mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
         <div>
-            <h1 class="text-[28px] font-extrabold text-slate-900 tracking-tight leading-none">Dashboard</h1>
-            <p class="text-[13px] text-slate-400 mt-1.5">Plan, prioritize, and accomplish your tasks with ease.</p>
+            <h1 class="text-[28px] font-extrabold text-slate-900 tracking-tight leading-none">Ringkasan Operasional</h1>
+            <p class="text-[13px] text-slate-400 mt-2">Selamat datang kembali! Berikut adalah status sistem hari ini.</p>
         </div>
-        <div class="flex items-center gap-2.5">
-            <a href="{{ route('dapurs.create') }}"
-               class="flex items-center gap-1.5 bg-green-900 text-white text-[12px] font-bold px-4 py-2.5 rounded-xl hover:bg-green-800 transition-colors">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        <div class="flex items-center gap-3">
+            <x-btn href="{{ route('menu-items.create') }}" variant="secondary">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M12 4v16m8-8H4"/>
                 </svg>
-                Add Project
-            </a>
-            <button class="text-[12px] font-semibold text-slate-700 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors">
-                Import Data
-            </button>
+                Buat Menu Baru
+            </x-btn>
+            <x-btn href="{{ route('materials.create') }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+                Tambah Bahan
+            </x-btn>
         </div>
     </div>
 
     {{-- STATS GRID --}}
-    <div class="grid grid-cols-4 gap-4 mb-5">
-
-        {{-- Hero Card: green --}}
-        <div class="bg-green-900 rounded-[20px] p-6 relative overflow-hidden">
-            <button class="absolute top-4 right-4 w-7 h-7 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
-                </svg>
-            </button>
-            <p class="text-[11px] font-semibold text-green-300 uppercase tracking-wide mb-3">Total Projects</p>
-            <span class="text-[46px] font-black text-white leading-none tracking-tight">24</span>
-            <div class="flex items-center gap-1.5 mt-3">
-                <svg class="w-3 h-3 text-green-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-                </svg>
-                <span class="text-[11px] text-green-300 font-medium">Increased from last month</span>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {{-- Card: Dapur --}}
+        <div class="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-green-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+            <div class="relative z-10">
+                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-green-700 mb-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                </div>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Dapur</p>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-black text-slate-900 tracking-tighter">{{ $stats['total_dapurs'] }}</span>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Unit Aktif</span>
+                </div>
             </div>
         </div>
 
-        {{-- Ended Projects --}}
-        <div class="bg-white rounded-[20px] p-6 relative border border-slate-100">
-            <button class="absolute top-4 right-4 w-7 h-7 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition-colors">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
-                </svg>
-            </button>
-            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-3">Ended Projects</p>
-            <span class="text-[46px] font-black text-slate-900 leading-none tracking-tight">10</span>
-            <div class="flex items-center gap-1.5 mt-3">
-                <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-                </svg>
-                <span class="text-[11px] text-slate-400 font-medium">Increased from last month</span>
+        {{-- Card: Bahan Baku --}}
+        <div class="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+            <div class="relative z-10">
+                <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 mb-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                </div>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Bahan Baku</p>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-black text-slate-900 tracking-tighter">{{ $stats['total_materials'] }}</span>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Item Terdaftar</span>
+                </div>
             </div>
         </div>
 
-        {{-- Running Projects --}}
-        <div class="bg-white rounded-[20px] p-6 relative border border-slate-100">
-            <button class="absolute top-4 right-4 w-7 h-7 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition-colors">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
-                </svg>
-            </button>
-            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-3">Running Projects</p>
-            <span class="text-[46px] font-black text-slate-900 leading-none tracking-tight">12</span>
-            <div class="flex items-center gap-1.5 mt-3">
-                <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-                </svg>
-                <span class="text-[11px] text-slate-400 font-medium">Increased from last month</span>
+        {{-- Card: Menu --}}
+        <div class="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-orange-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+            <div class="relative z-10">
+                <div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-orange-700 mb-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Daftar Menu</p>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-black text-slate-900 tracking-tighter">{{ $stats['total_menu_items'] }}</span>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Resep Tersedia</span>
+                </div>
             </div>
         </div>
 
-        {{-- Pending Project --}}
-        <div class="bg-white rounded-[20px] p-6 relative border border-slate-100">
-            <button class="absolute top-4 right-4 w-7 h-7 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition-colors">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
-                </svg>
-            </button>
-            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-3">Pending Project</p>
-            <span class="text-[46px] font-black text-slate-900 leading-none tracking-tight">2</span>
-            <div class="mt-3">
-                <span class="text-[11px] text-slate-400 font-medium">On Discuss</span>
+        {{-- Card: Periode --}}
+        <div class="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+            <div class="relative z-10">
+                <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-700 mb-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Periode Aktif</p>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-black text-slate-900 tracking-tighter">{{ $stats['total_periods'] }}</span>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Input Periode</span>
+                </div>
             </div>
         </div>
     </div>
 
-    {{-- CONTENT ROW --}}
-    <div class="grid grid-cols-[1fr_260px_210px] gap-4 mb-5">
+    {{-- MAIN CONTENT GRID --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {{-- Left Column: Recent Menus --}}
+        <div class="lg:col-span-2">
+            <x-card title="Masakan Terbaru" subtitle="Daftar menu yang baru saja ditambahkan ke sistem.">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 border-b border-slate-100">
+                            <tr>
+                                <th class="px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Nama Masakan</th>
+                                <th class="px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tipe</th>
+                                <th class="px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Kalori</th>
+                                <th class="px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            @forelse($recentMenus as $menu)
+                                <tr class="hover:bg-slate-50/50 transition-colors group">
+                                    <td class="px-5 py-4">
+                                        <p class="font-bold text-slate-900 tracking-tight leading-none">{{ $menu->name }}</p>
+                                        <p class="text-[11px] text-slate-400 mt-1 truncate max-w-xs">{{ $menu->description }}</p>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 uppercase">{{ $menu->meal_type }}</span>
+                                    </td>
+                                    <td class="px-5 py-4 text-right font-mono text-[13px] font-bold text-slate-600">
+                                        {{ number_format($menu->calories, 0) }} <span class="text-[10px] text-slate-400">kcal</span>
+                                    </td>
+                                    <td class="px-5 py-4 text-right">
+                                        <a href="{{ route('menu-items.show', $menu) }}" class="text-[11px] font-bold text-green-700 hover:text-green-900 underline transition-colors">Lihat Detail</a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="px-5 py-10 text-center text-slate-400 text-[13px]">Belum ada data menu tersedia.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 pt-4 border-t border-slate-50">
+                    <a href="{{ route('menu-items.index') }}" class="text-[12px] font-bold text-slate-500 hover:text-green-800 flex items-center justify-center gap-2 transition-colors">
+                        Lihat Semua Menu
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </a>
+                </div>
+            </x-card>
+        </div>
 
-        {{-- Project Analytics --}}
-        <div class="bg-white rounded-[20px] border border-slate-100 overflow-hidden">
-            <div class="flex items-center justify-between px-5 pt-5 pb-3">
-                <h3 class="text-[14px] font-bold text-slate-900">Project Analytics</h3>
-            </div>
-            <div class="flex items-end gap-2.5 px-5 pb-5" style="height:140px;">
-                @php
-                    $bars = [
-                        ['h' => '40%',  'type' => 'stripe', 'day' => 'S'],
-                        ['h' => '72%',  'type' => 'solid',  'day' => 'M'],
-                        ['h' => '55%',  'type' => 'stripe', 'day' => 'T', 'tip' => '74%'],
-                        ['h' => '88%',  'type' => 'solid',  'day' => 'W'],
-                        ['h' => '60%',  'type' => 'light',  'day' => 'T'],
-                        ['h' => '48%',  'type' => 'stripe', 'day' => 'F'],
-                        ['h' => '35%',  'type' => 'stripe', 'day' => 'S'],
-                    ];
-                @endphp
-                @foreach($bars as $bar)
-                    <div class="flex flex-col items-center gap-1.5 flex-1">
-                        <div class="w-full flex items-end" style="height:100px;">
-                            <div class="w-full rounded-t-xl relative
-                                {{ $bar['type'] === 'solid'  ? 'bg-green-900' : '' }}
-                                {{ $bar['type'] === 'light'  ? 'bg-green-300' : '' }}
-                                {{ $bar['type'] === 'stripe' ? 'border border-green-200' : '' }}"
-                                 style="height: {{ $bar['h'] }};
-                                 {{ $bar['type'] === 'stripe' ? 'background: repeating-linear-gradient(-45deg, #dcfce7, #dcfce7 3px, #f0fdf4 3px, #f0fdf4 8px);' : '' }}">
-                                @if(isset($bar['tip']))
-                                    <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap">{{ $bar['tip'] }}</div>
-                                @endif
+        {{-- Right Column: Side Info --}}
+        <div class="space-y-6">
+            <x-card title="Stok Bahan Rendah" subtitle="Segera lakukan pemesanan (PO).">
+                <div class="space-y-4">
+                    @php 
+                        // Temporary placeholder for low stock items
+                        $lowStockItems = []; 
+                    @endphp
+                    @forelse($lowStockItems as $item)
+                        {{-- Future item loop --}}
+                    @empty
+                        <div class="flex flex-col items-center justify-center py-6 text-center border-2 border-dashed border-slate-50 rounded-2xl bg-slate-50/30">
+                            <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-green-500 mb-3">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path d="M5 13l4 4L19 7"/>
+                                </svg>
                             </div>
+                            <p class="text-[12px] font-bold text-slate-700">Semua Stok Aman</p>
+                            <p class="text-[11px] text-slate-400">Tidak ada bahan yang kritis.</p>
                         </div>
-                        <span class="text-[10px] text-slate-400">{{ $bar['day'] }}</span>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-        {{-- Reminders --}}
-        <div class="bg-white rounded-[20px] border border-slate-100 overflow-hidden">
-            <div class="px-5 pt-5 pb-3">
-                <h3 class="text-[14px] font-bold text-slate-900">Reminders</h3>
-            </div>
-            <div class="px-5 pb-5">
-                <p class="text-[15px] font-bold text-slate-900 leading-snug">Meeting with Arc Company</p>
-                <p class="text-[11px] text-slate-400 mt-1">Time : 02.00 pm – 04.00 pm</p>
-                <button class="mt-4 flex items-center gap-2 bg-green-900 text-white text-[12px] font-bold px-4 py-2.5 rounded-xl hover:bg-green-800 transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
-                    </svg>
-                    Start Meeting
-                </button>
-            </div>
-        </div>
-
-        {{-- Project List --}}
-        <div class="bg-white rounded-[20px] border border-slate-100 overflow-hidden">
-            <div class="flex items-center justify-between px-4 pt-4 pb-2">
-                <h3 class="text-[14px] font-bold text-slate-900">Project</h3>
-                <a href="{{ route('dapurs.create') }}" class="flex items-center gap-1 text-[11px] font-semibold text-slate-500 bg-slate-50 border border-slate-100 px-2 py-1 rounded-lg hover:bg-slate-100 transition-colors">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                    New
-                </a>
-            </div>
-            @php
-                $projectList = [
-                    ['name' => 'Develop API Endpoints', 'date' => 'Nov 26', 'color' => 'green'],
-                    ['name' => 'Onboarding Flow',       'date' => 'Nov 28', 'color' => 'amber'],
-                    ['name' => 'Build Dashboard',       'date' => 'Nov 30', 'color' => 'emerald'],
-                    ['name' => 'Optimize Page Load',    'date' => 'Dec 5',  'color' => 'violet'],
-                    ['name' => 'Cross-Browser Testing', 'date' => 'Dec 6',  'color' => 'pink'],
-                ];
-                $dotColors = [
-                    'green'   => 'bg-green-700',
-                    'amber'   => 'bg-amber-500',
-                    'emerald' => 'bg-emerald-600',
-                    'violet'  => 'bg-violet-600',
-                    'pink'    => 'bg-pink-600',
-                ];
-                $bgColors = [
-                    'green'   => 'bg-green-50',
-                    'amber'   => 'bg-amber-50',
-                    'emerald' => 'bg-emerald-50',
-                    'violet'  => 'bg-violet-50',
-                    'pink'    => 'bg-pink-50',
-                ];
-            @endphp
-            @foreach($projectList as $p)
-                <div class="flex items-center gap-2.5 px-4 py-2.5 border-t border-slate-50 hover:bg-slate-50 transition-colors">
-                    <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ $bgColors[$p['color']] }}">
-                        <div class="w-2.5 h-2.5 rounded-sm {{ $dotColors[$p['color']] }}"></div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-[12px] font-semibold text-slate-800 leading-tight truncate">{{ $p['name'] }}</p>
-                        <p class="text-[10px] text-slate-400">Due date: {{ $p['date'] }}</p>
-                    </div>
+                    @endforelse
                 </div>
-            @endforeach
-        </div>
-    </div>
+            </x-card>
 
-    {{-- BOTTOM ROW --}}
-    <div class="grid grid-cols-[1fr_1fr_200px] gap-4">
-
-        {{-- Team Collaboration --}}
-        <div class="bg-white rounded-[20px] border border-slate-100 overflow-hidden">
-            <div class="flex items-center justify-between px-5 pt-5 pb-3">
-                <h3 class="text-[14px] font-bold text-slate-900">Team Collaboration</h3>
-                <a href="#" class="flex items-center gap-1 text-[11px] font-semibold text-slate-500 bg-slate-50 border border-slate-100 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                    Add Member
-                </a>
-            </div>
-            @php
-                $members = [
-                    ['n' => 'Alexandra Deff',       't' => 'Github Project Repository',       's' => 'Completed',  'av' => 'AD', 'color' => 'amber'],
-                    ['n' => 'Edwin Adenike',         't' => 'Integrate User Authentication',   's' => 'In Progress','av' => 'EA', 'color' => 'green'],
-                    ['n' => 'Isaac Oluwatemilorun',  't' => 'Develop Search and Filter',       's' => 'Pending',    'av' => 'IO', 'color' => 'violet'],
-                    ['n' => 'David Oshodi',          't' => 'Responsive Layout Homepage',      's' => 'In Progress','av' => 'DO', 'color' => 'pink'],
-                ];
-                $avatarBg   = ['amber' => 'bg-amber-50 text-amber-700',  'green' => 'bg-green-50 text-green-800', 'violet' => 'bg-violet-50 text-violet-700', 'pink' => 'bg-pink-50 text-pink-700'];
-                $taskColor  = 'text-green-800';
-                $badgeClass = [
-                    'Completed'   => 'bg-green-50 text-green-700 border border-green-100',
-                    'In Progress' => 'bg-amber-50 text-amber-700 border border-amber-100',
-                    'Pending'     => 'bg-red-50 text-red-600 border border-red-100',
-                ];
-            @endphp
-            @foreach($members as $m)
-                <div class="flex items-center gap-3 px-5 py-3 border-t border-slate-50">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black shrink-0 {{ $avatarBg[$m['color']] }}">
-                        {{ $m['av'] }}
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-[12px] font-semibold text-slate-900 leading-tight">{{ $m['n'] }}</p>
-                        <p class="text-[10px] text-slate-400 truncate">Working on <span class="{{ $taskColor }} font-medium">{{ $m['t'] }}</span></p>
-                    </div>
-                    <span class="text-[9px] font-bold px-2 py-1 rounded-full shrink-0 {{ $badgeClass[$m['s']] }}">
-                        {{ $m['s'] }}
-                    </span>
+            {{-- Quick Links --}}
+            <div class="bg-linear-to-br from-green-900 to-green-800 rounded-[24px] p-6 text-white overflow-hidden relative group">
+                <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full group-hover:scale-125 transition-transform"></div>
+                <div class="relative z-10">
+                    <h4 class="text-[16px] font-bold mb-1">Butuh Bantuan?</h4>
+                    <p class="text-[12px] text-green-100 opacity-80 mb-4 leading-relaxed">Cek dokumentasi sistem atau hubungi Administrator Yayasan.</p>
+                    <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center gap-2 bg-white text-green-900 text-[12px] font-extrabold px-4 py-2.5 rounded-xl hover:bg-green-50 transition-colors shadow-lg">
+                        Support Center
+                    </a>
                 </div>
-            @endforeach
-        </div>
-
-        {{-- Project Progress --}}
-        <div class="bg-white rounded-[20px] border border-slate-100 overflow-hidden">
-            <div class="px-5 pt-5 pb-3">
-                <h3 class="text-[14px] font-bold text-slate-900">Project Progress</h3>
-            </div>
-            <div class="flex flex-col items-center pb-5 gap-4">
-                <div class="relative w-36 h-36">
-                    <svg class="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                        <circle cx="60" cy="60" r="46" fill="none" stroke="#f1f5f9" stroke-width="16"/>
-                        <circle cx="60" cy="60" r="46" fill="none" stroke="#dcfce7" stroke-width="16"
-                                stroke-dasharray="{{ 2*3.14159*46*0.30 }} {{ 2*3.14159*46*0.70 }}"
-                                stroke-dashoffset="0" stroke-linecap="round"/>
-                        <circle cx="60" cy="60" r="46" fill="none" stroke="#86efac" stroke-width="16"
-                                stroke-dasharray="{{ 2*3.14159*46*0.28 }} {{ 2*3.14159*46*0.72 }}"
-                                stroke-dashoffset="-{{ 2*3.14159*46*0.30 }}" stroke-linecap="round"/>
-                        <circle cx="60" cy="60" r="46" fill="none" stroke="#166534" stroke-width="16"
-                                stroke-dasharray="{{ 2*3.14159*46*0.42 }} {{ 2*3.14159*46*0.58 }}"
-                                stroke-dashoffset="-{{ 2*3.14159*46*0.58 }}" stroke-linecap="round"/>
-                    </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="text-[26px] font-black text-slate-900 tracking-tight leading-none">41%</span>
-                        <span class="text-[10px] text-slate-400 mt-0.5">Project Ended</span>
-                    </div>
-                </div>
-                <div class="flex flex-wrap justify-center gap-x-4 gap-y-1">
-                    <div class="flex items-center gap-1.5 text-[11px] text-slate-500">
-                        <div class="w-2.5 h-2.5 rounded-full bg-green-800"></div> Completed
-                    </div>
-                    <div class="flex items-center gap-1.5 text-[11px] text-slate-500">
-                        <div class="w-2.5 h-2.5 rounded-full bg-green-300"></div> In Progress
-                    </div>
-                    <div class="flex items-center gap-1.5 text-[11px] text-slate-500">
-                        <div class="w-2.5 h-2.5 rounded-full bg-green-100 border border-green-200"></div> Pending
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Time Tracker --}}
-        <div class="bg-green-900 rounded-[20px] flex flex-col items-center justify-center p-6 text-center gap-4">
-            <p class="text-[13px] font-semibold text-green-300">Time Tracker</p>
-            <span id="tracker-time" class="text-[32px] font-black text-white tracking-tight leading-none">01:24:08</span>
-            <div class="flex items-center gap-2.5">
-                <button id="tracker-pause" onclick="toggleTimer()"
-                        class="w-9 h-9 rounded-full bg-white flex items-center justify-center hover:scale-105 transition-transform">
-                    <svg id="pause-icon" class="w-4 h-4 text-green-900" viewBox="0 0 24 24" fill="currentColor">
-                        <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
-                    </svg>
-                </button>
-                <button onclick="stopTimer()"
-                        class="w-9 h-9 rounded-full bg-red-500 flex items-center justify-center hover:scale-105 transition-transform">
-                    <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
-                        <rect x="4" y="4" width="16" height="16" rx="2"/>
-                    </svg>
-                </button>
             </div>
         </div>
     </div>
-
-    <script>
-        let secs = 5048, running = true;
-        const disp = document.getElementById('tracker-time');
-        const icon = document.getElementById('pause-icon');
-        setInterval(() => {
-            if (!running) return;
-            secs++;
-            const h = String(Math.floor(secs/3600)).padStart(2,'0');
-            const m = String(Math.floor((secs%3600)/60)).padStart(2,'0');
-            const s = String(secs%60).padStart(2,'0');
-            disp.textContent = `${h}:${m}:${s}`;
-        }, 1000);
-        function toggleTimer() {
-            running = !running;
-            icon.innerHTML = running
-                ? '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
-                : '<polygon points="5,3 19,12 5,21"/>';
-        }
-        function stopTimer() {
-            running = false; secs = 0;
-            disp.textContent = '00:00:00';
-            icon.innerHTML = '<polygon points="5,3 19,12 5,21"/>';
-        }
-    </script>
 
 </x-app-layout>

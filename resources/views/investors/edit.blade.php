@@ -17,13 +17,13 @@
                 <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-4">Akun & Identitas</p>
                 <div class="grid grid-cols-2 gap-5">
                     <div class="col-span-2">
-                        <x-form-select label="Akun User Terhubung" name="user_id" required>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}" {{ old('user_id', $investor->user_id) == $user->id ? 'selected' : '' }}>
-                                    {{ $user->name }} ({{ $user->email }})
-                                </option>
-                            @endforeach
-                        </x-form-select>
+                        <x-form-searchable-select 
+                            label="Akun User Terhubung" 
+                            name="user_id" 
+                            :selected="old('user_id', $investor->user_id)"
+                            :options="$users->map(fn($u) => ['value' => (string)$u->id, 'label' => $u->name . ' (' . $u->email . ')'])"
+                            required 
+                        />
                     </div>
                     <x-form-input label="Kode Investor" name="code" :value="old('code', $investor->code)" required />
                     <x-form-input label="Nama Lengkap Investor" name="name" :value="old('name', $investor->name)" required />

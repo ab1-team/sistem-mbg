@@ -12,13 +12,16 @@
             @csrf
 
             <div class="grid grid-cols-2 gap-5">
-                <x-form-select label="Bulan" name="month" required>
-                    @for($m=1; $m<=12; $m++)
-                        <option value="{{ $m }}" {{ old('month', date('n')) == $m ? 'selected' : '' }}>
-                            {{ \Carbon\Carbon::createFromDate(null, $m, 1)->translatedFormat('F') }}
-                        </option>
-                    @endfor
-                </x-form-select>
+                <x-form-searchable-select 
+                    label="Bulan" 
+                    name="month" 
+                    :selected="old('month', date('n'))"
+                    :options="collect(range(1, 12))->map(fn($m) => [
+                        'value' => (string)$m, 
+                        'label' => \Carbon\Carbon::createFromDate(null, $m, 1)->translatedFormat('F')
+                    ])->toArray()"
+                    required 
+                />
 
                 <x-form-input label="Tahun" name="year" type="number" :value="old('year', date('Y'))" required />
             </div>
