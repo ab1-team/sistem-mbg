@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Dapur;
 use App\Models\Material;
 use App\Models\MenuItem;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +35,8 @@ class MenuItemForm extends Component
 
     public $image;
 
+    public $dapur_id;
+
     // BOM Rows
     public $rows = [];
 
@@ -50,8 +53,6 @@ class MenuItemForm extends Component
 
     public function mount($menuItem = null)
     {
-        $this->allMaterials = Material::where('is_active', true)->orderBy('name')->get();
-
         if ($menuItem) {
             $this->menuItem = $menuItem;
             $this->isEdit = true;
@@ -64,6 +65,7 @@ class MenuItemForm extends Component
             $this->carbs = $menuItem->carbs;
             $this->fat = $menuItem->fat;
             $this->fiber = $menuItem->fiber;
+            $this->dapur_id = $menuItem->dapur_id;
 
             foreach ($menuItem->boms as $bom) {
                 $this->rows[] = [
@@ -75,6 +77,8 @@ class MenuItemForm extends Component
             }
         }
 
+        $this->loadMaterials();
+
         if (empty($this->rows)) {
             $this->rows[] = [
                 'material_id' => '',
@@ -82,6 +86,24 @@ class MenuItemForm extends Component
                 'unit' => '-',
             ];
         }
+    }
+
+    public function updatedDapurId(): void
+    {
+        $this->loadMaterials();
+    }
+
+    protected function loadMaterials(): void
+    {
+        $this->allMaterials = Material::where('is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('dapur_id')
+                    ->when($this->dapur_id, function ($q) {
+                        $q->orWhere('dapur_id', $this->dapur_id);
+                    });
+            })
+            ->orderBy('name')
+            ->get();
     }
 
     public function updatedRows($value, $key): void
@@ -130,6 +152,7 @@ class MenuItemForm extends Component
                 'fat' => $this->fat ?: 0,
                 'fiber' => $this->fiber ?: 0,
                 'created_by' => auth()->id() ?? 1, // Fallback ke user ID 1 jika guest (dev mode)
+                'dapur_id' => $this->dapur_id ?: null,
             ];
 
             if ($this->isEdit) {
@@ -172,6 +195,8 @@ class MenuItemForm extends Component
 
     public function render()
     {
-        return view('livewire.menu-item-form');
+        return view('livewire.menu-item-form', [
+            'dapurs' => Dapur::orderBy('name')->get(),
+        ]);
     }
 }

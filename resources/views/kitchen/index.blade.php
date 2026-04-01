@@ -15,7 +15,14 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         @forelse($schedules as $schedule)
-            <x-card :title="$schedule->menuSchedule->menuItem->name" :subtitle="Str::headline($schedule->menuSchedule->meal_type) . ' • ' . $dapur->name">
+            @php
+                $itemNames = $schedule->menuSchedule->items->pluck('name')->toArray();
+                if (empty($itemNames) && $schedule->menuSchedule->menuItem) {
+                    $itemNames = [$schedule->menuSchedule->menuItem->name];
+                }
+                $title = !empty($itemNames) ? implode(' + ', $itemNames) : 'Menu Kosong';
+            @endphp
+            <x-card :title="$title" :subtitle="Str::headline($schedule->menuSchedule->meal_type) . ' • ' . $dapur->name">
 
                 <div class="space-y-4">
                     <div class="flex justify-between items-center pb-4 border-b border-slate-50">
@@ -35,6 +42,45 @@
                                 {{ $schedule->portions_cooked ? number_format($schedule->portions_cooked) : '---' }}
                             </span>
                         </x-show-field>
+                    </div>
+
+                    {{-- TIMELINE & PETUGAS --}}
+                    <div class="space-y-2 p-3 bg-slate-50/50 rounded-2xl border border-slate-100/50">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Alur Produksi</span>
+                            @if($schedule->koki)
+                                <span class="text-[10px] font-black text-slate-900 bg-white px-2 py-0.5 rounded-lg border border-slate-100 shadow-sm">
+                                    {{ $schedule->koki->name }}
+                                </span>
+                            @endif
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-y-2 gap-x-4">
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="text-slate-400">Persiapan:</span>
+                                <span class="font-bold {{ $schedule->prepared_at ? 'text-slate-700' : 'text-slate-300 italic' }}">
+                                    {{ $schedule->prepared_at ? $schedule->prepared_at->format('H:i') : '--:--' }}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="text-slate-400">Masak:</span>
+                                <span class="font-bold {{ $schedule->started_at ? 'text-slate-700' : 'text-slate-300 italic' }}">
+                                    {{ $schedule->started_at ? $schedule->started_at->format('H:i') : '--:--' }}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="text-slate-400">Selesai:</span>
+                                <span class="font-bold {{ $schedule->completed_at ? 'text-slate-700' : 'text-slate-300 italic' }}">
+                                    {{ $schedule->completed_at ? $schedule->completed_at->format('H:i') : '--:--' }}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="text-slate-400">Distribusi:</span>
+                                <span class="font-bold {{ $schedule->distributed_at ? 'text-slate-700' : 'text-slate-300 italic' }}">
+                                    {{ $schedule->distributed_at ? $schedule->distributed_at->format('H:i') : '--:--' }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- AKSI (Kecil & Rapi - Sesuai Modul Penagihan) --}}

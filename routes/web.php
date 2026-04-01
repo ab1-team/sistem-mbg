@@ -43,6 +43,9 @@ Route::middleware('auth')->group(function () {
     Route::get('materials/download-template', [MaterialController::class, 'downloadTemplate'])->name('materials.download-template');
     Route::post('materials/import', [MaterialController::class, 'import'])->name('materials.import');
     Route::resource('materials', MaterialController::class);
+
+    Route::get('menu-items/download-template', [MenuItemController::class, 'downloadTemplate'])->name('menu-items.download-template');
+    Route::post('menu-items/import', [MenuItemController::class, 'import'])->name('menu-items.import');
     Route::resource('menu-items', MenuItemController::class);
 
     // Menu Period Approval Flow (Fase 2.4)

@@ -118,10 +118,9 @@
         </div>
     </div>
 
-    {{-- Dropdown - Menggunakan Teleport agar tidak terpotong tabel --}}
     <template x-teleport="body">
         <div x-show="open"
-            class="fixed z-9999 mt-2 bg-white border border-slate-200 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden"
+            class="searchable-select-menu fixed z-9999 mt-2 bg-white border border-slate-200 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden"
             :style="`top: ${position.top}px; left: ${position.left}px; width: ${position.width}px;`"
             style="display: none;">
             <div class="max-h-60 overflow-y-auto p-1.5 custom-scrollbar">

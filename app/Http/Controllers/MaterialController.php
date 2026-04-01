@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\MaterialsImport;
+use App\Models\Dapur;
 use App\Models\Material;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -54,6 +55,13 @@ class MaterialController extends Controller
         return response()->stream(function () use ($columns) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
+            // Tambahkan baris instruksi
+            fputcsv($file, [
+                '--- PETUNJUK PENGISIAN ---', 
+                'Semua kolom nutrisi (kalori-serat) opsional', 
+                'Kategori harus sesuai: sayuran,daging,ikan,bumbu,sembako,minuman,lainnya', 
+                '', '', '', '', '', '', '', ''
+            ]);
             // Add example row
             fputcsv($file, ['BB-BER-01', 'Beras Ramos', 'sembako', 'Kg', '365', '7', '80', '0.6', '1.3', '15000', '50']);
             fclose($file);
@@ -66,8 +74,9 @@ class MaterialController extends Controller
     public function create()
     {
         $categories = ['sayuran', 'daging', 'ikan', 'bumbu', 'sembako', 'minuman', 'lainnya'];
+        $dapurs = Dapur::orderBy('name')->get();
 
-        return view('materials.create', compact('categories'));
+        return view('materials.create', compact('categories', 'dapurs'));
     }
 
     /**
@@ -88,6 +97,7 @@ class MaterialController extends Controller
             'price_estimate' => 'required|numeric|min:0',
             'min_stock_threshold' => 'required|numeric|min:0',
             'is_active' => 'boolean',
+            'dapur_id' => 'nullable|exists:dapurs,id',
         ]);
 
         Material::create($validated);
@@ -110,8 +120,9 @@ class MaterialController extends Controller
     public function edit(Material $material)
     {
         $categories = ['sayuran', 'daging', 'ikan', 'bumbu', 'sembako', 'minuman', 'lainnya'];
+        $dapurs = Dapur::orderBy('name')->get();
 
-        return view('materials.edit', compact('material', 'categories'));
+        return view('materials.edit', compact('material', 'categories', 'dapurs'));
     }
 
     /**
@@ -132,6 +143,7 @@ class MaterialController extends Controller
             'price_estimate' => 'required|numeric|min:0',
             'min_stock_threshold' => 'required|numeric|min:0',
             'is_active' => 'boolean',
+            'dapur_id' => 'nullable|exists:dapurs,id',
         ]);
 
         $material->update($validated);

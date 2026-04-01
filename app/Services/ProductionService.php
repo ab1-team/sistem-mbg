@@ -49,7 +49,9 @@ class ProductionService
         return CookingSchedule::where('dapur_id', $dapur->id)
             ->whereHas('menuSchedule', function ($q) use ($date) {
                 $q->where('serve_date', $date);
-            })->get();
+            })
+            ->with(['menuSchedule.items', 'menuSchedule.menuItem', 'koki'])
+            ->get();
     }
 
     /**
@@ -60,6 +62,7 @@ class ProductionService
         return $schedule->update([
             'status' => CookingStatus::PERSIAPAN,
             'prepared_at' => now(), // Menambahkan timestamp persiapan
+            'cooked_by' => auth()->id() ?? 1,
         ]);
     }
 
@@ -119,6 +122,7 @@ class ProductionService
         return $schedule->update([
             'status' => CookingStatus::DIDISTRIBUSIKAN,
             'distributed_at' => now(),
+            'cooked_by' => auth()->id() ?? 1,
         ]);
     }
 }

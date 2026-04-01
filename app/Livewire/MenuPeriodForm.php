@@ -73,6 +73,7 @@ class MenuPeriodForm extends Component
                     ['type' => 'sarapan', 'menu_item_ids' => [], 'portions' => 0],
                     ['type' => 'makan_siang', 'menu_item_ids' => [], 'portions' => 0],
                     ['type' => 'makan_malam', 'menu_item_ids' => [], 'portions' => 0],
+                    ['type' => 'snack', 'menu_item_ids' => [], 'portions' => 0],
                 ],
             ];
         }
@@ -175,7 +176,16 @@ class MenuPeriodForm extends Component
         return view('livewire.menu-period-form', [
             'dapurs' => Dapur::orderBy('name')->get(),
             'periods' => Period::where('status', 'open')->orderBy('start_date', 'desc')->get(),
-            'menuItems' => MenuItem::orderBy('name')->get(),
+            'menuItems' => MenuItem::query()
+                ->where('is_active', true)
+                ->where(function ($q) {
+                    $q->whereNull('dapur_id')
+                        ->when($this->dapur_id, function ($query) {
+                            $query->orWhere('dapur_id', $this->dapur_id);
+                        });
+                })
+                ->orderBy('name')
+                ->get(),
             'mealTypes' => ['sarapan', 'makan_siang', 'makan_malam', 'snack'],
         ]);
     }

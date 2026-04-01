@@ -21,7 +21,13 @@ class MenuItem extends Model
         'fiber',
         'image',
         'created_by',
+        'dapur_id',
     ];
+
+    public function dapur(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Dapur::class);
+    }
 
     protected $casts = [
         'calories' => 'decimal:2',

@@ -38,6 +38,16 @@
                     required 
                 />
 
+                <x-form-searchable-select 
+                    label="Dapur (Opsional)" 
+                    name="dapur_id" 
+                    :selected="old('dapur_id')"
+                    :options="collect($dapurs)->map(fn($d) => ['value' => $d->id, 'label' => $d->name])->prepend(['value' => '', 'label' => 'Global (Semua Dapur)'])->toArray()"
+                    hint="Pilih jika bahan ini hanya ada di dapur tertentu."
+                />
+            </div>
+
+            <div class="grid grid-cols-2 gap-5 pb-6 border-b border-slate-50">
                 <x-form-input 
                     label="Satuan" 
                     name="unit" 

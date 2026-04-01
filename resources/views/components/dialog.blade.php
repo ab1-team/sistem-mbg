@@ -46,7 +46,7 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
-            @click.away="open = false"
+            @click.away="if(!$event.target.closest('.searchable-select-menu')) open = false"
             class="bg-white rounded-2xl shadow-2xl w-full {{ $widths[$maxWidth] ?? $widths['md'] }}"
         >
             {{-- Header --}}

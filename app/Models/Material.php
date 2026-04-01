@@ -22,6 +22,7 @@ class Material extends Model
         'price_estimate',
         'min_stock_threshold',
         'is_active',
+        'dapur_id',
     ];
 
     protected $casts = [
@@ -34,6 +35,11 @@ class Material extends Model
         'min_stock_threshold' => 'decimal:3',
         'is_active' => 'boolean',
     ];
+
+    public function dapur(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Dapur::class);
+    }
 
     /**
      * Get the BOMs associated with this material.

@@ -76,6 +76,11 @@ $watch('rows', () => recalc())">
                 ]" />
             </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <x-form-searchable-select label="Dapur (Opsional)" wire:model.live="dapur_id" :options="collect($dapurs)->map(fn($d) => ['value' => (string)$d->id, 'label' => $d->name])->prepend(['value' => '', 'label' => 'Global (Semua Dapur)'])->toArray()" 
+                    hint="Pilih jika masakan ini hanya untuk dapur tertentu. Bahan baku akan difilter sesuai dapur ini." />
+            </div>
+
             <x-form-textarea label="Deskripsi masakan" wire:model="description"
                 placeholder="Ceritakan singkat tentang masakan ini..." />
 
