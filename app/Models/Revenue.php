@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Revenue extends Model
 {
@@ -22,12 +23,12 @@ class Revenue extends Model
         'amount' => 'decimal:2',
     ];
 
-    public function dapur(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function dapur(): BelongsTo
     {
         return $this->belongsTo(Dapur::class);
     }
 
-    public function period(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function period(): BelongsTo
     {
         return $this->belongsTo(Period::class);
     }

@@ -6,7 +6,6 @@ use App\Http\Controllers\Finance\ExpenseController;
 use App\Http\Controllers\Finance\FinancialPeriodController;
 use App\Http\Controllers\Finance\InvoiceController;
 use App\Http\Controllers\Finance\RevenueController;
-use App\Http\Controllers\Warehouse\GrController;
 use App\Http\Controllers\InvestorController;
 use App\Http\Controllers\Kitchen\CookingController;
 use App\Http\Controllers\MaterialController;
@@ -18,6 +17,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Supplier\PoController as SupplierPoController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Warehouse\GrController;
+use App\Livewire\Finance\WithdrawalManagement;
+use App\Livewire\Investor\WithdrawalRequestForm;
+use App\Livewire\InvestorDashboard;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -67,9 +70,9 @@ Route::middleware('auth')->group(function () {
             Route::resource('revenues', RevenueController::class);
             Route::resource('expenses', ExpenseController::class);
             Route::get('periods', [FinancialPeriodController::class, 'index'])->name('periods.index');
-            Route::get('withdrawals', \App\Livewire\Finance\WithdrawalManagement::class)->name('withdrawals.index');
+            Route::get('withdrawals', WithdrawalManagement::class)->name('withdrawals.index');
         });
-        
+
         // Invoices (Moved inside finance prefix group but KEEPING original names for backward compatibility)
         Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
         Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
@@ -88,8 +91,8 @@ Route::middleware('auth')->group(function () {
 
     // Investor Portal Routes (Fase 6.5)
     Route::middleware('role:investor')->prefix('investor')->name('investor.')->group(function () {
-        Route::get('dashboard', \App\Livewire\InvestorDashboard::class)->name('dashboard');
-        Route::get('withdrawals/create', \App\Livewire\Investor\WithdrawalRequestForm::class)->name('withdrawals.create');
+        Route::get('dashboard', InvestorDashboard::class)->name('dashboard');
+        Route::get('withdrawals/create', WithdrawalRequestForm::class)->name('withdrawals.create');
     });
 
     // Supplier Portal Routes

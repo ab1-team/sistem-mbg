@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Finance;
 
 use App\Http\Controllers\Controller;
 use App\Models\Expense;
-use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
@@ -26,6 +25,7 @@ class ExpenseController extends Controller
     public function destroy(Expense $expense)
     {
         $expense->delete();
+
         return redirect()->route('finance.expenses.index')->with('success', 'Data pengeluaran berhasil dihapus.');
     }
 }

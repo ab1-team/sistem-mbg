@@ -21,10 +21,10 @@ class ExpenseTable extends Component
         $expenses = Expense::query()
             ->with(['dapur', 'period', 'creator'])
             ->when($this->search, function ($query) {
-                $query->where('notes', 'like', '%' . $this->search . '%')
-                    ->orWhere('category', 'like', '%' . $this->search . '%')
+                $query->where('notes', 'like', '%'.$this->search.'%')
+                    ->orWhere('category', 'like', '%'.$this->search.'%')
                     ->orWhereHas('dapur', function ($q) {
-                        $q->where('nama', 'like', '%' . $this->search . '%');
+                        $q->where('nama', 'like', '%'.$this->search.'%');
                     });
             })
             ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')

@@ -14,12 +14,19 @@ class ExpenseForm extends Component
     use WithFileUploads;
 
     public $expenseId;
+
     public $dapur_id;
+
     public $period_id;
+
     public $category;
+
     public $amount;
+
     public $notes;
+
     public $attachment;
+
     public $existingAttachment;
 
     public function mount($expenseId = null)

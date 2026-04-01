@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Finance;
 
 use App\Http\Controllers\Controller;
 use App\Models\Revenue;
-use Illuminate\Http\Request;
 
 class RevenueController extends Controller
 {
@@ -26,6 +25,7 @@ class RevenueController extends Controller
     public function destroy(Revenue $revenue)
     {
         $revenue->delete();
+
         return redirect()->route('finance.revenues.index')->with('success', 'Data pendapatan berhasil dihapus.');
     }
 }

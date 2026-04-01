@@ -10,7 +10,6 @@ use App\Models\ProfitCalculation;
 use App\Models\Revenue;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ProfitDistributionService
 {
@@ -30,13 +29,13 @@ class ProfitDistributionService
             foreach ($dapurIds as $dapurId) {
                 // 1. Calculate Totals
                 $totalRevenue = Revenue::where('period_id', $period->id)->where('dapur_id', $dapurId)->sum('amount');
-                
+
                 // COGS (HPP) - In our case, expenses with category 'bahan_baku'
                 $totalCogs = Expense::where('period_id', $period->id)
                     ->where('dapur_id', $dapurId)
                     ->where('category', 'bahan_baku')
                     ->sum('amount');
-                
+
                 // Other Expenses
                 $totalOtherExpenses = Expense::where('period_id', $period->id)
                     ->where('dapur_id', $dapurId)
@@ -82,7 +81,7 @@ class ProfitDistributionService
                         // Credit Investor's Wallet
                         $this->creditWallet($investor, $investorShare, "Dividen Periode: {$period->name} (Dapur: {$calculation->dapur->nama})");
                     }
-                    
+
                     // Credit Yayasan's Wallet (mapped to Dapur wallet for now or a general Yayasan account)
                     // For now, let's just record it. If Dapur has a wallet, credit it.
                     $dapur = $calculation->dapur;
@@ -102,8 +101,8 @@ class ProfitDistributionService
     protected function creditWallet($owner, $amount, $notes)
     {
         $wallet = $owner->wallet;
-        
-        if (!$wallet) {
+
+        if (! $wallet) {
             $wallet = Wallet::create([
                 'owner_type' => get_class($owner),
                 'owner_id' => $owner->id,

@@ -15,9 +15,10 @@ class PeriodManagement extends Component
     public function closePeriod($id)
     {
         $period = Period::findOrFail($id);
-        
-        if (!$period->isOpen()) {
+
+        if (! $period->isOpen()) {
             $this->dispatch('notify', message: 'Hanya periode Open yang bisa ditutup.', variant: 'danger');
+
             return;
         }
 
@@ -33,9 +34,10 @@ class PeriodManagement extends Component
     public function reopenPeriod($id)
     {
         $period = Period::findOrFail($id);
-        
-        if (!$period->isClosed()) {
+
+        if (! $period->isClosed()) {
             $this->dispatch('notify', message: 'Hanya periode Closed yang bisa dibuka kembali.', variant: 'danger');
+
             return;
         }
 
@@ -51,9 +53,10 @@ class PeriodManagement extends Component
     public function lockPeriod($id, ProfitDistributionService $service)
     {
         $period = Period::findOrFail($id);
-        
-        if (!$period->isClosed()) {
+
+        if (! $period->isClosed()) {
             $this->dispatch('notify', message: 'Periode harus ditutup (Closed) sebelum bisa dikunci (Locked).', variant: 'danger');
+
             return;
         }
 
@@ -68,7 +71,7 @@ class PeriodManagement extends Component
 
             $this->dispatch('notify', message: "Periode {$period->name} telah dikunci dan bagi hasil berhasil didistribusikan.", variant: 'success');
         } catch (\Exception $e) {
-            $this->dispatch('notify', message: "Gagal mengunci periode: " . $e->getMessage(), variant: 'danger');
+            $this->dispatch('notify', message: 'Gagal mengunci periode: '.$e->getMessage(), variant: 'danger');
         }
     }
 
@@ -77,8 +80,8 @@ class PeriodManagement extends Component
         $periods = Period::query()
             ->with('closedBy')
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
-                    ->orWhere('code', 'like', '%' . $this->search . '%');
+                $query->where('name', 'like', '%'.$this->search.'%')
+                    ->orWhere('code', 'like', '%'.$this->search.'%');
             })
             ->orderBy('year', 'desc')
             ->orderBy('month', 'desc')

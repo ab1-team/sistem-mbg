@@ -10,6 +10,7 @@ use Livewire\Component;
 class WithdrawalRequestForm extends Component
 {
     public $amount;
+
     public $notes;
 
     public function save()
@@ -17,8 +18,9 @@ class WithdrawalRequestForm extends Component
         $user = Auth::user();
         $investor = Investor::where('user_id', $user->id)->first();
 
-        if (!$investor) {
+        if (! $investor) {
             session()->flash('error', 'Data investor tidak ditemukan.');
+
             return;
         }
 
@@ -26,7 +28,7 @@ class WithdrawalRequestForm extends Component
         $balance = $wallet ? $wallet->balance : 0;
 
         $this->validate([
-            'amount' => 'required|numeric|min:10000|max:' . $balance,
+            'amount' => 'required|numeric|min:10000|max:'.$balance,
             'notes' => 'nullable|string|max:500',
         ], [
             'amount.max' => 'Saldo tidak mencukupi untuk penarikan ini.',

@@ -58,7 +58,7 @@ class FinancialRecordService
             ->where('end_date', '>=', $invoice->created_at)
             ->first() ?? Period::getActive();
 
-        if (!$period) {
+        if (! $period) {
             return null;
         }
 

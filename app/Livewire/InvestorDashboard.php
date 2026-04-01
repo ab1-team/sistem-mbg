@@ -18,9 +18,9 @@ class InvestorDashboard extends Component
         $user = Auth::user();
         $investor = Investor::where('user_id', $user->id)->first();
 
-        if (!$investor) {
+        if (! $investor) {
             return view('livewire.investor-dashboard', [
-                'error' => 'Data investor tidak ditemukan untuk akun ini.'
+                'error' => 'Data investor tidak ditemukan untuk akun ini.',
             ]);
         }
 

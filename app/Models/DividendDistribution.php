@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DividendDistribution extends Model
 {
@@ -25,12 +25,12 @@ class DividendDistribution extends Model
         'paid_at' => 'datetime',
     ];
 
-    public function profitCalculation(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function profitCalculation(): BelongsTo
     {
         return $this->belongsTo(ProfitCalculation::class);
     }
 
-    public function investor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function investor(): BelongsTo
     {
         return $this->belongsTo(Investor::class);
     }

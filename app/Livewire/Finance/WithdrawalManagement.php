@@ -18,6 +18,7 @@ class WithdrawalManagement extends Component
 
         if ($request->status !== 'pending') {
             $this->dispatch('notify', message: 'Hanya permintaan Pending yang bisa diproses.', variant: 'danger');
+
             return;
         }
 
@@ -25,7 +26,7 @@ class WithdrawalManagement extends Component
             $investor = $request->investor;
             $wallet = $investor->wallet;
 
-            if (!$wallet || $wallet->balance < $request->amount) {
+            if (! $wallet || $wallet->balance < $request->amount) {
                 throw new \Exception('Saldo investor tidak cukup untuk penarikan ini.');
             }
 
@@ -52,6 +53,7 @@ class WithdrawalManagement extends Component
 
         if ($request->status !== 'pending') {
             $this->dispatch('notify', message: 'Hanya permintaan Pending yang bisa ditolak.', variant: 'danger');
+
             return;
         }
 
@@ -70,7 +72,7 @@ class WithdrawalManagement extends Component
             ->with(['investor', 'processedBy'])
             ->when($this->search, function ($query) {
                 $query->whereHas('investor', function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%');
+                    $q->where('name', 'like', '%'.$this->search.'%');
                 });
             })
             ->orderBy('created_at', 'desc')

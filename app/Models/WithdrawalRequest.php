@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WithdrawalRequest extends Model
 {
@@ -27,12 +27,12 @@ class WithdrawalRequest extends Model
         'processed_at' => 'datetime',
     ];
 
-    public function investor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function investor(): BelongsTo
     {
         return $this->belongsTo(Investor::class);
     }
 
-    public function processedBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function processedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'processed_by');
     }

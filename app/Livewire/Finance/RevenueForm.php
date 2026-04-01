@@ -11,9 +11,13 @@ use Livewire\Component;
 class RevenueForm extends Component
 {
     public $revenueId;
+
     public $dapur_id;
+
     public $period_id;
+
     public $amount;
+
     public $notes;
 
     public function mount($revenueId = null)

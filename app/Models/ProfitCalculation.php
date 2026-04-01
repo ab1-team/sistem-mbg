@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProfitCalculation extends Model
 {
@@ -33,22 +35,22 @@ class ProfitCalculation extends Model
         'investor_total_share' => 'decimal:2',
     ];
 
-    public function dapur(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function dapur(): BelongsTo
     {
         return $this->belongsTo(Dapur::class);
     }
 
-    public function period(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function period(): BelongsTo
     {
         return $this->belongsTo(Period::class);
     }
 
-    public function calculatedBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function calculatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'calculated_by');
     }
 
-    public function distributions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function distributions(): HasMany
     {
         return $this->hasMany(DividendDistribution::class);
     }
