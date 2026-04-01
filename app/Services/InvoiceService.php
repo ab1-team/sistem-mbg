@@ -22,7 +22,7 @@ class InvoiceService
             $invoiceNumber = 'INV-'.$purchaseOrder->dapur->code.'-'.now()->format('Ymd-His');
 
             // Kalkulasi Total dari Harga Aktual PO
-            $totalAmount = $purchaseOrder->items->all()->sum(function ($item) {
+            $totalAmount = $purchaseOrder->items->sum(function ($item) {
                 $price = $item->actual_unit_price ?? $item->estimated_unit_price ?? 0;
 
                 return $item->quantity_received * (float) $price;

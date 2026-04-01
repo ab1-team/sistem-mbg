@@ -2,19 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class StockMovement extends Model
+class Expense extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'dapur_id',
-        'material_id',
-        'type', // in, out, adjustment
-        'quantity',
-        'reference_type',
-        'reference_id',
+        'period_id',
+        'category',
+        'amount',
         'notes',
+        'attachment',
         'created_by',
     ];
 
@@ -23,9 +25,9 @@ class StockMovement extends Model
         return $this->belongsTo(Dapur::class);
     }
 
-    public function material(): BelongsTo
+    public function period(): BelongsTo
     {
-        return $this->belongsTo(Material::class);
+        return $this->belongsTo(Period::class);
     }
 
     public function creator(): BelongsTo

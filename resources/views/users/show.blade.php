@@ -27,7 +27,7 @@
                     <x-show-field label="Grup Akses (Roles)">
                         <div class="flex flex-wrap gap-2">
                              @foreach($user->roles as $role)
-                                 <x-badge variant="success">{{ $role->name }}</x-badge>
+                                 <x-badge variant="success">{{ ucwords(str_replace('_', ' ', $role->name)) }}</x-badge>
                              @endforeach
                         </div>
                     </x-show-field>
@@ -53,15 +53,17 @@
                 </div>
             </x-card>
 
-            <div class="bg-indigo-50 border border-indigo-100 rounded-3xl p-6">
-                <div class="flex items-start gap-4">
-                     <div class="p-2 bg-indigo-100 text-indigo-700 rounded-xl">
-                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                     </div>
-                     <div>
-                         <h4 class="text-[13px] font-black text-indigo-900 uppercase">Status Keamanan</h4>
-                         <p class="text-[12px] text-indigo-600 font-medium leading-relaxed mt-1">Akun ini memiliki izin akses penuh ke seluruh modul sistem Yayasan MBG.</p>
-                     </div>
+            <div class="bg-brand-soft border border-emerald-100 rounded-3xl p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-[13px] font-bold text-emerald-900 capitalize">Status Keamanan</h4>
+                        <p class="text-[12px] text-emerald-600 font-medium leading-relaxed mt-1">Akun ini memiliki izin akses penuh ke seluruh modul sistem Yayasan MBG.</p>
+                    </div>
                 </div>
             </div>
         </div>

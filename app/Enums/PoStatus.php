@@ -26,10 +26,10 @@ enum PoStatus: string
             self::DIKIRIM_KE_YAYASAN => [self::DIREVIEW_YAYASAN, self::DITOLAK_YAYASAN, self::DIBATALKAN],
             self::DIREVIEW_YAYASAN => [self::DITERUSKAN_KE_SUPPLIER, self::DITOLAK_YAYASAN, self::DIBATALKAN],
             self::DITOLAK_YAYASAN => [self::DRAF, self::DIBATALKAN],
-            self::DITERUSKAN_KE_SUPPLIER => [self::DIPROSES_SUPPLIER, self::DIBATALKAN],
-            self::DIPROSES_SUPPLIER => [self::DALAM_PENGIRIMAN, self::DIBATALKAN],
+            self::DITERUSKAN_KE_SUPPLIER => [self::DIPROSES_SUPPLIER, self::DIBATALKAN, self::DITERIMA_SEBAGIAN, self::DITERIMA_LENGKAP],
+            self::DIPROSES_SUPPLIER => [self::DALAM_PENGIRIMAN, self::DIBATALKAN, self::DITERIMA_SEBAGIAN, self::DITERIMA_LENGKAP],
             self::DALAM_PENGIRIMAN => [self::DITERIMA_SEBAGIAN, self::DITERIMA_LENGKAP],
-            self::DITERIMA_SEBAGIAN => [self::DITERIMA_LENGKAP],
+            self::DITERIMA_SEBAGIAN => [self::DITERIMA_LENGKAP, self::SELESAI],
             self::DITERIMA_LENGKAP => [self::SELESAI],
             default => []
         };
@@ -57,10 +57,10 @@ enum PoStatus: string
         return match ($this) {
             self::DRAF => 'bg-slate-100 text-slate-600 border-slate-200',
             self::DIKIRIM_KE_YAYASAN => 'bg-amber-50 text-amber-700 border-amber-100',
-            self::DIREVIEW_YAYASAN => 'bg-blue-50 text-blue-700 border-blue-100',
-            self::DITERUSKAN_KE_SUPPLIER => 'bg-indigo-50 text-indigo-700 border-indigo-100',
+            self::DIREVIEW_YAYASAN => 'bg-sky-50 text-sky-700 border-sky-100',
+            self::DITERUSKAN_KE_SUPPLIER => 'bg-emerald-50 text-emerald-700 border-emerald-100',
             self::DIPROSES_SUPPLIER => 'bg-orange-50 text-orange-700 border-orange-100',
-            self::DALAM_PENGIRIMAN => 'bg-indigo-50 text-indigo-700 border-indigo-100',
+            self::DALAM_PENGIRIMAN => 'bg-emerald-100 text-emerald-800 border-emerald-200',
             self::DITERIMA_SEBAGIAN => 'bg-teal-50 text-teal-700 border-teal-100',
             self::DITERIMA_LENGKAP => 'bg-green-50 text-green-700 border-green-100',
             self::DITOLAK_YAYASAN => 'bg-red-50 text-red-700 border-red-100',

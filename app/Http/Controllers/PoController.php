@@ -157,4 +157,26 @@ class PoController extends Controller
                 ->with('success', "PO {$poNumber} berhasil di-generate otomatis.");
         });
     }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        // Handle status update specifically (State Machine logic)
+        if ($request->has('status')) {
+            try {
+                $statusVal = is_string($request->status) ? $request->status : $request->status->value;
+                $newStatus = PoStatus::from($statusVal);
+                $purchaseOrder->changeStatus($newStatus, $request->reason ?? 'Penyelesaian manual melalui dashboard.');
+                return redirect()->route('purchase-orders.show', $purchaseOrder)
+                    ->with('success', "Status PO berhasil diperbarui menjadi {$newStatus->label()}.");
+            } catch (\Exception $e) {
+                return back()->with('error', $e->getMessage());
+            }
+        }
+
+        return redirect()->route('purchase-orders.show', $purchaseOrder)
+            ->with('success', 'Data PO berhasil diperbarui.');
+    }
 }

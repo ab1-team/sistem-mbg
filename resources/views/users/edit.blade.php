@@ -37,7 +37,7 @@
                         label="Role / Hak Akses" 
                         name="role" 
                         :selected="old('role', $user->roles->first()?->name)"
-                        :options="$roles->map(fn($role) => ['value' => $role->name, 'label' => $role->name])"
+                        :options="$roles->map(fn($role) => ['value' => $role->name, 'label' => ucwords(str_replace('_', ' ', $role->name))])"
                         required 
                     />
 

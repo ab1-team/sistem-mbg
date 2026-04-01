@@ -45,7 +45,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-[14px] font-black text-slate-900 leading-none mb-1">{{ $item->material->name ?? 'Bahan Tidak Diketahui' }}</p>
+                                <p class="text-[14px] font-black text-slate-900 leading-none mb-1">{{ ucwords($item->material->name ?? 'Bahan Tidak Diketahui') }}</p>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{{ number_format($item->quantity_to_order, 2) }} {{ $item->unit }}</p>
                             </div>
                         </div>
@@ -61,19 +61,19 @@
                                 @foreach($item->assignments as $assignment)
                                     <div class="group flex items-center justify-between p-4 bg-white border border-slate-100 rounded-3xl shadow-sm hover:shadow-md transition-all">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
+                                            <div class="w-10 h-10 rounded-2xl bg-brand-soft border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                                     <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                                 </svg>
                                             </div>
                                             <div>
-                                                <p class="text-[13px] font-black text-slate-900 leading-none">{{ $assignment->supplier->name }}</p>
+                                                <p class="text-[13px] font-black text-slate-900 leading-none">{{ ucwords($assignment->supplier->name) }}</p>
                                                 <p class="text-[11px] text-slate-400 mt-1 font-bold tracking-tight">Rp {{ number_format($assignment->unit_price_agreed, 0, ',', '.') }}</p>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3">
                                             <div class="text-right">
-                                                <p class="text-[14px] font-black text-indigo-600 leading-none">{{ number_format($assignment->quantity_assigned, 1) }}</p>
+                                                <p class="text-[14px] font-bold text-emerald-600 leading-none">{{ number_format($assignment->quantity_assigned, 1) }}</p>
                                                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">{{ $item->unit }}</p>
                                             </div>
                                             <button wire:click="removeAssignment({{ $assignment->id }})" class="p-2 text-slate-200 hover:text-red-500 transition-colors">
@@ -120,7 +120,7 @@
                                     id="side_supplier_{{ $item->id }}" 
                                     name="supplier_id" 
                                     wire:model="supplier_id" 
-                                    :options="$suppliers->map(fn($s) => ['value' => (string)$s->id, 'label' => $s->name])"
+                                    :options="$suppliers->map(fn($s) => ['value' => (string)$s->id, 'label' => ucwords($s->name)])"
                                     placeholder="Cari supplier..."
                                     required 
                                 />
@@ -131,7 +131,7 @@
                                 </div>
                             </div>
 
-                            <x-btn wire:click="addAssignment" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-900/20">
+                            <x-btn wire:click="addAssignment" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl shadow-emerald-900/20">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                                     <path d="M12 4v16m8-8H4"/>
                                 </svg>

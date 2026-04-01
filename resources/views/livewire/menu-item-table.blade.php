@@ -1,13 +1,12 @@
 <div>
     <x-smart-table-actions>
         <div class="flex flex-wrap items-center gap-3">
-            <select wire:model.live="mealType" 
-                class="text-[13px] border-slate-200 rounded-xl focus:ring-green-500/20 focus:border-green-500 transition-all bg-white text-slate-600 px-3 py-2">
-                <option value="">Semua Tipe Makan</option>
-                @foreach($mealTypes as $type)
-                    <option value="{{ $type }}">{{ ucfirst($type) }}</option>
-                @endforeach
-            </select>
+            <x-form-searchable-select wire:model.live="mealType" 
+                class="w-48 text-[13px]"
+                placeholder="Semua Tipe Makan"
+                :selected="$mealType"
+                :options="collect($mealTypes)->map(fn($t) => ['value' => $t, 'label' => ucfirst($t)])->prepend(['value' => '', 'label' => 'Semua Tipe Makan'])->toArray()"
+            />
         </div>
         <x-btn href="{{ route('menu-items.create') }}">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">

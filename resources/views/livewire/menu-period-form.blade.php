@@ -39,12 +39,12 @@
             </x-card>
         </div>
         <div class="lg:col-span-1">
-            <div class="bg-indigo-900 rounded-[24px] p-6 text-white relative overflow-hidden h-full flex flex-col justify-center">
+            <div class="bg-emerald-900 rounded-[24px] p-6 text-white relative overflow-hidden h-full flex flex-col justify-center">
                 <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full"></div>
                 <div class="relative z-10">
                     <h4 class="text-[18px] font-black leading-tight mb-2 tracking-tight">Tips Perencanaan</h4>
-                    <p class="text-[12px] text-indigo-100 opacity-80 leading-relaxed mb-4">Pilih periode terlebih dahulu untuk memunculkan daftar tanggal penjadwalan secara otomatis.</p>
-                    <div class="flex items-center gap-2 text-[11px] font-bold text-indigo-300">
+                    <p class="text-[12px] text-emerald-100 opacity-80 leading-relaxed mb-4">Pilih periode terlebih dahulu untuk memunculkan daftar tanggal penjadwalan secara otomatis.</p>
+                    <div class="flex items-center gap-2 text-[11px] font-bold text-emerald-300">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/>
                         </svg>

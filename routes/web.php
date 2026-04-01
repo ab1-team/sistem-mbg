@@ -66,8 +66,10 @@ Route::middleware('auth')->group(function () {
 
     // Kitchen Operations (Fase 5.1 & 5.2)
     Route::get('kitchen/dashboard', [CookingController::class, 'index'])->name('kitchen.index');
+    Route::post('kitchen/cooking/{schedule}/prepare', [CookingController::class, 'prepare'])->name('kitchen.prepare');
     Route::post('kitchen/cooking/{schedule}/start', [CookingController::class, 'start'])->name('kitchen.start');
     Route::post('kitchen/cooking/{schedule}/finish', [CookingController::class, 'finish'])->name('kitchen.finish');
+    Route::post('kitchen/cooking/{schedule}/distribute', [CookingController::class, 'distribute'])->name('kitchen.distribute');
     Route::get('kitchen/inventory', [CookingController::class, 'inventory'])->name('kitchen.inventory');
 
     // Supplier Portal Routes

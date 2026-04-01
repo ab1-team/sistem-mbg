@@ -29,18 +29,8 @@
                         <span class="font-mono font-bold text-slate-900">Rp {{ number_format($po->total_estimated_cost, 0, ',', '.') }}</span>
                     </x-table-td>
                     <x-table-td class="text-center">
-                        @php
-                            $statusColors = [
-                                'draf' => 'bg-slate-100 text-slate-600 border-slate-200',
-                                'dikirim_ke_yayasan' => 'bg-amber-50 text-amber-700 border-amber-100',
-                                'direview_yayasan' => 'bg-blue-50 text-blue-700 border-blue-100',
-                                'diteruskan_ke_supplier' => 'bg-indigo-50 text-indigo-700 border-indigo-100',
-                                'selesai' => 'bg-green-50 text-green-700 border-green-100',
-                                'dibatalkan' => 'bg-red-50 text-red-700 border-red-100',
-                            ];
-                        @endphp
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black border {{ $statusColors[$po->status] ?? 'bg-slate-50 text-slate-500' }} uppercase whitespace-nowrap">
-                            {{ str_replace('_', ' ', $po->status) }}
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black border {{ $po->status->color() }} uppercase whitespace-nowrap">
+                            {{ $po->status->label() }}
                         </span>
                     </x-table-td>
                     <x-table-td class="text-right">

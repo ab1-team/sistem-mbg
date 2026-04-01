@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="mb-10 animate-slide-up" style="animation-delay: 0.2s">
         <h3 class="text-4xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
-            Reset <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-indigo-500">Kata Sandi</span>
+            Reset <span class="bg-clip-text text-transparent bg-linear-to-r from-emerald-600 to-green-500">Kata Sandi</span>
         </h3>
         <p class="mt-4 text-lg text-gray-500 dark:text-gray-400 font-medium">
             Lupa kata sandi? Masukkan email Anda dan kami akan mengirimkan tautan pemulihan.
@@ -27,7 +27,7 @@
         </div>
 
         <div class="pt-4">
-            <button type="submit" class="w-full h-16 bg-gradient-to-tr from-primary-600 to-indigo-500 hover:from-primary-500 hover:to-indigo-400 text-white font-black text-lg tracking-tight rounded-2xl shadow-[0_20px_40px_-15px_rgba(124,58,237,0.3)] hover:shadow-[0_20px_40px_-10px_rgba(124,58,237,0.4)] hover:-translate-y-1 transition-all duration-300 active:scale-95">
+            <button type="submit" class="w-full h-16 bg-linear-to-tr from-emerald-600 to-green-500 hover:from-emerald-500 hover:to-green-400 text-white font-bold text-lg tracking-tight rounded-2xl shadow-[0_20px_40px_-15px_rgba(16,185,129,0.3)] hover:shadow-[0_20px_40px_-10px_rgba(16,185,129,0.4)] hover:-translate-y-1 transition-all duration-300 active:scale-95">
                 {{ __('Kirim Tautan Pemulihan') }}
             </button>
         </div>

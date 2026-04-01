@@ -1,14 +1,18 @@
 <div>
     <x-smart-table-actions>
         <div class="flex flex-wrap items-center gap-3">
-            <select wire:model.live="status"
-                class="text-[13px] border-slate-200 rounded-xl focus:ring-green-500/20 focus:border-green-500 transition-all bg-white text-slate-600 px-3 py-2">
-                <option value="">Semua Status</option>
-                <option value="draf">Draf</option>
-                <option value="menunggu_approval">Menunggu Approval</option>
-                <option value="disetujui">Disetujui</option>
-                <option value="ditolak">Ditolak</option>
-            </select>
+            <x-form-searchable-select wire:model.live="status" 
+                class="w-48 text-[13px]"
+                placeholder="Semua Status"
+                :selected="$status"
+                :options="[
+                    ['value' => '', 'label' => 'Semua Status'],
+                    ['value' => 'draf', 'label' => 'Draf'],
+                    ['value' => 'menunggu_approval', 'label' => 'Menunggu Approval'],
+                    ['value' => 'disetujui', 'label' => 'Disetujui'],
+                    ['value' => 'ditolak', 'label' => 'Ditolak'],
+                ]"
+            />
         </div>
         <x-btn href="{{ route('menu-periods.create') }}">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">

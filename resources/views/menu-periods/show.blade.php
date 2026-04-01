@@ -84,11 +84,15 @@
                 <x-card title="Kebutuhan Logistik" subtitle="Total agregasi bahan baku untuk menjalankan rencana ini.">
                     @php
                         $requirements = [];
+                        // Eager load relationships for the entire aggregation to prevent N+1
+                        $menuPeriod->loadMissing('schedules.items.boms.material');
+
                         foreach($menuPeriod->schedules as $s) {
                             foreach($s->items as $item) {
                                 foreach($item->boms as $bom) {
                                     $materialId = $bom->material_id;
-                                    $needed = ($bom->quantity / 1) * $s->target_portions;
+                                    // Use the correct property: quantity_per_portion
+                                    $needed = (float) $bom->quantity_per_portion * $s->target_portions;
                                     
                                     if(!isset($requirements[$materialId])) {
                                         $requirements[$materialId] = [
@@ -105,13 +109,13 @@
 
                     <div class="space-y-3">
                         @forelse(collect($requirements)->sortBy('name') as $req)
-                            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
-                                <div>
-                                    <p class="text-[12px] font-bold text-slate-800 leading-none">{{ $req['name'] }}</p>
+                            <div class="flex items-center justify-between py-3 border-b border-slate-100 last:border-0 group">
+                                <div class="flex-1">
+                                    <p class="text-[13px] font-bold text-slate-700 leading-none group-hover:text-green-700 transition-colors">{{ $req['name'] }}</p>
                                 </div>
-                                <div class="text-right">
-                                    <p class="text-[13px] font-black text-slate-900 tracking-tight leading-none">{{ number_format($req['total'], 2) }}</p>
-                                    <p class="text-[9px] font-bold text-slate-400 uppercase mt-1">{{ $req['unit'] }}</p>
+                                <div class="flex items-baseline gap-1.5 text-right">
+                                    <span class="text-[16px] font-black text-slate-900 tracking-tight">{{ number_format($req['total'], 2) }}</span>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ $req['unit'] }}</span>
                                 </div>
                             </div>
                         @empty

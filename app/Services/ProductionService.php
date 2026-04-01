@@ -53,6 +53,17 @@ class ProductionService
     }
 
     /**
+     * Pindah ke status persiapan (Fase 5.2).
+     */
+    public function prepareCooking(CookingSchedule $schedule)
+    {
+        return $schedule->update([
+            'status' => CookingStatus::PERSIAPAN,
+            'prepared_at' => now(), // Menambahkan timestamp persiapan
+        ]);
+    }
+
+    /**
      * Mulai proses memasak (Fase 5.2).
      */
     public function startCooking(CookingSchedule $schedule)
@@ -77,7 +88,6 @@ class ProductionService
                 'status' => CookingStatus::SELESAI,
                 'portions_cooked' => $actualPortions,
                 'completed_at' => now(),
-                'cooked_at' => now(), // legacy compat
                 'cooked_by' => auth()->id() ?? 1,
             ]);
 
@@ -91,7 +101,7 @@ class ProductionService
                         $schedule->dapur,
                         $bom->material,
                         $totalUsage,
-                        $schedule, // Referensi ke CookingSchedule
+                        $schedule,
                         "Pemakaian bahan baku untuk masak [{$menuItem->name}] - {$actualPortions} porsi"
                     );
                 }

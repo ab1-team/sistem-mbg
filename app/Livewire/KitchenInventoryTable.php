@@ -13,14 +13,18 @@ class KitchenInventoryTable extends Component
     use WithSmartTable;
 
     public $category = '';
+    public $dapur_id;
+
+    public function mount($dapur_id = null)
+    {
+        $this->dapur_id = $dapur_id ?? auth()->user()->dapur_id ?? Dapur::first()->id;
+    }
 
     public function render()
     {
-        $dapurId = Auth::user()->dapur_id ?? Dapur::first()->id;
-
         $stocks = Stock::query()
             ->with(['material'])
-            ->where('dapur_id', $dapurId)
+            ->where('dapur_id', $this->dapur_id)
             ->when($this->search, function ($query) {
                 $query->whereHas('material', function ($q) {
                     $q->where('name', 'like', '%'.$this->search.'%')

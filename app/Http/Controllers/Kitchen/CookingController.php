@@ -24,20 +24,39 @@ class CookingController extends Controller
      */
     public function index(Request $request)
     {
-        // Untuk demo/testing: ambil dapur pertama jika koki belum ter-assign secara ketat
-        $dapur = auth()->user()->dapur ?? Dapur::first();
+        // Untuk Superadmin, izinkan pindah dapur via request
+        $dapurId = $request->get('dapur_id');
+        
+        if ($dapurId && auth()->user()->hasRole('superadmin')) {
+            $dapur = Dapur::findOrFail($dapurId);
+        } else {
+            $dapur = auth()->user()->dapur ?? Dapur::first();
+        }
 
         if (! $dapur) {
-            return redirect()->back()->with('error', 'Dapur tidak ditemukan untuk user ini.');
+            return redirect()->back()->with('error', 'Dapur tidak ditemukan.');
         }
 
         // Sinkronisasi jadwal hari ini
         $schedules = $this->productionService->syncDailySchedules($dapur);
+        
+        $allDapurs = auth()->user()->hasRole('superadmin') ? Dapur::all() : collect([$dapur]);
 
         return view('kitchen.index', [
             'dapur' => $dapur,
+            'allDapurs' => $allDapurs,
             'schedules' => $schedules,
         ]);
+    }
+
+    /**
+     * Masuk ke fase persiapan.
+     */
+    public function prepare(CookingSchedule $schedule)
+    {
+        $this->productionService->prepareCooking($schedule);
+
+        return redirect()->back()->with('success', "Persiapan dimulai: {$schedule->menuSchedule->menuItem->name}");
     }
 
     /**
@@ -47,7 +66,7 @@ class CookingController extends Controller
     {
         $this->productionService->startCooking($schedule);
 
-        return redirect()->back()->with('success', "Memulai memasak: {$schedule->menuSchedule->menuItem->name}");
+        return redirect()->back()->with('success', "Sedang memasak: {$schedule->menuSchedule->menuItem->name}");
     }
 
     /**
@@ -61,7 +80,7 @@ class CookingController extends Controller
 
         $this->productionService->completeCooking($schedule, $request->portions_cooked);
 
-        return redirect()->back()->with('success', "Produksi selesai: {$schedule->menuSchedule->menuItem->name}");
+        return redirect()->back()->with('success', "Produksi selesai & stok terpotong: {$schedule->menuSchedule->menuItem->name}");
     }
 
     /**
@@ -71,24 +90,28 @@ class CookingController extends Controller
     {
         $this->productionService->distribute($schedule);
 
-        return redirect()->back()->with('success', "Makanan didistribusikan: {$schedule->menuSchedule->menuItem->name}");
+        return redirect()->back()->with('success', "Berhasil didistribusikan: {$schedule->menuSchedule->menuItem->name}");
     }
 
     /**
      * Tampilkan stok inventaris dapur saat ini.
      * Sesuai Roadmap 5.3
      */
-    public function inventory()
+    public function inventory(Request $request)
     {
-        $dapur = auth()->user()->dapur ?? Dapur::first();
+        $dapurId = $request->get('dapur_id');
 
-        $stocks = Stock::with('material')
-            ->where('dapur_id', $dapur->id)
-            ->get();
+        if ($dapurId && auth()->user()->hasRole('superadmin')) {
+            $dapur = Dapur::findOrFail($dapurId);
+        } else {
+            $dapur = auth()->user()->dapur ?? Dapur::first();
+        }
+
+        $allDapurs = auth()->user()->hasRole('superadmin') ? Dapur::all() : collect([$dapur]);
 
         return view('kitchen.inventory', [
             'dapur' => $dapur,
-            'stocks' => $stocks,
+            'allDapurs' => $allDapurs,
         ]);
     }
 }

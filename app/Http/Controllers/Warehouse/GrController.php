@@ -53,7 +53,7 @@ class GrController extends Controller
                 ->with('error', 'Status PO tidak mengizinkan penerimaan barang saat ini.');
         }
 
-        $purchaseOrder->load('items.material', 'supplier');
+        $purchaseOrder->load('items.material', 'items.assignments.supplier');
 
         return view('gr.create', compact('purchaseOrder'));
     }

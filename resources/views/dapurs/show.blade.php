@@ -54,15 +54,15 @@
                 </div>
             </x-card>
 
-            <div class="bg-indigo-50 border border-indigo-100 rounded-3xl p-6">
-                <div class="flex items-start gap-4">
-                     <div class="p-2 bg-indigo-100 text-indigo-700 rounded-xl">
-                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                     </div>
-                     <div>
-                         <h4 class="text-[13px] font-black text-indigo-900 uppercase">Statistik Unit</h4>
-                         <p class="text-[12px] text-indigo-600 font-medium leading-relaxed mt-1">Dapur ini merupakan salah satu unit operasional utama Yayasan MBG.</p>
-                     </div>
+            <div class="bg-brand-soft border border-emerald-100 rounded-3xl p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-[13px] font-bold text-emerald-900 capitalize">Statistik Unit</h4>
+                        <p class="text-[12px] text-emerald-600 font-medium leading-relaxed mt-1">Dapur ini merupakan salah satu unit operasional utama Yayasan MBG.</p>
+                    </div>
                 </div>
             </div>
         </div>

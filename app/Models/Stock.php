@@ -32,6 +32,7 @@ class Stock extends Model
 
     public function movements(): HasMany
     {
-        return $this->hasMany(StockMovement::class);
+        return $this->hasMany(StockMovement::class, 'material_id', 'material_id')
+            ->where('dapur_id', $this->dapur_id);
     }
 }

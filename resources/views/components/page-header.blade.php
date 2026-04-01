@@ -15,7 +15,7 @@
                 {{ $backLabel }}
             </a>
         @endif
-        <h1 class="text-[24px] font-extrabold text-slate-900 tracking-tight leading-none">{{ $title }}</h1>
+        <h1 class="text-[24px] font-bold text-slate-900 tracking-tight leading-none">{{ $title }}</h1>
         @if($subtitle)
             <p class="text-[13px] text-slate-400 mt-1.5">{{ $subtitle }}</p>
         @endif

@@ -49,15 +49,15 @@
                 </div>
             </x-card>
 
-            <div class="bg-indigo-50 border border-indigo-100 rounded-3xl p-6">
-                <div class="flex items-start gap-4">
-                     <div class="p-2 bg-indigo-100 text-indigo-700 rounded-xl">
-                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                     </div>
-                     <div>
-                         <h4 class="text-[13px] font-black text-indigo-900 uppercase">Status Aktif</h4>
-                         <p class="text-[12px] text-indigo-600 font-medium leading-relaxed mt-1">Supplier ini terverifikasi aktif untuk pengadaan barang Yayasan MBG.</p>
-                     </div>
+            <div class="bg-brand-soft border border-emerald-100 rounded-3xl p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-[13px] font-bold text-emerald-900 capitalize">Status Aktif</h4>
+                        <p class="text-[12px] text-emerald-600 font-medium leading-relaxed mt-1">Supplier ini terverifikasi aktif untuk pengadaan barang Yayasan MBG.</p>
+                    </div>
                 </div>
             </div>
         </div>

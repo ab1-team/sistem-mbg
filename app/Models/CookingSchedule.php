@@ -14,6 +14,7 @@ class CookingSchedule extends Model
         'menu_schedule_id',
         'dapur_id',
         'status',
+        'prepared_at',
         'started_at',
         'completed_at',
         'distributed_at',
@@ -25,6 +26,7 @@ class CookingSchedule extends Model
 
     protected $casts = [
         'status' => CookingStatus::class,
+        'prepared_at' => 'datetime',
         'started_at' => 'datetime',
         'completed_at' => 'datetime',
         'distributed_at' => 'datetime',

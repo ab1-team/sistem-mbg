@@ -15,7 +15,7 @@
         @can('manage-approvals')
             {{-- Admin Only --}}
             <x-btn wire:click="approve" loading="true" loading-target="approve" loading-text="Menyetujui..."
-                class="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-900/20">
+                class="bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-900/20">
                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path d="M5 13l4 4L19 7" />
                 </svg>

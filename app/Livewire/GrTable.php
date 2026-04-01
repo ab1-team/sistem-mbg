@@ -13,8 +13,13 @@ class GrTable extends Component
     public function render()
     {
         $purchaseOrders = PurchaseOrder::query()
-            ->with(['dapur', 'supplier', 'menuPeriod'])
-            ->whereIn('status', ['dikirim', 'diterima']) // PO yang dalam proses logistik
+            ->with(['dapur', 'menuPeriod'])
+            ->whereIn('status', [
+                \App\Enums\PoStatus::DITERUSKAN_KE_SUPPLIER,
+                \App\Enums\PoStatus::DIPROSES_SUPPLIER,
+                \App\Enums\PoStatus::DALAM_PENGIRIMAN,
+                \App\Enums\PoStatus::DITERIMA_SEBAGIAN,
+            ])
             ->when($this->search, function ($query) {
                 $query->where('po_number', 'like', '%'.$this->search.'%')
                     ->orWhereHas('dapur', function ($q) {

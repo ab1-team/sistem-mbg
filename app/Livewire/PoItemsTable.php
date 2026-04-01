@@ -12,7 +12,7 @@ class PoItemsTable extends Component
 
     public function mount(PurchaseOrder $purchaseOrder)
     {
-        $this->purchaseOrder = $purchaseOrder;
+        $this->purchaseOrder = $purchaseOrder->load(['items.material', 'items.assignments.supplier']);
     }
 
     #[On('assignment-updated')]

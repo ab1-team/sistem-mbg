@@ -30,12 +30,13 @@ class StockService
             $stock->increment('current_stock', $quantity);
 
             StockMovement::create([
-                'stock_id' => $stock->id,
-                'type' => 'masuk',
+                'dapur_id' => $dapur->id,
+                'material_id' => $material->id,
+                'type' => 'in',
                 'quantity' => $quantity,
                 'reference_type' => 'goods_receipt',
                 'reference_id' => $gr->id,
-                'performed_by' => auth()->id(),
+                'created_by' => auth()->id(),
                 'notes' => $notes ?? "Penerimaan barang via {$gr->gr_number}",
             ]);
 
@@ -56,12 +57,13 @@ class StockService
             $stock->decrement('current_stock', $quantity);
 
             StockMovement::create([
-                'stock_id' => $stock->id,
-                'type' => 'keluar',
+                'dapur_id' => $dapur->id,
+                'material_id' => $material->id,
+                'type' => 'out',
                 'quantity' => $quantity,
                 'reference_type' => get_class($reference),
                 'reference_id' => $reference->id,
-                'performed_by' => auth()->id(),
+                'created_by' => auth()->id(),
                 'notes' => $notes ?? 'Pengeluaran stok barang',
             ]);
 

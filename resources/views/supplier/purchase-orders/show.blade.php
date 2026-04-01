@@ -1,7 +1,7 @@
 <x-app-layout title="Detail Pesanan">
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <a href="{{ route('supplier.purchase-orders.index') }}" class="inline-flex items-center text-[13px] font-bold text-slate-400 hover:text-indigo-700 transition-colors mb-4">
+            <a href="{{ route('supplier.purchase-orders.index') }}" class="inline-flex items-center text-[13px] font-bold text-slate-400 hover:text-emerald-700 transition-colors mb-4">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                     <path d="M15 19l-7-7 7-7"/>
                 </svg>
@@ -63,7 +63,7 @@
                 <form action="{{ route('supplier.purchase-orders.respond', $assignment) }}" method="POST" class="inline">
                     @csrf
                     <input type="hidden" name="action" value="ship">
-                    <x-btn type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-900/20">KIRIM BARANG</x-btn>
+                    <x-btn type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-900/20">KIRIM BARANG</x-btn>
                 </form>
             @endif
         </div>
@@ -81,7 +81,7 @@
             <x-card title="Rincian Pesanan Bahan" subtitle="Data bahan baku yang ditugaskan kepada Anda.">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-slate-50 rounded-[32px] border border-slate-100">
                     <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 rounded-[22px] bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-indigo-900/10">
+                        <div class="w-14 h-14 rounded-[22px] bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-900/10">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                             </svg>
@@ -93,7 +93,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-[12px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Kuantitas Pesanan</p>
-                        <p class="text-[24px] font-black text-indigo-600 leading-tight">
+                        <p class="text-[24px] font-black text-emerald-600 leading-tight">
                             {{ number_format($assignment->quantity_assigned, 2) }} <span class="text-[14px]">{{ $assignment->item->unit }}</span>
                         </p>
                     </div>
@@ -154,7 +154,7 @@
 
                     @if($assignment->shipped_at)
                         <div class="relative pl-8">
-                            <div class="absolute left-0 top-1 w-[24px] h-[24px] rounded-full bg-indigo-500 flex items-center justify-center text-white ring-4 ring-white">
+                            <div class="absolute left-0 top-1 w-[24px] h-[24px] rounded-full bg-emerald-500 flex items-center justify-center text-white ring-4 ring-white">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                                     <path d="M5 13l4 4L19 7"/>
                                 </svg>

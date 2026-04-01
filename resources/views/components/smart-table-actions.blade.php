@@ -17,13 +17,15 @@
     <div class="flex items-center gap-3">
         <div class="flex items-center gap-2.5 group">
             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-none">Tampilkan:</span>
-            <x-form-select wire:model.live="perPage"
-                class="w-auto! py-1.5! pr-10! text-[12px]! font-bold! rounded-xl! bg-slate-50! focus:bg-white! shadow-sm">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </x-form-select>
+            <x-form-searchable-select wire:model.live="perPage"
+                class="w-24! text-[12px]!"
+                :options="[
+                    ['value' => '10', 'label' => '10'], 
+                    ['value' => '25', 'label' => '25'], 
+                    ['value' => '50', 'label' => '50'], 
+                    ['value' => '100', 'label' => '100']
+                ]" 
+            />
         </div>
         {{ $slot }}
     </div>

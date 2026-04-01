@@ -33,7 +33,7 @@
                     <x-table-td>{{ $user->email }}</x-table-td>
                     <x-table-td>
                         @foreach ($user->roles as $role)
-                            <x-badge variant="success">{{ $role->name }}</x-badge>
+                            <x-badge variant="success">{{ ucwords(str_replace('_', ' ', $role->name)) }}</x-badge>
                         @endforeach
                     </x-table-td>
                     <x-table-td>

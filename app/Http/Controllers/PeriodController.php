@@ -40,16 +40,28 @@ class PeriodController extends Controller
 
         $month = $request->month;
         $year = $request->year;
-        $code = $year.'-'.str_pad($month, 2, '0', STR_PAD_LEFT);
+        
+        // Cek tumpang tindih tanggal (Overlap Detection)
+        $overlap = Period::where(function ($q) use ($request) {
+            $q->where('start_date', '<=', $request->end_date)
+              ->where('end_date', '>=', $request->start_date);
+        })->exists();
 
-        // Check uniqueness for year/month
-        if (Period::where('year', $year)->where('month', $month)->exists()) {
-            return back()->withErrors(['month' => 'Periode untuk bulan dan tahun ini sudah ada.'])->withInput();
+        if ($overlap) {
+            return back()->withErrors(['start_date' => 'Gagal: Rentang tanggal ini tumpang tindih dengan periode lain yang sudah ada.'])->withInput();
+        }
+
+        // Generate kode unik (Auto-increment jika bulan yang sama sudah ada)
+        $baseCode = $year.'-'.str_pad($month, 2, '0', STR_PAD_LEFT);
+        $code = $baseCode;
+        $existingCount = Period::where('year', $year)->where('month', $month)->count();
+        if ($existingCount > 0) {
+            $code = $baseCode . '-' . ($existingCount + 1);
         }
 
         Period::create([
             'code' => $code,
-            'name' => Carbon::createFromDate($year, $month, 1)->format('F Y'),
+            'name' => Carbon::createFromDate($year, $month, 1)->translatedFormat('F Y') . ($existingCount > 0 ? ' ('.($existingCount + 1).')' : ''),
             'month' => $month,
             'year' => $year,
             'start_date' => $request->start_date,
