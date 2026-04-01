@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseOrderItem extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'po_items';
 
     protected $fillable = [

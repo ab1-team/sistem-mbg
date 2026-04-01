@@ -11,7 +11,9 @@ use Livewire\Component;
 class PoAssignmentForm extends Component
 {
     public ?PurchaseOrderItem $item = null;
+
     public $isOpen = false;
+
     public $suppliers;
 
     // Form fields
@@ -52,7 +54,9 @@ class PoAssignmentForm extends Component
 
     public function getRemainingQuantityProperty()
     {
-        if (!$this->item) return 0;
+        if (! $this->item) {
+            return 0;
+        }
         $assigned = $this->item->assignments()->sum('quantity_assigned');
 
         return $this->item->quantity_to_order - $assigned;
