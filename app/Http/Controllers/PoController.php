@@ -169,6 +169,7 @@ class PoController extends Controller
                 $statusVal = is_string($request->status) ? $request->status : $request->status->value;
                 $newStatus = PoStatus::from($statusVal);
                 $purchaseOrder->changeStatus($newStatus, $request->reason ?? 'Penyelesaian manual melalui dashboard.');
+
                 return redirect()->route('purchase-orders.show', $purchaseOrder)
                     ->with('success', "Status PO berhasil diperbarui menjadi {$newStatus->label()}.");
             } catch (\Exception $e) {

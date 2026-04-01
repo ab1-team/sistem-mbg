@@ -5,7 +5,6 @@ namespace App\Livewire;
 use App\Models\Dapur;
 use App\Models\Stock;
 use App\Traits\WithSmartTable;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class KitchenInventoryTable extends Component
@@ -13,6 +12,7 @@ class KitchenInventoryTable extends Component
     use WithSmartTable;
 
     public $category = '';
+
     public $dapur_id;
 
     public function mount($dapur_id = null)

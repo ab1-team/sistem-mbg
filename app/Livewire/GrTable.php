@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Enums\PoStatus;
 use App\Models\PurchaseOrder;
 use App\Traits\WithSmartTable;
 use Livewire\Component;
@@ -15,10 +16,10 @@ class GrTable extends Component
         $purchaseOrders = PurchaseOrder::query()
             ->with(['dapur', 'menuPeriod'])
             ->whereIn('status', [
-                \App\Enums\PoStatus::DITERUSKAN_KE_SUPPLIER,
-                \App\Enums\PoStatus::DIPROSES_SUPPLIER,
-                \App\Enums\PoStatus::DALAM_PENGIRIMAN,
-                \App\Enums\PoStatus::DITERIMA_SEBAGIAN,
+                PoStatus::DITERUSKAN_KE_SUPPLIER,
+                PoStatus::DIPROSES_SUPPLIER,
+                PoStatus::DALAM_PENGIRIMAN,
+                PoStatus::DITERIMA_SEBAGIAN,
             ])
             ->when($this->search, function ($query) {
                 $query->where('po_number', 'like', '%'.$this->search.'%')

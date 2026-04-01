@@ -40,11 +40,11 @@ class PeriodController extends Controller
 
         $month = $request->month;
         $year = $request->year;
-        
+
         // Cek tumpang tindih tanggal (Overlap Detection)
         $overlap = Period::where(function ($q) use ($request) {
             $q->where('start_date', '<=', $request->end_date)
-              ->where('end_date', '>=', $request->start_date);
+                ->where('end_date', '>=', $request->start_date);
         })->exists();
 
         if ($overlap) {
@@ -56,12 +56,12 @@ class PeriodController extends Controller
         $code = $baseCode;
         $existingCount = Period::where('year', $year)->where('month', $month)->count();
         if ($existingCount > 0) {
-            $code = $baseCode . '-' . ($existingCount + 1);
+            $code = $baseCode.'-'.($existingCount + 1);
         }
 
         Period::create([
             'code' => $code,
-            'name' => Carbon::createFromDate($year, $month, 1)->translatedFormat('F Y') . ($existingCount > 0 ? ' ('.($existingCount + 1).')' : ''),
+            'name' => Carbon::createFromDate($year, $month, 1)->translatedFormat('F Y').($existingCount > 0 ? ' ('.($existingCount + 1).')' : ''),
             'month' => $month,
             'year' => $year,
             'start_date' => $request->start_date,

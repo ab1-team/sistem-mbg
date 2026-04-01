@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Kitchen;
 use App\Http\Controllers\Controller;
 use App\Models\CookingSchedule;
 use App\Models\Dapur;
-use App\Models\Stock;
 use App\Services\ProductionService;
 use Illuminate\Http\Request;
 
@@ -26,7 +25,7 @@ class CookingController extends Controller
     {
         // Untuk Superadmin, izinkan pindah dapur via request
         $dapurId = $request->get('dapur_id');
-        
+
         if ($dapurId && auth()->user()->hasRole('superadmin')) {
             $dapur = Dapur::findOrFail($dapurId);
         } else {
@@ -39,7 +38,7 @@ class CookingController extends Controller
 
         // Sinkronisasi jadwal hari ini
         $schedules = $this->productionService->syncDailySchedules($dapur);
-        
+
         $allDapurs = auth()->user()->hasRole('superadmin') ? Dapur::all() : collect([$dapur]);
 
         return view('kitchen.index', [
