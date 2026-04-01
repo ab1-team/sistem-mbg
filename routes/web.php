@@ -1,17 +1,20 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DapurController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Finance\InvoiceController;
 use App\Http\Controllers\InvestorController;
+use App\Http\Controllers\Kitchen\CookingController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\MenuItemController;
-use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\MenuPeriodController;
+use App\Http\Controllers\PeriodController;
+use App\Http\Controllers\PoController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Supplier\PoController as SupplierPoController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\PoController;
-use App\Http\Controllers\Supplier\PoController as SupplierPoController;
+use App\Http\Controllers\Warehouse\GrController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,18 +33,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('investors', InvestorController::class);
     Route::resource('periods', PeriodController::class);
     Route::resource('users', UserController::class);
-    
+
     Route::get('materials/download-template', [MaterialController::class, 'downloadTemplate'])->name('materials.download-template');
     Route::post('materials/import', [MaterialController::class, 'import'])->name('materials.import');
     Route::resource('materials', MaterialController::class);
     Route::resource('menu-items', MenuItemController::class);
-    
+
     // Menu Period Approval Flow (Fase 2.4)
     Route::post('menu-periods/{menuPeriod}/submit', [MenuPeriodController::class, 'submit'])->name('menu-periods.submit');
     Route::post('menu-periods/{menuPeriod}/approve', [MenuPeriodController::class, 'approve'])->name('menu-periods.approve');
     Route::post('menu-periods/{menuPeriod}/reject', [MenuPeriodController::class, 'reject'])->name('menu-periods.reject');
     Route::resource('menu-periods', MenuPeriodController::class);
-    
+
     // SCM - Purchase Orders
     Route::post('menu-periods/{menuPeriod}/generate-po', [PoController::class, 'generateFromMenu'])->name('menu-periods.generate-po');
     Route::post('purchase-orders/{purchaseOrder}/submit-to-supplier', [PoController::class, 'submitToSupplier'])->name('purchase-orders.submit-to-supplier');
@@ -49,23 +52,23 @@ Route::middleware('auth')->group(function () {
     Route::resource('purchase-orders', PoController::class);
 
     // Warehouse / Goods Receipt (Fase 4.1)
-    Route::get('warehouse/gr', [\App\Http\Controllers\Warehouse\GrController::class, 'index'])->name('gr.index');
-    Route::get('warehouse/gr/create/{purchaseOrder}', [\App\Http\Controllers\Warehouse\GrController::class, 'create'])->name('gr.create');
-    Route::post('warehouse/gr/store/{purchaseOrder}', [\App\Http\Controllers\Warehouse\GrController::class, 'store'])->name('gr.store');
-    Route::get('warehouse/gr/{goodsReceipt}', [\App\Http\Controllers\Warehouse\GrController::class, 'show'])->name('gr.show');
+    Route::get('warehouse/gr', [GrController::class, 'index'])->name('gr.index');
+    Route::get('warehouse/gr/create/{purchaseOrder}', [GrController::class, 'create'])->name('gr.create');
+    Route::post('warehouse/gr/store/{purchaseOrder}', [GrController::class, 'store'])->name('gr.store');
+    Route::get('warehouse/gr/{goodsReceipt}', [GrController::class, 'show'])->name('gr.show');
 
     // Finance / Invoices (Fase 4.2 & 4.3)
-    Route::get('finance/invoices', [\App\Http\Controllers\Finance\InvoiceController::class, 'index'])->name('invoices.index');
-    Route::get('finance/invoices/{invoice}', [\App\Http\Controllers\Finance\InvoiceController::class, 'show'])->name('invoices.show');
-    Route::post('finance/invoices/{invoice}/verify', [\App\Http\Controllers\Finance\InvoiceController::class, 'verify'])->name('invoices.verify');
-    Route::post('finance/invoices/{invoice}/pay', [\App\Http\Controllers\Finance\InvoiceController::class, 'pay'])->name('invoices.pay');
-    Route::get('finance/invoices/{invoice}/download', [\App\Http\Controllers\Finance\InvoiceController::class, 'downloadPdf'])->name('invoices.download');
+    Route::get('finance/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('finance/invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+    Route::post('finance/invoices/{invoice}/verify', [InvoiceController::class, 'verify'])->name('invoices.verify');
+    Route::post('finance/invoices/{invoice}/pay', [InvoiceController::class, 'pay'])->name('invoices.pay');
+    Route::get('finance/invoices/{invoice}/download', [InvoiceController::class, 'downloadPdf'])->name('invoices.download');
 
     // Kitchen Operations (Fase 5.1 & 5.2)
-    Route::get('kitchen/dashboard', [\App\Http\Controllers\Kitchen\CookingController::class, 'index'])->name('kitchen.index');
-    Route::post('kitchen/cooking/{schedule}/start', [\App\Http\Controllers\Kitchen\CookingController::class, 'start'])->name('kitchen.start');
-    Route::post('kitchen/cooking/{schedule}/finish', [\App\Http\Controllers\Kitchen\CookingController::class, 'finish'])->name('kitchen.finish');
-    Route::get('kitchen/inventory', [\App\Http\Controllers\Kitchen\CookingController::class, 'inventory'])->name('kitchen.inventory');
+    Route::get('kitchen/dashboard', [CookingController::class, 'index'])->name('kitchen.index');
+    Route::post('kitchen/cooking/{schedule}/start', [CookingController::class, 'start'])->name('kitchen.start');
+    Route::post('kitchen/cooking/{schedule}/finish', [CookingController::class, 'finish'])->name('kitchen.finish');
+    Route::get('kitchen/inventory', [CookingController::class, 'inventory'])->name('kitchen.inventory');
 
     // Supplier Portal Routes
     Route::middleware('role:supplier')->prefix('supplier')->name('supplier.')->group(function () {

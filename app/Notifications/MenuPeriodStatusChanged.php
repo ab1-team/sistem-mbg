@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\MenuPeriod;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class MenuPeriodStatusChanged extends Notification
@@ -12,6 +11,7 @@ class MenuPeriodStatusChanged extends Notification
     use Queueable;
 
     protected $menuPeriod;
+
     protected $status;
 
     public function __construct(MenuPeriod $menuPeriod, $status)
@@ -29,7 +29,7 @@ class MenuPeriodStatusChanged extends Notification
     {
         $messages = [
             'disetujui' => "Rencana menu '{$this->menuPeriod->title}' telah disetujui oleh Admin.",
-            'ditolak' => "Rencana menu '{$this->menuPeriod->title}' ditolak. Alasan: " . ($this->menuPeriod->rejection_note ?? 'Tidak ada catatan.'),
+            'ditolak' => "Rencana menu '{$this->menuPeriod->title}' ditolak. Alasan: ".($this->menuPeriod->rejection_note ?? 'Tidak ada catatan.'),
             'menunggu_approval' => "Rencana menu baru '{$this->menuPeriod->title}' menunggu persetujuan Anda.",
         ];
 

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Dapur;
 use App\Models\Stock;
 use App\Traits\WithSmartTable;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,7 @@ class KitchenInventoryTable extends Component
 
     public function render()
     {
-        $dapurId = Auth::user()->dapur_id ?? \App\Models\Dapur::first()->id;
+        $dapurId = Auth::user()->dapur_id ?? Dapur::first()->id;
 
         $stocks = Stock::query()
             ->with(['material'])
@@ -23,7 +24,7 @@ class KitchenInventoryTable extends Component
             ->when($this->search, function ($query) {
                 $query->whereHas('material', function ($q) {
                     $q->where('name', 'like', '%'.$this->search.'%')
-                      ->orWhere('code', 'like', '%'.$this->search.'%');
+                        ->orWhere('code', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->category, function ($query) {

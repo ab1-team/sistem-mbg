@@ -21,16 +21,6 @@
         this.$wire.carbs = total.car.toFixed(2);
         this.$wire.fat = total.fat.toFixed(2);
         this.$wire.fiber = total.fib.toFixed(2);
-    },
-    addRow() {
-        this.rows.push({ material_id: '', quantity: 1, unit: '-' });
-        this.$nextTick(() => this.recalc());
-    },
-    removeRow(index) {
-        if (this.rows.length > 1) {
-            this.rows.splice(index, 1);
-            this.$nextTick(() => this.recalc());
-        }
     }
 }" x-init="recalc();
 $watch('rows', () => recalc())">
@@ -98,163 +88,78 @@ $watch('rows', () => recalc())">
 
     {{-- BOM Details --}}
     <x-card title="Bahan Baku (BOM) per 1 Porsi">
-        <div class="overflow-x-auto relative">
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-slate-50 border-b border-slate-100">
-                    <tr>
-                        <x-table-th>Bahan Baku</x-table-th>
-                        <x-table-th class="w-32">Kuantitas</x-table-th>
-                        <x-table-th class="w-24 text-center">Satuan</x-table-th>
-                        <x-table-th class="w-20"></x-table-th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-50">
-                    <template x-for="(row, index) in rows" :key="index">
-                        <tr class="hover:bg-slate-50/50 transition-colors">
-                            <x-table-td>
-                                {{-- Faithful Re-implementation of YOUR Searchable Select Component --}}
-                                <div class="relative" x-data="{
-                                    open: false,
-                                    search: '',
-                                    pos: { top: 0, left: 0, width: 0 },
-                                    options: Object.values(materials),
-                                
-                                    get filteredOptions() {
-                                        if (!this.search) return this.options;
-                                        let s = this.search.toLowerCase();
-                                        return this.options.filter(o =>
-                                            (o.name || '').toLowerCase().includes(s) ||
-                                            (o.code || '').toLowerCase().includes(s)
-                                        );
-                                    },
-                                    get selectedLabel() {
-                                        let m = materials[row.material_id];
-                                        return m ? (m.name + ' (' + m.code + ')') : '';
-                                    },
-                                    updatePos() {
-                                        if (!this.$refs.trigger) return;
-                                        let rect = this.$refs.trigger.getBoundingClientRect();
-                                        this.pos.top = rect.bottom + window.scrollY;
-                                        this.pos.left = rect.left + window.scrollX;
-                                        this.pos.width = rect.width;
-                                    },
-                                    toggle() {
-                                        this.open = !this.open;
-                                        if (this.open) {
-                                            this.updatePos();
-                                            setTimeout(() => { if (this.$refs.searchInput) this.$refs.searchInput.focus(); }, 100);
-                                        }
-                                    },
-                                    select(m) {
-                                        row.material_id = m.id;
-                                        row.unit = m.unit;
-                                        this.open = false;
-                                        this.search = '';
-                                        recalc();
-                                    }
-                                }" @scroll.window="if(open) updatePos()"
-                                    @resize.window="if(open) updatePos()">
+        <x-table loading-target="save">
+            <x-slot name="thead">
+                <x-table-th>Bahan Baku</x-table-th>
+                <x-table-th class="w-32">Kuantitas</x-table-th>
+                <x-table-th class="w-24 text-center">Satuan</x-table-th>
+                <x-table-th class="w-20"></x-table-th>
+            </x-slot>
 
-                                    <div class="relative" x-ref="trigger">
-                                        <input type="text" x-model="search" x-ref="searchInput"
-                                            @click="if(!open) toggle()" @focus="if(!open) toggle()"
-                                            @keydown.escape="open = false"
-                                            :placeholder="row.material_id ? selectedLabel : 'Pilih Bahan...'"
-                                            class="block w-full bg-slate-50 border border-slate-200 text-slate-900 text-[13px] rounded-xl px-4 py-2.5 
-                                                  focus:bg-white focus:border-green-900 focus:ring-4 focus:ring-green-900/5 
-                                                  transition-all outline-none placeholder:text-slate-900 placeholder:font-bold"
-                                            :class="open ? 'ring-4 ring-green-900/5 border-green-900 bg-white' : ''">
+            @foreach ($rows as $index => $row)
+                @php
+                    $rowUnit = $row['unit'] ?? '-';
+                    $materialOptions = collect($allMaterials)
+                        ->map(function ($mat) {
+                            return [
+                                'value' => (string) $mat->id,
+                                'label' => $mat->name . ' (' . $mat->code . ')',
+                                'unit' => (string) $mat->unit,
+                            ];
+                        })
+                        ->toArray();
+                @endphp
+                <tr class="hover:bg-slate-50/50 transition-colors" wire:key="bom-row-{{ $index }}"
+                    x-data="{ unit: '{{ $rowUnit }}' }">
+                    <x-table-td>
+                        <x-form-searchable-select wire:model="rows.{{ $index }}.material_id" :options="$materialOptions"
+                            on-selected="unit = opt.unit; $nextTick(() => recalc())" placeholder="Pilih Bahan..." />
+                        @error('rows.' . $index . '.material_id')
+                            <span class="text-[11px] text-red-500 font-bold">{{ $message }}</span>
+                        @enderror
+                    </x-table-td>
+                    <x-table-td>
+                        <input type="number" step="0.0001" wire:model="rows.{{ $index }}.quantity"
+                            @input="recalc()"
+                            class="block w-full bg-slate-50 border border-slate-200 text-slate-900 text-[13px] rounded-xl px-4 py-2 focus:bg-white focus:border-green-900 focus:ring-4 focus:ring-green-900/5 transition-all outline-none">
+                        @error('rows.' . $index . '.quantity')
+                            <span class="text-[11px] text-red-500 font-bold">{{ $message }}</span>
+                        @enderror
+                    </x-table-td>
+                    <x-table-td class="text-center font-bold text-slate-400 text-[11px] uppercase tracking-widest">
+                        <span x-text="unit"></span>
+                    </x-table-td>
+                    <x-table-td class="text-right">
+                        @if (count($rows) > 1)
+                            <button type="button" @click="$wire.removeRow({{ $index }})"
+                                class="text-red-400 hover:text-red-600 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5"
+                                    viewBox="0 0 24 24">
+                                    <path
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        @endif
+                    </x-table-td>
+                </tr>
+            @endforeach
 
-                                        <div @click="toggle()"
-                                            class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 cursor-pointer text-slate-400 hover:text-green-600 transition-colors">
-                                            <svg x-show="!open" class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                            <svg x-show="open" class="w-4 h-4 animate-in fade-in zoom-in duration-200"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                            </svg>
-                                        </div>
-                                    </div>
+            <x-slot name="footer">
+                <div class="px-6 py-4">
+                    <button type="button" @click="$wire.addRow()"
+                        class="flex items-center gap-2 text-green-700 font-bold text-[13px] hover:text-green-800 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                            <path d="M12 5v14M5 12h14" />
+                        </svg>
+                        Tambah Bahan Baku
+                    </button>
+                </div>
+            </x-slot>
+        </x-table>
 
-                                    <template x-teleport="body">
-                                        <div x-show="open" @click.away="open = false"
-                                            class="fixed z-[99999] bg-white border border-slate-200 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden"
-                                            :style="`top: ${pos.top}px; left: ${pos.left}px; width: ${pos.width}px;`"
-                                            style="display: none;">
-                                            <div class="max-h-60 overflow-y-auto p-1.5 custom-scrollbar">
-                                                <template x-for="m in filteredOptions" :key="m.id">
-                                                    <button type="button" @click="select(m)"
-                                                        class="flex items-center w-full px-4 py-2.5 text-left text-[13px] rounded-xl transition-all hover:bg-green-50 group"
-                                                        :class="row.material_id == m.id ?
-                                                            'bg-green-50 text-green-700 font-extrabold' :
-                                                            'text-slate-600 hover:text-slate-900'">
-                                                        <div class="flex flex-col flex-1">
-                                                            <span x-text="m.name" class="font-bold"></span>
-                                                            <span
-                                                                class="text-[10px] text-slate-400 uppercase tracking-tighter"
-                                                                x-text="m.code"></span>
-                                                        </div>
-                                                        <template x-if="row.material_id == m.id">
-                                                            <svg class="w-4 h-4 text-green-700" fill="none"
-                                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="3" d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </template>
-                                                    </button>
-                                                </template>
-                                                <div x-show="filteredOptions.length === 0"
-                                                    class="p-8 text-center bg-slate-50/50">
-                                                    <p class="text-[12px] text-slate-400 font-bold italic">Bahan tidak
-                                                        ditemukan...</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </div>
-                            </x-table-td>
-
-                            <x-table-td>
-                                <input type="number" step="0.0001" x-model="row.quantity" @input="recalc()"
-                                    class="block w-full bg-slate-50 border border-slate-200 text-slate-900 text-[13px] rounded-xl px-4 py-2.5 focus:bg-white focus:border-green-900 focus:ring-4 focus:ring-green-900/5 transition-all outline-none">
-                            </x-table-td>
-
-                            <x-table-td
-                                class="text-center font-bold text-slate-400 text-[11px] uppercase tracking-widest">
-                                <span x-text="row.unit || '-'"></span>
-                            </x-table-td>
-
-                            <x-table-td class="text-right">
-                                <button type="button" @click="removeRow(index)"
-                                    class="text-red-400 hover:text-red-600 transition-colors p-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
-                            </x-table-td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
-
-            {{-- Instant Add Button --}}
-            <div class="px-6 py-4 border-t border-slate-50 bg-slate-50/20">
-                <button type="button" @click="addRow()"
-                    class="flex items-center gap-2 text-green-700 font-bold text-[13px] hover:text-green-800 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                        <path d="M12 5v14M5 12h14" />
-                    </svg>
-                    Tambah Bahan Baku
-                </button>
-            </div>
-        </div>
-
+        @error('rows')
+            <div class="mt-2 text-xs text-red-500 font-bold">{{ $message }}</div>
+        @enderror
     </x-card>
 
     {{-- Nutritional Info --}}
@@ -275,22 +180,15 @@ $watch('rows', () => recalc())">
 
     <div class="flex items-center justify-end gap-3 pt-6 border-t border-slate-100">
         <x-btn href="{{ route('menu-items.index') }}" variant="secondary">Batal</x-btn>
-        <button type="submit" wire:loading.attr="disabled" wire:target="save"
-            class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-green-900 border border-transparent rounded-xl font-bold text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-900/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-            <svg wire:loading.remove wire:target="save" class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                stroke-width="2.5" viewBox="0 0 24 24">
+        <x-btn type="submit" 
+            loading="true" 
+            loading-target="save" 
+            loading-text="Menyimpan..."
+            class="px-6 py-2.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                 <path d="M5 13l4 4L19 7" />
             </svg>
-            <svg wire:loading wire:target="save" class="w-3.5 h-3.5 animate-spin" fill="none"
-                viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                    stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
-            </svg>
-            <span wire:loading.remove wire:target="save">Simpan Masakan</span>
-            <span wire:loading wire:target="save">Menyimpan...</span>
-        </button>
+            Simpan Masakan
+        </x-btn>
     </div>
 </form>

@@ -22,7 +22,13 @@
                 {{ $purchaseOrder->creator->name }}</p>
         </div>
         <div class="flex items-center gap-2" x-data="{ showCancelModal: false }">
-            @if(in_array($purchaseOrder->status->value, ['diteruskan_ke_supplier', 'diproses_supplier', 'dalam_pengiriman', 'diterima_sebagian']) && (auth()->user()->hasRole('logistik') || auth()->user()->hasRole('admin')))
+            @if (in_array($purchaseOrder->status->value, [
+                    'diteruskan_ke_supplier',
+                    'diproses_supplier',
+                    'dalam_pengiriman',
+                    'diterima_sebagian',
+                ]) &&
+                    auth()->user()->hasRole(['logistik', 'admin', 'superadmin']))
                 <a href="{{ route('gr.create', $purchaseOrder) }}">
                     <x-btn class="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-900/20">
                         Terima Barang
@@ -48,7 +54,9 @@
                 </form>
             @endif
 
-            @if ($purchaseOrder->status->value === 'direview_yayasan' && auth()->user()->hasRole('admin'))
+            @if (
+                $purchaseOrder->status->value === 'direview_yayasan' &&
+                    auth()->user()->hasRole(['admin', 'superadmin']))
                 <form action="{{ route('purchase-orders.submit-to-supplier', $purchaseOrder) }}" method="POST"
                     class="inline">
                     @csrf
@@ -61,7 +69,7 @@
 
             {{-- MODAL PEMBATALAN (Roadmap 3.5) --}}
             <div x-show="showCancelModal"
-                class="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+                class="fixed inset-0 z-1000 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
                 x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
                 x-transition:enter-end="opacity-100" x-cloak>
                 <div @click.away="showCancelModal = false"
@@ -108,108 +116,7 @@
         {{-- LEFT: PO ITEMS --}}
         <div class="lg:col-span-2 space-y-6">
             <x-card title="Daftar Bahan Baku" subtitle="Tugaskan supplier untuk setiap item belanja.">
-                <div class="overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-slate-50 border-b border-slate-100">
-                            <tr>
-                                <th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest">
-                                    Bahan & Supplier</th>
-                                <th
-                                    class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest text-right">
-                                    Target Porsi</th>
-                                <th
-                                    class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest text-right">
-                                    Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-50">
-                            @foreach ($purchaseOrder->items as $item)
-                                <tr x-data="{ open: false }" class="group hover:bg-slate-50/30 transition-colors">
-                                    <td class="px-6 py-5">
-                                        <div class="flex items-start gap-3">
-                                            <div
-                                                class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-green-50 group-hover:text-green-600 transition-colors shrink-0">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                    stroke-width="2.5" viewBox="0 0 24 24">
-                                                    <path
-                                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                                </svg>
-                                            </div>
-                                            <div>
-                                                <p class="font-black text-slate-900 tracking-tight leading-none mb-1">
-                                                    {{ $item->material->name }}</p>
-                                                <div class="flex flex-wrap gap-2 mt-2">
-                                                    @forelse($item->assignments as $assign)
-                                                        <span
-                                                            class="inline-flex items-center px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 text-[10px] font-bold border border-indigo-100">
-                                                            {{ $assign->supplier->name }}
-                                                            ({{ number_format($assign->quantity_assigned, 1) }})
-                                                        </span>
-                                                    @empty
-                                                        <span class="text-[11px] text-slate-300 italic">Belum ada
-                                                            supplier</span>
-                                                    @endforelse
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-5 text-right">
-                                        @php
-                                            $assigned = $item->assignments->sum('quantity_assigned');
-                                            $isComplete = abs($item->quantity_to_order - $assigned) < 0.001;
-                                        @endphp
-                                        <div class="inline-block text-right">
-                                            <p
-                                                class="text-[15px] font-black {{ $isComplete ? 'text-green-600' : 'text-slate-900' }} leading-none">
-                                                {{ number_format($item->quantity_to_order, 2) }}
-                                            </p>
-                                            <p
-                                                class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-1">
-                                                {{ $item->unit }}</p>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-5 text-right">
-                                        @if (auth()->user()->hasRole('admin') &&
-                                                ($purchaseOrder->status->value === 'dikirim_ke_yayasan' ||
-                                                    $purchaseOrder->status->value === 'direview_yayasan'))
-                                            <x-btn @click="open = !open" variant="secondary"
-                                                class="py-1.5! px-3! text-[11px]!">
-                                                <span x-text="open ? 'Tutup' : 'Kelola Supplier'"></span>
-                                            </x-btn>
-                                        @endif
-                                    </td>
-
-                                    {{-- EXPANDABLE FORM --}}
-                                    <template x-if="open">
-                                <tr class="bg-white">
-                                    <td colspan="3" class="px-8 py-8 border-t border-slate-100 shadow-inner">
-                                        <div class="max-w-2xl mx-auto">
-                                            <livewire:po-assignment-form :item="$item" :key="'item-' . $item->id" />
-                                        </div>
-                                    </td>
-                                </tr>
-                                </template>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                        <tfoot class="bg-slate-50 border-t border-slate-100">
-                            <tr>
-                                <td colspan="3" class="px-6 py-4 text-[11px] font-bold text-slate-400 text-center">
-                                    Akhir dari daftar bahan baku
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <div class="bg-slate-50 border-t border-slate-100 px-6 py-5 flex justify-end">
-                    <div class="text-right">
-                        <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Estimasi
-                            Biaya</p>
-                        <p class="text-[24px] font-black text-slate-900 tracking-tight leading-none">
-                            Rp {{ number_format($purchaseOrder->total_estimated_cost, 0, ',', '.') }}
-                        </p>
-                    </div>
-                </div>
+                <livewire:po-items-table :purchaseOrder="$purchaseOrder" />
             </x-card>
         </div>
 
@@ -245,6 +152,7 @@
             <div class="p-6 bg-slate-900 rounded-[32px] text-white">
                 <h4 class="text-[16px] font-bold mb-4 tracking-tight">Langkah Selanjutnya</h4>
                 <div class="space-y-4">
+                    {{-- Step 1 --}}
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center shrink-0">
                             <svg class="w-4 h-4 text-slate-900" fill="none" stroke="currentColor"
@@ -252,20 +160,65 @@
                                 <path d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <p class="text-[12px] font-bold text-slate-300 italic line-through decoration-slate-500">
+                        <p class="text-[12px] font-bold text-slate-400 italic line-through decoration-slate-500">
                             Generate PO dari rencana menu</p>
                     </div>
+
+                    {{-- Step 2 --}}
+                    @php
+                        $step2Done = in_array($purchaseOrder->status->value, [
+                            'direview_yayasan',
+                            'diteruskan_ke_supplier',
+                            'diproses_supplier',
+                            'dalam_pengiriman',
+                            'diterima_sebagian',
+                            'diterima_lengkap',
+                            'selesai',
+                        ]);
+                    @endphp
                     <div class="flex items-center gap-3">
                         <div
-                            class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-500 font-black text-[12px]">
-                            2</div>
-                        <p class="text-[12px] font-bold text-white">Kirim ke Yayasan untuk review supplier</p>
+                            class="w-8 h-8 rounded-full {{ $step2Done ? 'bg-green-500' : 'bg-slate-800' }} flex items-center justify-center shrink-0">
+                            @if ($step2Done)
+                                <svg class="w-4 h-4 text-slate-900" fill="none" stroke="currentColor"
+                                    stroke-width="3" viewBox="0 0 24 24">
+                                    <path d="M5 13l4 4L19 7" />
+                                </svg>
+                            @else
+                                <span class="text-slate-500 font-black text-[12px]">2</span>
+                            @endif
+                        </div>
+                        <p
+                            class="text-[12px] font-bold {{ $step2Done ? 'text-slate-400 italic line-through decoration-slate-500' : 'text-white' }}">
+                            Kirim & Review oleh Yayasan</p>
                     </div>
+
+                    {{-- Step 3 --}}
+                    @php
+                        $step3Done = in_array($purchaseOrder->status->value, [
+                            'diteruskan_ke_supplier',
+                            'diproses_supplier',
+                            'dalam_pengiriman',
+                            'diterima_sebagian',
+                            'diterima_lengkap',
+                            'selesai',
+                        ]);
+                    @endphp
                     <div class="flex items-center gap-3">
                         <div
-                            class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-500 font-black text-[12px]">
-                            3</div>
-                        <p class="text-[12px] font-bold text-slate-500">Meneruskan ke Supplier</p>
+                            class="w-8 h-8 rounded-full {{ $step3Done ? 'bg-green-500' : 'bg-slate-800' }} flex items-center justify-center shrink-0">
+                            @if ($step3Done)
+                                <svg class="w-4 h-4 text-slate-900" fill="none" stroke="currentColor"
+                                    stroke-width="3" viewBox="0 0 24 24">
+                                    <path d="M5 13l4 4L19 7" />
+                                </svg>
+                            @else
+                                <span class="text-slate-500 font-black text-[12px]">3</span>
+                            @endif
+                        </div>
+                        <p
+                            class="text-[12px] font-bold {{ $step3Done ? 'text-slate-400 italic line-through decoration-slate-500' : ($step2Done ? 'text-white font-bold' : 'text-slate-500') }}">
+                            Meneruskan ke Supplier</p>
                     </div>
                 </div>
             </div>
@@ -315,4 +268,6 @@
             </x-card>
         </div>
     </div>
+
+    <livewire:po-assignment-form />
 </x-app-layout>

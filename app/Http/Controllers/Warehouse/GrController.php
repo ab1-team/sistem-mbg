@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers\Warehouse;
 
+use App\Enums\PoStatus;
 use App\Http\Controllers\Controller;
 use App\Models\GoodsReceipt;
-use App\Models\GoodsReceiptItem;
 use App\Models\PurchaseOrder;
-use App\Models\Stock;
-use App\Models\StockMovement;
-use App\Enums\PoStatus;
 use App\Services\StockService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -51,7 +48,7 @@ class GrController extends Controller
             PoStatus::DITERIMA_SEBAGIAN,
         ];
 
-        if (!in_array($purchaseOrder->status, $allowedStatuses)) {
+        if (! in_array($purchaseOrder->status, $allowedStatuses)) {
             return redirect()->route('purchase-orders.show', $purchaseOrder)
                 ->with('error', 'Status PO tidak mengizinkan penerimaan barang saat ini.');
         }
@@ -80,7 +77,7 @@ class GrController extends Controller
         return DB::transaction(function () use ($validated, $purchaseOrder) {
             // 1. Buat Header Penerimaan
             $gr = GoodsReceipt::create([
-                'gr_number' => 'GR-' . $purchaseOrder->dapur->code . '-' . now()->format('Ymd-His'),
+                'gr_number' => 'GR-'.$purchaseOrder->dapur->code.'-'.now()->format('Ymd-His'),
                 'purchase_order_id' => $purchaseOrder->id,
                 'supplier_id' => $purchaseOrder->items->first()->assignments->first()->supplier_id ?? 1,
                 'received_by' => auth()->id(),
@@ -92,7 +89,7 @@ class GrController extends Controller
 
             foreach ($validated['items'] as $itemData) {
                 $poItem = $purchaseOrder->items()->find($itemData['po_item_id']);
-                
+
                 $photoPath = null;
                 if (isset($itemData['qc_photo'])) {
                     $photoPath = $itemData['qc_photo']->store('qc_photos', 'public');
@@ -123,7 +120,7 @@ class GrController extends Controller
 
                 // 4. Update qty diterima di level item PO (kumulatif untuk cek completion)
                 $poItem->increment('quantity_received', $itemData['quantity_received']);
-                
+
                 if ($poItem->quantity_received < $poItem->quantity_to_order) {
                     $allCompleted = false;
                 }

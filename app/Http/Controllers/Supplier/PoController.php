@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Supplier;
 
-use App\Http\Controllers\Controller;
 use App\Enums\PoStatus;
+use App\Http\Controllers\Controller;
 use App\Models\PoSupplierAssignment;
 use Illuminate\Http\Request;
 
@@ -12,8 +12,8 @@ class PoController extends Controller
     public function index()
     {
         $supplierId = auth()->user()->supplier_id;
-        
-        if (!$supplierId) {
+
+        if (! $supplierId) {
             return redirect()->route('dashboard')->with('error', 'Profil user Anda tidak terikat dengan supplier manapun.');
         }
 
@@ -35,6 +35,7 @@ class PoController extends Controller
         }
 
         $assignment->load(['item.purchaseOrder', 'item.material']);
+
         return view('supplier.purchase-orders.show', compact('assignment'));
     }
 
@@ -48,7 +49,7 @@ class PoController extends Controller
 
         $request->validate([
             'action' => 'required|in:accept,reject,process,ship',
-            'rejection_reason' => 'required_if:action,reject|nullable|string|min:5'
+            'rejection_reason' => 'required_if:action,reject|nullable|string|min:5',
         ]);
 
         $statusMap = [
@@ -67,7 +68,7 @@ class PoController extends Controller
 
         // Sync main PO status based on Supplier action (Roadmap 3.4/State Machine)
         $po = $assignment->item->purchaseOrder;
-        
+
         if ($request->action === 'accept' || $request->action === 'process') {
             $po->changeStatus(PoStatus::DIPROSES_SUPPLIER, "Supplier ({$assignment->supplier->name}) menerima/memproses item: {$assignment->item->material->name}");
         } elseif ($request->action === 'ship') {

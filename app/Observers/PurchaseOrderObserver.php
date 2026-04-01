@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\PurchaseOrder;
 use App\Enums\PoStatus;
+use App\Models\PurchaseOrder;
 use App\Services\InvoiceService;
 
 class PurchaseOrderObserver

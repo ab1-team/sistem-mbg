@@ -53,10 +53,19 @@
                                 @foreach($daySchedules->sortBy('meal_type') as $s)
                                     <div class="bg-slate-50/50 rounded-2xl p-3 border border-slate-100/50 group hover:border-green-200 transition-colors">
                                         <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">{{ str_replace('_', ' ', $s->meal_type) }}</p>
-                                        <p class="text-[13px] font-bold text-slate-900 leading-tight">{{ $s->menuItem->name }}</p>
+                                        <div class="space-y-0.5">
+                                            @forelse($s->items as $item)
+                                                <p class="text-[13px] font-bold text-slate-900 leading-tight">{{ $item->name }}</p>
+                                            @empty
+                                                <p class="text-[13px] font-bold text-slate-300 leading-tight italic">Belum dipilih</p>
+                                            @endforelse
+                                        </div>
                                         <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
                                             <span class="text-[11px] font-bold text-slate-500">{{ $s->target_portions }} <span class="text-[9px] text-slate-400">PORSI</span></span>
-                                            <span class="text-[11px] font-mono font-bold text-green-700">{{ number_format($s->menuItem->calories * $s->target_portions / 1000, 1) }} <span class="text-[9px]">Mcal</span></span>
+                                            <span class="text-[11px] font-mono font-bold text-green-700">
+                                                {{ number_format($s->items->sum('calories') * $s->target_portions / 1000, 1) }} 
+                                                <span class="text-[9px]">Mcal</span>
+                                            </span>
                                         </div>
                                     </div>
                                 @endforeach
@@ -66,101 +75,121 @@
                 </div>
             </x-card>
 
-            @if($menuPeriod->status === \App\Models\MenuPeriod::STATUS_APPROVED)
-                <div class="mt-6 flex flex-col gap-4">
-                    @php
-                        $hasPo = \App\Models\PurchaseOrder::where('menu_period_id', $menuPeriod->id)->first();
-                    @endphp
-
-                    @if(!$hasPo)
-                        <div class="p-6 rounded-[28px] bg-slate-900 text-white border border-slate-800 shadow-xl relative overflow-hidden group">
-                            <div class="absolute -right-12 -top-12 w-32 h-32 bg-white/5 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
-                            <div class="relative z-10">
-                                <h4 class="text-[16px] font-bold mb-2 tracking-tight">Kirim ke Logistik</h4>
-                                <p class="text-[12px] text-slate-400 mb-6 leading-relaxed">Rencana ini siap diproses menjadi Purchase Order (PO). Tim logistik akan menerima draf belanja otomatis.</p>
-                                <form action="{{ route('menu-periods.generate-po', $menuPeriod) }}" method="POST">
-                                    @csrf
-                                    <x-btn type="submit" class="w-full bg-green-500 hover:bg-green-600 text-slate-900 font-black shadow-lg shadow-green-500/20 py-4! text-[13px]!">
-                                        BUAT PURCHASE ORDER (PO)
-                                    </x-btn>
-                                </form>
-                            </div>
-                        </div>
-                    @else
-                        <div class="p-6 rounded-[28px] bg-green-50 border border-green-100 flex items-center justify-between gap-4">
-                            <div>
-                                <p class="text-[11px] font-black text-green-700 uppercase tracking-widest mb-1">Status PO</p>
-                                <p class="text-[14px] font-bold text-slate-900 leading-tight">PO: {{ $hasPo->po_number }}</p>
-                            </div>
-                            <x-btn href="{{ route('purchase-orders.show', $hasPo) }}" variant="secondary" class="bg-white hover:bg-green-100 border-green-200 text-green-700">
-                                Lihat PO
-                            </x-btn>
-                        </div>
-                    @endif
-                </div>
-            @endif
+            {{-- End of Left Column --}}
         </div>
 
         {{-- RIGHT: MATERIAL SUMMARY --}}
-        <div class="space-y-6">
-            <x-card title="Kebutuhan Logistik" subtitle="Total agregasi bahan baku untuk menjalankan rencana ini.">
-                @php
-                    $requirements = [];
-                    foreach($menuPeriod->schedules as $s) {
-                        foreach($s->menuItem->boms as $bom) {
-                            $materialId = $bom->material_id;
-                            $needed = ($bom->quantity / 1) * $s->target_portions; // quantity is per 1 portion (already normalized)
-                            
-                            if(!isset($requirements[$materialId])) {
-                                $requirements[$materialId] = [
-                                    'name' => $bom->material->name,
-                                    'unit' => $bom->material->unit,
-                                    'total' => 0
-                                ];
+        <div class="xl:col-span-1">
+            <div class="sticky top-6 space-y-6">
+                <x-card title="Kebutuhan Logistik" subtitle="Total agregasi bahan baku untuk menjalankan rencana ini.">
+                    @php
+                        $requirements = [];
+                        foreach($menuPeriod->schedules as $s) {
+                            foreach($s->items as $item) {
+                                foreach($item->boms as $bom) {
+                                    $materialId = $bom->material_id;
+                                    $needed = ($bom->quantity / 1) * $s->target_portions;
+                                    
+                                    if(!isset($requirements[$materialId])) {
+                                        $requirements[$materialId] = [
+                                            'name' => $bom->material->name,
+                                            'unit' => $bom->material->unit,
+                                            'total' => 0
+                                        ];
+                                    }
+                                    $requirements[$materialId]['total'] += $needed;
+                                }
                             }
-                            $requirements[$materialId]['total'] += $needed;
                         }
-                    }
-                @endphp
+                    @endphp
 
-                <div class="space-y-3">
-                    @forelse(collect($requirements)->sortBy('name') as $req)
-                        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <div class="space-y-3">
+                        @forelse(collect($requirements)->sortBy('name') as $req)
+                            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                <div>
+                                    <p class="text-[12px] font-bold text-slate-800 leading-none">{{ $req['name'] }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[13px] font-black text-slate-900 tracking-tight leading-none">{{ number_format($req['total'], 2) }}</p>
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase mt-1">{{ $req['unit'] }}</p>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="py-10 text-center text-slate-400 text-[13px]">Jadwalkan menu untuk melihat kebutuhan bahan.</div>
+                        @endforelse
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-slate-100">
+                        <p class="text-[11px] text-slate-400 leading-relaxed italic">Catatan: Kalkulasi didasarkan pada resep (BOM) standar yang terdaftar di sistem.</p>
+                    </div>
+                </x-card>
+
+                {{-- ENERGY SUMMARY --}}
+                <div class="bg-green-900 rounded-[28px] p-6 text-white overflow-hidden relative group">
+                    <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full group-hover:scale-125 transition-transform"></div>
+                    <div class="relative z-10">
+                        <h4 class="text-[16px] font-bold mb-4 tracking-tight">Total Gizi Periode</h4>
+                        <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <p class="text-[12px] font-bold text-slate-800 leading-none">{{ $req['name'] }}</p>
+                                <p class="text-[10px] uppercase font-bold text-green-300 tracking-widest">Energi</p>
+                                <p class="text-xl font-black">{{ number_format($menuPeriod->schedules->sum(fn($s) => $s->items->sum('calories') * $s->target_portions) / 1000, 0) }}k <span class="text-[10px]">kcal</span></p>
                             </div>
-                            <div class="text-right">
-                                <p class="text-[13px] font-black text-slate-900 tracking-tight leading-none">{{ number_format($req['total'], 2) }}</p>
-                                <p class="text-[9px] font-bold text-slate-400 uppercase mt-1">{{ $req['unit'] }}</p>
+                            <div>
+                                <p class="text-[10px] uppercase font-bold text-green-300 tracking-widest">Protein</p>
+                                <p class="text-xl font-black">{{ number_format($menuPeriod->schedules->sum(fn($s) => $s->items->sum('protein') * $s->target_portions) / 1000, 1) }}k <span class="text-[10px]">g</span></p>
                             </div>
-                        </div>
-                    @empty
-                        <div class="py-10 text-center text-slate-400 text-[13px]">Jadwalkan menu untuk melihat kebutuhan bahan.</div>
-                    @endforelse
-                </div>
-
-                <div class="mt-6 pt-6 border-t border-slate-100">
-                    <p class="text-[11px] text-slate-400 leading-relaxed italic">Catatan: Kalkulasi didasarkan pada resep (BOM) standar yang terdaftar di sistem.</p>
-                </div>
-            </x-card>
-
-            {{-- ENERGY SUMMARY --}}
-            <div class="bg-green-900 rounded-[28px] p-6 text-white overflow-hidden relative group">
-                <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full group-hover:scale-125 transition-transform"></div>
-                <div class="relative z-10">
-                    <h4 class="text-[16px] font-bold mb-4 tracking-tight">Total Gizi Periode</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-[10px] uppercase font-bold text-green-300 tracking-widest">Energi</p>
-                            <p class="text-xl font-black">{{ number_format($menuPeriod->schedules->sum(fn($s) => $s->menuItem->calories * $s->target_portions) / 1000, 0) }}k <span class="text-[10px]">kcal</span></p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] uppercase font-bold text-green-300 tracking-widest">Protein</p>
-                            <p class="text-xl font-black">{{ number_format($menuPeriod->schedules->sum(fn($s) => $s->menuItem->protein * $s->target_portions) / 1000, 1) }}k <span class="text-[10px]">g</span></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    @if($menuPeriod->status === \App\Models\MenuPeriod::STATUS_APPROVED)
+        <div class="mt-8">
+            @php
+                $hasPo = \App\Models\PurchaseOrder::where('menu_period_id', $menuPeriod->id)->first();
+            @endphp
+
+            @if(!$hasPo)
+                <div class="p-8 rounded-[32px] bg-slate-900 text-white border border-slate-800 shadow-2xl relative overflow-hidden group">
+                    <div class="absolute -right-24 -top-24 w-64 h-64 bg-green-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+                    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div class="max-w-2xl">
+                            <h4 class="text-[20px] font-black mb-2 tracking-tight flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                Kirim ke Logistik
+                            </h4>
+                            <p class="text-[14px] text-slate-400 leading-relaxed">Rancangan menu telah disetujui. Langkah terakhir adalah menerbitkannya sebagai **Purchase Order (PO)** untuk diproses oleh tim pengadaan barang.</p>
+                        </div>
+                        <div class="shrink-0">
+                            <form action="{{ route('menu-periods.generate-po', $menuPeriod) }}" method="POST">
+                                @csrf
+                                <x-btn type="submit" size="xl" class="bg-green-500 hover:bg-green-600 text-slate-900 font-black shadow-lg shadow-green-500/20">
+                                    BUAT PURCHASE ORDER (PO) SEKARANG
+                                </x-btn>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="p-6 rounded-[32px] bg-green-50 border border-green-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center text-green-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-[11px] font-black text-green-700 uppercase tracking-widest mb-1">Logistik Sudah Diproses</p>
+                            <p class="text-[16px] font-bold text-slate-900 leading-tight">PO: {{ $hasPo->po_number }}</p>
+                        </div>
+                    </div>
+                    <x-btn href="{{ route('purchase-orders.show', $hasPo) }}" variant="secondary" class="bg-white hover:bg-green-100 border-green-200 text-green-700 px-8!">
+                        Lihat Detail PO
+                    </x-btn>
+                </div>
+            @endif
+        </div>
+    @endif
 </x-app-layout>

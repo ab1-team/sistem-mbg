@@ -21,7 +21,7 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->string('ip_address', 45)->nullable();
             $table->timestamp('created_at')->useCurrent();
-            
+
             // Indexing matching schema 4.4
             $table->index('purchase_order_id', 'idx_po_history_po');
             $table->index('created_at', 'idx_po_history_date');

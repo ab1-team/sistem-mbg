@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Investor extends Model
 {
@@ -43,7 +43,7 @@ class Investor extends Model
     /**
      * Get the wallet associated with the investor.
      */
-    public function wallet(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    public function wallet(): MorphOne
     {
         return $this->morphOne(Wallet::class, 'owner');
     }

@@ -17,7 +17,7 @@
 <div {{ $attributes->merge(['class' => 'space-y-1.5']) }} data-options="{{ $optionsJson }}" x-data="{
     open: false,
     search: '',
-    value: null,
+    value: @js($selected),
     options: [],
     position: { top: 0, left: 0, width: 0 },
 

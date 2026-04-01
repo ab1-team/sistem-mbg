@@ -1,7 +1,7 @@
 <div>
     <x-smart-table-actions>
         <div class="flex flex-wrap items-center gap-3">
-            <select wire:model.live="status" 
+            <select wire:model.live="status"
                 class="text-[13px] border-slate-200 rounded-xl focus:ring-green-500/20 focus:border-green-500 transition-all bg-white text-slate-600 px-3 py-2">
                 <option value="">Semua Status</option>
                 <option value="draf">Draf</option>
@@ -35,7 +35,8 @@
                         <p class="text-[11px] text-slate-400 mt-1">Dibuat oleh: {{ $item->creator->name }}</p>
                     </x-table-td>
                     <x-table-td>
-                        <span class="font-medium text-slate-600 truncate block max-w-[150px]">{{ $item->dapur->name }}</span>
+                        <span
+                            class="font-medium text-slate-600 truncate block max-w-[150px]">{{ $item->dapur->name }}</span>
                     </x-table-td>
                     <x-table-td>
                         <span class="font-mono text-[12px] text-slate-500">{{ $item->period->name }}</span>
@@ -49,16 +50,20 @@
                                 'ditolak' => 'bg-red-50 text-red-700 border-red-100',
                             ];
                         @endphp
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $statusColors[$item->status] }} uppercase whitespace-nowrap">
+                        <span
+                            class="px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $statusColors[$item->status] }} uppercase whitespace-nowrap">
                             {{ str_replace('_', ' ', $item->status) }}
                         </span>
                     </x-table-td>
                     <x-table-td class="text-right py-3 px-4">
-                        <div class="flex items-center justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200">
-                            <x-btn href="{{ route('menu-periods.show', $item) }}" variant="secondary" class="py-1.5! px-3! text-[11px]!">Detail</x-btn>
-                            @if($item->status === 'draf' || $item->status === 'ditolak')
-                                <x-btn href="{{ route('menu-periods.edit', $item) }}" variant="secondary" class="py-1.5! px-3! text-[11px]!">Edit</x-btn>
-                                <x-dialog title="Hapus Rencana" 
+                        <div
+                            class="flex items-center justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200">
+                            <x-btn href="{{ route('menu-periods.show', $item) }}" variant="secondary"
+                                class="py-1.5! px-3! text-[11px]!">Detail</x-btn>
+                            @if ($item->status === 'draf' || $item->status === 'ditolak')
+                                <x-btn href="{{ route('menu-periods.edit', $item) }}" variant="secondary"
+                                    class="py-1.5! px-3! text-[11px]!">Edit</x-btn>
+                                <x-dialog title="Hapus Rencana"
                                     description="Apakah Anda yakin ingin menghapus rencana {{ $item->title }}? Data jadwal harian di dalamnya akan ikut terhapus."
                                     action-label="Ya, Hapus" :action-url="route('menu-periods.destroy', $item)" method="DELETE">
                                     <x-btn variant="danger" class="py-1.5! px-3! text-[11px]!">Hapus</x-btn>
@@ -70,7 +75,8 @@
             @empty
                 <tr>
                     <td colspan="5">
-                        <x-empty-state title="Belum ada rencana menu" subtitle="Buat jadwal makanan harian untuk unit dapur Anda." />
+                        <x-empty-state title="Belum ada rencana menu"
+                            subtitle="Buat jadwal makanan harian untuk unit dapur Anda." />
                     </td>
                 </tr>
             @endforelse

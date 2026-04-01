@@ -15,7 +15,7 @@ class MenuSchedule extends Model
         'serve_date',
         'meal_type',
         'target_portions',
-        'notes'
+        'notes',
     ];
 
     protected $casts = [

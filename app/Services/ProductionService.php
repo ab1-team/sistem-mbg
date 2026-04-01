@@ -3,10 +3,9 @@
 namespace App\Services;
 
 use App\Enums\CookingStatus;
+use App\Models\CookingSchedule;
 use App\Models\Dapur;
 use App\Models\MenuSchedule;
-use App\Models\CookingSchedule;
-use App\Models\Stock;
 use Illuminate\Support\Facades\DB;
 
 class ProductionService
@@ -27,9 +26,9 @@ class ProductionService
 
         // Tarik menu yang sudah di-approve untuk hari ini
         $menuSchedules = MenuSchedule::whereHas('menuPeriod', function ($q) use ($dapur) {
-                $q->where('dapur_id', $dapur->id)
-                  ->where('status', 'disetujui');
-            })
+            $q->where('dapur_id', $dapur->id)
+                ->where('status', 'disetujui');
+        })
             ->where('serve_date', $date)
             ->get();
 

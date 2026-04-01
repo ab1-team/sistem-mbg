@@ -7,7 +7,6 @@ use App\Models\MenuItem;
 use App\Models\MenuPeriod;
 use App\Models\MenuSchedule;
 use App\Models\Period;
-use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -19,14 +18,16 @@ class MenuPeriodForm extends Component
     protected $queryString = [
         'dapur_id',
         'period_id',
-        'title'
+        'title',
     ];
 
     public $dapur_id;
-    public $period_id;
-    public $title;
-    public $schedules = []; // Array of days, each with an array of meal slots
 
+    public $period_id;
+
+    public $title;
+
+    public $schedules = []; // Array of days, each with an array of meal slots
 
     public function mount($menuPeriodId = null)
     {
@@ -36,7 +37,7 @@ class MenuPeriodForm extends Component
             $this->dapur_id = $mp->dapur_id;
             $this->period_id = $mp->period_id;
             $this->title = $mp->title;
-            
+
             // Map existing schedules to our local array
             $this->loadExistingSchedules($mp->schedules);
         } elseif ($this->period_id) {
@@ -47,7 +48,6 @@ class MenuPeriodForm extends Component
             }
         }
     }
-
 
     public function updatedPeriodId($value)
     {
@@ -73,7 +73,7 @@ class MenuPeriodForm extends Component
                     ['type' => 'sarapan', 'menu_item_ids' => [], 'portions' => 0],
                     ['type' => 'makan_siang', 'menu_item_ids' => [], 'portions' => 0],
                     ['type' => 'makan_malam', 'menu_item_ids' => [], 'portions' => 0],
-                ]
+                ],
             ];
         }
     }
@@ -115,15 +115,16 @@ class MenuPeriodForm extends Component
         $hasAnyMenu = false;
         foreach ($this->schedules as $day) {
             foreach ($day['meals'] as $meal) {
-                if (!empty($meal['menu_item_ids'])) {
+                if (! empty($meal['menu_item_ids'])) {
                     $hasAnyMenu = true;
                     break 2;
                 }
             }
         }
 
-        if (!$hasAnyMenu) {
+        if (! $hasAnyMenu) {
             $this->addError('schedules', 'Anda harus memilih minimal satu menu untuk disimpan.');
+
             return;
         }
 
@@ -145,9 +146,10 @@ class MenuPeriodForm extends Component
 
             foreach ($this->schedules as $day) {
                 foreach ($day['meals'] as $meal) {
-                    if (!empty($meal['menu_item_ids'])) {
+                    if (! empty($meal['menu_item_ids'])) {
                         $s = MenuSchedule::create([
                             'menu_period_id' => $mp->id,
+                            'menu_item_id' => $meal['menu_item_ids'][0] ?? null,
                             'serve_date' => $day['date'],
                             'meal_type' => $meal['type'],
                             'target_portions' => $meal['portions'],
@@ -159,11 +161,12 @@ class MenuPeriodForm extends Component
 
             DB::commit();
             session()->flash('success', 'Rencana Menu berhasil disimpan sebagai draf.');
+
             return redirect()->route('menu-periods.index');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            session()->flash('error', 'Terjadi kesalahan: '.$e->getMessage());
         }
     }
 
@@ -173,7 +176,7 @@ class MenuPeriodForm extends Component
             'dapurs' => Dapur::orderBy('name')->get(),
             'periods' => Period::where('status', 'open')->orderBy('start_date', 'desc')->get(),
             'menuItems' => MenuItem::orderBy('name')->get(),
-            'mealTypes' => ['sarapan', 'makan_siang', 'makan_malam', 'snack']
+            'mealTypes' => ['sarapan', 'makan_siang', 'makan_malam', 'snack'],
         ]);
     }
 }

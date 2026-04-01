@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class PoStatusHistory extends Model
 {
     // Indikasi tabel jika perlu, tapi Laravel jamak otomatis sudah benar (po_status_histories)
-    
+
     public $timestamps = false; // Karena kita pakai created_at manual di migrasi
-    
+
     protected $fillable = [
         'purchase_order_id',
         'from_status',

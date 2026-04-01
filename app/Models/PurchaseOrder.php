@@ -21,7 +21,7 @@ class PurchaseOrder extends Model
         'notes',
         'cancellation_reason',
         'created_by',
-        'submitted_at'
+        'submitted_at',
     ];
 
     protected $casts = [
@@ -55,7 +55,7 @@ class PurchaseOrder extends Model
         $oldStatus = $this->status;
 
         // Validasi transisi (kecuali jika status sama, abaikan)
-        if ($oldStatus !== $newStatus && !in_array($newStatus, $oldStatus->allowedTransitions())) {
+        if ($oldStatus !== $newStatus && ! in_array($newStatus, $oldStatus->allowedTransitions())) {
             throw new \Exception("Transisi status dari {$oldStatus->value} ke {$newStatus->value} tidak diizinkan.");
         }
 

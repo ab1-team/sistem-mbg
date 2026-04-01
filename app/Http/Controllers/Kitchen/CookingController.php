@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Kitchen;
 use App\Http\Controllers\Controller;
 use App\Models\CookingSchedule;
 use App\Models\Dapur;
+use App\Models\Stock;
 use App\Services\ProductionService;
 use Illuminate\Http\Request;
 
@@ -25,8 +26,8 @@ class CookingController extends Controller
     {
         // Untuk demo/testing: ambil dapur pertama jika koki belum ter-assign secara ketat
         $dapur = auth()->user()->dapur ?? Dapur::first();
-        
-        if (!$dapur) {
+
+        if (! $dapur) {
             return redirect()->back()->with('error', 'Dapur tidak ditemukan untuk user ini.');
         }
 
@@ -35,7 +36,7 @@ class CookingController extends Controller
 
         return view('kitchen.index', [
             'dapur' => $dapur,
-            'schedules' => $schedules
+            'schedules' => $schedules,
         ]);
     }
 
@@ -80,14 +81,14 @@ class CookingController extends Controller
     public function inventory()
     {
         $dapur = auth()->user()->dapur ?? Dapur::first();
-        
-        $stocks = \App\Models\Stock::with('material')
+
+        $stocks = Stock::with('material')
             ->where('dapur_id', $dapur->id)
             ->get();
 
         return view('kitchen.inventory', [
             'dapur' => $dapur,
-            'stocks' => $stocks
+            'stocks' => $stocks,
         ]);
     }
 }

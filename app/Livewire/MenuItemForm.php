@@ -4,31 +4,41 @@ namespace App\Livewire;
 
 use App\Models\Material;
 use App\Models\MenuItem;
-use App\Models\MenuBom;
-use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class MenuItemForm extends Component
 {
     public $menuItem;
+
     public $isEdit = false;
 
     // Menu Fields
     public $name;
+
     public $description;
+
     public $meal_type = 'sarapan';
+
     public $portion_size = 1;
+
     public $calories = 0;
+
     public $protein = 0;
+
     public $carbs = 0;
+
     public $fat = 0;
+
     public $fiber = 0;
+
     public $image;
- 
+
     // BOM Rows
     public $rows = [];
+
     public $allMaterials = [];
- 
+
     protected $rules = [
         'name' => 'required|string|max:150',
         'description' => 'nullable|string',
@@ -90,8 +100,8 @@ class MenuItemForm extends Component
     {
         $this->rows[] = [
             'material_id' => '',
-            'quantity'    => 1,
-            'unit'        => '-',
+            'quantity' => 1,
+            'unit' => '-',
         ];
     }
 
@@ -130,27 +140,32 @@ class MenuItemForm extends Component
             }
 
             foreach ($this->rows as $row) {
-                if (empty($row['material_id'])) continue;
-                
+                if (empty($row['material_id'])) {
+                    continue;
+                }
+
                 $material = Material::find($row['material_id']);
-                if (!$material) continue;
+                if (! $material) {
+                    continue;
+                }
 
                 $this->menuItem->boms()->create([
-                    'material_id'          => $row['material_id'],
+                    'material_id' => $row['material_id'],
                     'quantity_per_portion' => $row['quantity'],
-                    'unit'                 => $material->unit,
+                    'unit' => $material->unit,
                 ]);
             }
 
             DB::commit();
+
             return redirect()->route('menu-items.index')->with('success', 'Menu masakan berhasil disimpan.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('MenuItem Save Error: ' . $e->getMessage());
-            
+            \Log::error('MenuItem Save Error: '.$e->getMessage());
+
             // Tampilkan error ke session agar muncul di Blade
-            session()->flash('error', 'Gagal menyimpan: ' . $e->getMessage());
+            session()->flash('error', 'Gagal menyimpan: '.$e->getMessage());
             $this->dispatch('alert', ['type' => 'error', 'message' => $e->getMessage()]);
         }
     }

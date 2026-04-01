@@ -21,8 +21,8 @@ enum PoStatus: string
      */
     public function allowedTransitions(): array
     {
-        return match($this) {
-            self::DRAF => [self::DIKIRIM_KE_YAYASAN, self::DIBATALKAN],
+        return match ($this) {
+            self::DRAF => [self::DIKIRIM_KE_YAYASAN, self::DIREVIEW_YAYASAN, self::DIBATALKAN],
             self::DIKIRIM_KE_YAYASAN => [self::DIREVIEW_YAYASAN, self::DITOLAK_YAYASAN, self::DIBATALKAN],
             self::DIREVIEW_YAYASAN => [self::DITERUSKAN_KE_SUPPLIER, self::DITOLAK_YAYASAN, self::DIBATALKAN],
             self::DITOLAK_YAYASAN => [self::DRAF, self::DIBATALKAN],
@@ -37,7 +37,7 @@ enum PoStatus: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::DRAF => 'Draf',
             self::DIKIRIM_KE_YAYASAN => 'Dikirim ke Yayasan',
             self::DIREVIEW_YAYASAN => 'Direview Yayasan',
@@ -54,7 +54,7 @@ enum PoStatus: string
 
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::DRAF => 'bg-slate-100 text-slate-600 border-slate-200',
             self::DIKIRIM_KE_YAYASAN => 'bg-amber-50 text-amber-700 border-amber-100',
             self::DIREVIEW_YAYASAN => 'bg-blue-50 text-blue-700 border-blue-100',

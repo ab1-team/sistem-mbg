@@ -8,7 +8,6 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class PoController extends Controller
 {
@@ -30,6 +29,7 @@ class PoController extends Controller
         }
 
         $purchaseOrder->load(['dapur', 'menuPeriod.period', 'items.material', 'items.assignments.supplier', 'creator', 'statusHistory.user']);
+
         return view('purchase-orders.show', compact('purchaseOrder'));
     }
 
@@ -87,24 +87,26 @@ class PoController extends Controller
         return DB::transaction(function () use ($menuPeriod) {
             // 2. Aggregate Requirements (Logic from MenuPeriodShow)
             $requirements = [];
-            foreach($menuPeriod->schedules as $s) {
-                foreach($s->menuItem->boms as $bom) {
-                    $materialId = $bom->material_id;
-                    $needed = ($bom->quantity / 1) * $s->target_portions;
-                    
-                    if(!isset($requirements[$materialId])) {
-                        $requirements[$materialId] = [
-                            'material' => $bom->material,
-                            'total' => 0
-                        ];
+            foreach ($menuPeriod->schedules as $s) {
+                foreach ($s->items as $item) {
+                    foreach ($item->boms as $bom) {
+                        $materialId = $bom->material_id;
+                        $needed = ($bom->quantity / 1) * $s->target_portions;
+
+                        if (! isset($requirements[$materialId])) {
+                            $requirements[$materialId] = [
+                                'material' => $bom->material,
+                                'total' => 0,
+                            ];
+                        }
+                        $requirements[$materialId]['total'] += $needed;
                     }
-                    $requirements[$materialId]['total'] += $needed;
                 }
             }
 
             // 3. Create PO Header
-            $poNumber = 'PO/' . now()->format('Y/m') . '/' . str_pad(PurchaseOrder::count() + 1, 3, '0', STR_PAD_LEFT);
-            
+            $poNumber = 'PO/'.now()->format('Y/m').'/'.str_pad(PurchaseOrder::count() + 1, 3, '0', STR_PAD_LEFT);
+
             $purchaseOrder = PurchaseOrder::create([
                 'po_number' => $poNumber,
                 'dapur_id' => $menuPeriod->dapur_id,
@@ -140,7 +142,7 @@ class PoController extends Controller
                     'quantity_to_order' => $qtyNeeded,
                     'unit' => $material->unit,
                     'estimated_unit_price' => $estPrice,
-                    'item_status' => 'pending'
+                    'item_status' => 'pending',
                 ]);
 
                 $totalEstimatedCost += $itemTotal;
@@ -148,7 +150,7 @@ class PoController extends Controller
 
             // 5. Update Total Cost
             $purchaseOrder->update([
-                'total_estimated_cost' => $totalEstimatedCost
+                'total_estimated_cost' => $totalEstimatedCost,
             ]);
 
             return redirect()->route('purchase-orders.show', $purchaseOrder)

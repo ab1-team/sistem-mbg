@@ -12,7 +12,7 @@ enum CookingStatus: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::BELUM_MULAI => 'Belum Mulai',
             self::PERSIAPAN => 'Persiapan',
             self::MEMASAK => 'Memasak',
@@ -23,7 +23,7 @@ enum CookingStatus: string
 
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::BELUM_MULAI => 'bg-slate-100 text-slate-600 border-slate-200',
             self::PERSIAPAN => 'bg-amber-50 text-amber-700 border-amber-100',
             self::MEMASAK => 'bg-blue-50 text-blue-700 border-blue-100',
@@ -37,7 +37,7 @@ enum CookingStatus: string
      */
     public function allowedTransitions(): array
     {
-        return match($this) {
+        return match ($this) {
             self::BELUM_MULAI => [self::PERSIAPAN],
             self::PERSIAPAN => [self::MEMASAK, self::BELUM_MULAI],
             self::MEMASAK => [self::SELESAI],

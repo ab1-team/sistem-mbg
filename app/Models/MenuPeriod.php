@@ -10,8 +10,11 @@ class MenuPeriod extends Model
     use HasFactory;
 
     const STATUS_DRAF = 'draf';
+
     const STATUS_PENDING = 'menunggu_approval';
+
     const STATUS_APPROVED = 'disetujui';
+
     const STATUS_REJECTED = 'ditolak';
 
     protected $fillable = [
@@ -22,7 +25,7 @@ class MenuPeriod extends Model
         'created_by',
         'approved_by',
         'approved_at',
-        'rejection_note'
+        'rejection_note',
     ];
 
     protected $casts = [

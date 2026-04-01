@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Material;
 use App\Imports\MaterialsImport;
+use App\Models\Material;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
@@ -17,6 +17,7 @@ class MaterialController extends Controller
     public function index()
     {
         $materials = Material::latest()->paginate(10);
+
         return view('materials.index', compact('materials'));
     }
 
@@ -31,9 +32,10 @@ class MaterialController extends Controller
 
         try {
             Excel::import(new MaterialsImport, $request->file('file'));
+
             return redirect()->route('materials.index')->with('success', 'Data bahan baku berhasil diimport.');
         } catch (\Exception $e) {
-            return redirect()->route('materials.index')->with('error', 'Terjadi kesalahan saat mengimport data: ' . $e->getMessage());
+            return redirect()->route('materials.index')->with('error', 'Terjadi kesalahan saat mengimport data: '.$e->getMessage());
         }
     }
 
@@ -64,6 +66,7 @@ class MaterialController extends Controller
     public function create()
     {
         $categories = ['sayuran', 'daging', 'ikan', 'bumbu', 'sembako', 'minuman', 'lainnya'];
+
         return view('materials.create', compact('categories'));
     }
 
@@ -107,6 +110,7 @@ class MaterialController extends Controller
     public function edit(Material $material)
     {
         $categories = ['sayuran', 'daging', 'ikan', 'bumbu', 'sembako', 'minuman', 'lainnya'];
+
         return view('materials.edit', compact('material', 'categories'));
     }
 

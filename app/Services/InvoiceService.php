@@ -2,11 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\PurchaseOrder;
+use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
-use App\Models\Expense;
-use App\Enums\PoStatus;
+use App\Models\PurchaseOrder;
 use Illuminate\Support\Facades\DB;
 
 class InvoiceService
@@ -18,13 +17,14 @@ class InvoiceService
     public function generateFromPo(PurchaseOrder $purchaseOrder): ?Invoice
     {
         return DB::transaction(function () use ($purchaseOrder) {
-            
+
             // Generate Nomor Invoice
-            $invoiceNumber = 'INV-' . $purchaseOrder->dapur->code . '-' . now()->format('Ymd-His');
+            $invoiceNumber = 'INV-'.$purchaseOrder->dapur->code.'-'.now()->format('Ymd-His');
 
             // Kalkulasi Total dari Harga Aktual PO
             $totalAmount = $purchaseOrder->items->all()->sum(function ($item) {
                 $price = $item->actual_unit_price ?? $item->estimated_unit_price ?? 0;
+
                 return $item->quantity_received * (float) $price;
             });
 

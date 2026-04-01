@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\MenuItem;
-use Illuminate\Http\Request;
 
 class MenuItemController extends Controller
 {
@@ -29,6 +28,7 @@ class MenuItemController extends Controller
     public function show(MenuItem $menuItem)
     {
         $menuItem->load('boms.material');
+
         return view('menu-items.show', compact('menuItem'));
     }
 

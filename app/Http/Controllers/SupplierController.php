@@ -40,7 +40,7 @@ class SupplierController extends Controller
             'bank_name' => 'nullable|string|max:50',
             'bank_account' => 'nullable|string|max:50',
             'bank_holder' => 'nullable|string|max:100',
-            'category' => 'required|string|max:20', // e.g., 'Sayur', 'Daging', 'Bumbu'
+            'category' => 'required|string|in:sayuran,daging,bumbu,sembako,lainnya',
             'is_active' => 'boolean',
         ]);
 
@@ -81,7 +81,7 @@ class SupplierController extends Controller
             'bank_name' => 'nullable|string|max:50',
             'bank_account' => 'nullable|string|max:50',
             'bank_holder' => 'nullable|string|max:100',
-            'category' => 'required|string|max:20',
+            'category' => 'required|string|in:sayuran,daging,bumbu,sembako,lainnya',
             'is_active' => 'boolean',
         ]);
 

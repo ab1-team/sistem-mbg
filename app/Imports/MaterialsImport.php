@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Material;
+use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
@@ -10,20 +11,18 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 class MaterialsImport implements ToModel, WithHeadingRow, WithValidation
 {
     /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
+     * @return Model|null
+     */
     public function model(array $row)
     {
         return new Material([
-            'code'                => $row['kode'],
-            'name'                => $row['nama'],
-            'category'            => strtolower($row['kategori']),
-            'unit'                => $row['satuan'],
-            'price_estimate'      => $row['estimasi_harga'] ?? 0,
+            'code' => $row['kode'],
+            'name' => $row['nama'],
+            'category' => strtolower($row['kategori']),
+            'unit' => $row['satuan'],
+            'price_estimate' => $row['estimasi_harga'] ?? 0,
             'min_stock_threshold' => $row['min_stok'] ?? 0,
-            'is_active'           => true,
+            'is_active' => true,
         ]);
     }
 

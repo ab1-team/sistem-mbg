@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Finance;
 
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
-use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
@@ -38,9 +38,9 @@ class InvoiceController extends Controller
     public function downloadPdf(Invoice $invoice)
     {
         $invoice->load(['purchaseOrder', 'supplier', 'dapur', 'items.material', 'items.poItem']);
-        
+
         $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
-        
+
         return $pdf->download("Invoice-{$invoice->invoice_number}.pdf");
     }
 

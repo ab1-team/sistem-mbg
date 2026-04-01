@@ -15,7 +15,7 @@ return new class extends Migration
             $table->enum('qc_status', ['sesuai', 'kurang', 'rusak', 'retur'])->after('unit')->default('sesuai');
             $table->text('qc_notes')->nullable()->after('qc_status');
             $table->string('qc_photo')->nullable()->after('qc_notes');
-            
+
             // Drop old simple rejection columns
             $table->dropColumn(['is_rejected', 'rejection_reason']);
         });

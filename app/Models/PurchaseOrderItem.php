@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseOrderItem extends Model
 {
     use HasFactory;
+    
+    protected $table = 'po_items';
 
     protected $fillable = [
         'purchase_order_id',
@@ -20,7 +22,7 @@ class PurchaseOrderItem extends Model
         'actual_unit_price',
         'quantity_received',
         'item_status',
-        'rejection_reason'
+        'rejection_reason',
     ];
 
     public function purchaseOrder()

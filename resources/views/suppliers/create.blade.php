@@ -21,11 +21,11 @@
                         name="category" 
                         :selected="old('category')"
                         :options="[
-                            ['value' => 'Sayur', 'label' => 'Sayur & Buah'],
-                            ['value' => 'Daging', 'label' => 'Daging & Ikan'],
-                            ['value' => 'Bumbu', 'label' => 'Bumbu & Sembako'],
-                            ['value' => 'Kering', 'label' => 'Barang Kering'],
-                            ['value' => 'Lainnya', 'label' => 'Lainnya'],
+                            ['value' => 'sayuran', 'label' => 'Sayur & Buah'],
+                            ['value' => 'daging', 'label' => 'Daging & Ikan'],
+                            ['value' => 'bumbu', 'label' => 'Bumbu'],
+                            ['value' => 'sembako', 'label' => 'Sembako & Barang Kering'],
+                            ['value' => 'lainnya', 'label' => 'Lainnya'],
                         ]"
                         required 
                     />

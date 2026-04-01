@@ -18,7 +18,7 @@ class PoSupplierAssignment extends Model
         'status',
         'rejection_reason',
         'responded_at',
-        'shipped_at'
+        'shipped_at',
     ];
 
     protected $casts = [

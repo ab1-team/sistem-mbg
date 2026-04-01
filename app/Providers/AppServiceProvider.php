@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('manage-approvals', function (User $user) {
-            return $user->hasRole('admin');
+            return $user->hasRole(['admin', 'superadmin']);
         });
 
         // Register Observers for Wallet Auto-creation (Fase 1.2)

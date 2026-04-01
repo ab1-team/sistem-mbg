@@ -78,22 +78,38 @@
                                         <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ str_replace('_', ' ', $meal['type']) }}</span>
                                     </div>
                                     <div class="flex gap-2">
-                                        <div class="flex-1 min-w-0 relative" x-data="{ open: false, search: '' }">
+                                        <div class="flex-1 min-w-0 relative" 
+                                            x-data="{ 
+                                                open: false, 
+                                                search: '', 
+                                                selectedIds: @entangle('schedules.'.$date.'.meals.'.$mIdx.'.menu_item_ids') || [],
+                                                menuLookup: @js($menuItems->keyBy('id')),
+                                                toggle(id) {
+                                                    const idInt = parseInt(id);
+                                                    if (!Array.isArray(this.selectedIds)) this.selectedIds = [];
+                                                    if (this.selectedIds.includes(idInt)) {
+                                                        this.selectedIds = this.selectedIds.filter(i => i != idInt);
+                                                    } else {
+                                                        this.selectedIds.push(idInt);
+                                                    }
+                                                }
+                                            }">
                                             <div @click="open = !open" 
                                                 class="w-full min-h-[38px] p-1.5 border {{ $errors->has('schedules.'.$date.'.meals.'.$mIdx.'.menu_item_ids') ? 'border-red-500 ring-1 ring-red-500/20' : 'border-slate-200' }} rounded-xl bg-white flex flex-wrap gap-1.5 cursor-pointer hover:border-green-500 transition-all group items-center">
-                                                @if(empty($meal['menu_item_ids']))
+                                                
+                                                <template x-if="!selectedIds || selectedIds.length === 0">
                                                     <span class="text-[12px] text-slate-400 px-2 py-1 font-bold">Pilih Menu...</span>
-                                                @else
-                                                    @foreach($meal['menu_item_ids'] as $itemId)
-                                                        @php $itemName = $menuItems->firstWhere('id', $itemId)?->name ?? 'Menu'; @endphp
-                                                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-black rounded-lg border border-slate-200 group-hover:bg-green-50 group-hover:text-green-700 group-hover:border-green-100 transition-colors">
-                                                            {{ $itemName }}
-                                                            <button type="button" @click.stop="$wire.set('schedules.{{ $date }}.meals.{{ $mIdx }}.menu_item_ids', {{ json_encode(array_values(array_diff($meal['menu_item_ids'], [$itemId]))) }})" class="hover:text-red-500">
-                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
-                                                            </button>
-                                                        </span>
-                                                    @endforeach
-                                                @endif
+                                                </template>
+
+                                                <template x-for="id in (selectedIds || [])" :key="id">
+                                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-black rounded-lg border border-slate-200 group-hover:bg-green-50 group-hover:text-green-700 group-hover:border-green-100 transition-colors">
+                                                        <span x-text="menuLookup[id]?.name || 'Menu'"></span>
+                                                        <button type="button" @click.stop="toggle(id)" class="hover:text-red-500">
+                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                                                        </button>
+                                                    </span>
+                                                </template>
+
                                                 <div class="ml-auto pr-1 flex items-center">
                                                     <svg class="w-3 h-3 text-slate-300 group-hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
                                                 </div>
@@ -114,7 +130,9 @@
                                                     @foreach($menuItems as $item)
                                                         <label x-show="'{{ strtolower($item->name) }}'.includes(search.toLowerCase())" 
                                                             class="flex items-center gap-2.5 p-2 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors">
-                                                            <input type="checkbox" wire:model.live="schedules.{{ $date }}.meals.{{ $mIdx }}.menu_item_ids" value="{{ $item->id }}" 
+                                                            <input type="checkbox" 
+                                                                :checked="(selectedIds || []).includes(parseInt('{{ $item->id }}'))"
+                                                                @change="toggle('{{ $item->id }}')"
                                                                 class="w-4 h-4 rounded-lg border-slate-300 text-green-600 focus:ring-green-500/20 transition-all">
                                                             <span class="text-[12px] font-black text-slate-700 leading-none">{{ $item->name }}</span>
                                                         </label>
@@ -158,7 +176,12 @@
             </div>
             <div class="flex items-center gap-3 w-full sm:w-auto">
                 <x-btn href="{{ route('menu-periods.index') }}" variant="secondary" class="flex-1 sm:flex-none">Batal</x-btn>
-                <x-btn type="button" wire:click="save" class="flex-1 sm:flex-none shadow-lg shadow-green-900/20">
+                <x-btn type="button" 
+                    wire:click="save" 
+                    loading="true" 
+                    loading-target="save" 
+                    loading-text="Menyimpan..."
+                    class="flex-1 sm:flex-none shadow-lg shadow-green-900/20">
                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                         <path d="M5 13l4 4L19 7"/>
                     </svg>
