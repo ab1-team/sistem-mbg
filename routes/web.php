@@ -2,7 +2,11 @@
 
 use App\Http\Controllers\DapurController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Finance\ExpenseController;
+use App\Http\Controllers\Finance\FinancialPeriodController;
 use App\Http\Controllers\Finance\InvoiceController;
+use App\Http\Controllers\Finance\RevenueController;
+use App\Http\Controllers\Warehouse\GrController;
 use App\Http\Controllers\InvestorController;
 use App\Http\Controllers\Kitchen\CookingController;
 use App\Http\Controllers\MaterialController;
@@ -14,7 +18,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Supplier\PoController as SupplierPoController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\Warehouse\GrController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -57,12 +60,23 @@ Route::middleware('auth')->group(function () {
     Route::post('warehouse/gr/store/{purchaseOrder}', [GrController::class, 'store'])->name('gr.store');
     Route::get('warehouse/gr/{goodsReceipt}', [GrController::class, 'show'])->name('gr.show');
 
-    // Finance / Invoices (Fase 4.2 & 4.3)
-    Route::get('finance/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
-    Route::get('finance/invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
-    Route::post('finance/invoices/{invoice}/verify', [InvoiceController::class, 'verify'])->name('invoices.verify');
-    Route::post('finance/invoices/{invoice}/pay', [InvoiceController::class, 'pay'])->name('invoices.pay');
-    Route::get('finance/invoices/{invoice}/download', [InvoiceController::class, 'downloadPdf'])->name('invoices.download');
+    // Finance Module (Fase 6)
+    Route::prefix('finance')->group(function () {
+        // Finance-prefixed route names for new modules
+        Route::name('finance.')->group(function () {
+            Route::resource('revenues', RevenueController::class);
+            Route::resource('expenses', ExpenseController::class);
+            Route::get('periods', [FinancialPeriodController::class, 'index'])->name('periods.index');
+            Route::get('withdrawals', \App\Livewire\Finance\WithdrawalManagement::class)->name('withdrawals.index');
+        });
+        
+        // Invoices (Moved inside finance prefix group but KEEPING original names for backward compatibility)
+        Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+        Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+        Route::post('invoices/{invoice}/verify', [InvoiceController::class, 'verify'])->name('invoices.verify');
+        Route::post('invoices/{invoice}/pay', [InvoiceController::class, 'pay'])->name('invoices.pay');
+        Route::get('invoices/{invoice}/preview', [InvoiceController::class, 'previewPdf'])->name('invoices.preview');
+    });
 
     // Kitchen Operations (Fase 5.1 & 5.2)
     Route::get('kitchen/dashboard', [CookingController::class, 'index'])->name('kitchen.index');
@@ -71,6 +85,12 @@ Route::middleware('auth')->group(function () {
     Route::post('kitchen/cooking/{schedule}/finish', [CookingController::class, 'finish'])->name('kitchen.finish');
     Route::post('kitchen/cooking/{schedule}/distribute', [CookingController::class, 'distribute'])->name('kitchen.distribute');
     Route::get('kitchen/inventory', [CookingController::class, 'inventory'])->name('kitchen.inventory');
+
+    // Investor Portal Routes (Fase 6.5)
+    Route::middleware('role:investor')->prefix('investor')->name('investor.')->group(function () {
+        Route::get('dashboard', \App\Livewire\InvestorDashboard::class)->name('dashboard');
+        Route::get('withdrawals/create', \App\Livewire\Investor\WithdrawalRequestForm::class)->name('withdrawals.create');
+    });
 
     // Supplier Portal Routes
     Route::middleware('role:supplier')->prefix('supplier')->name('supplier.')->group(function () {

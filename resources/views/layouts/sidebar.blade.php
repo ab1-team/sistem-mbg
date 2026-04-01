@@ -52,10 +52,13 @@
                 ]
             ],
             [
-                'label' => 'Finance',
+                'label' => 'Finance & Keuangan',
                 'role' => ['finance_yayasan', 'superadmin'],
                 'items' => [
+                    ['route' => 'finance.revenues.index', 'match' => 'finance.revenues.*', 'label' => 'Pemasukan (Revenue)', 'icon' => 'revenue'],
+                    ['route' => 'finance.expenses.index', 'match' => 'finance.expenses.*', 'label' => 'Pengeluaran (Expense)', 'icon' => 'expense'],
                     ['route' => 'invoices.index', 'match' => 'invoices.*', 'label' => 'Penagihan (Invoice)', 'icon' => 'invoice'],
+                    ['route' => 'finance.withdrawals.index', 'match' => 'finance.withdrawals.*', 'label' => 'Penarikan Dana', 'icon' => 'supplier'],
                 ]
             ],
             [
@@ -66,12 +69,20 @@
                 ]
             ],
             [
+                'label' => 'Portal Investor',
+                'role' => 'investor',
+                'items' => [
+                    ['route' => 'investor.dashboard', 'match' => 'investor.dashboard', 'label' => 'Dashboard Investasi', 'icon' => 'dashboard'],
+                    ['route' => 'investor.withdrawals.create', 'match' => 'investor.withdrawals.*', 'label' => 'Tarik Dana', 'icon' => 'revenue'],
+                ]
+            ],
+            [
                 'label' => 'Manajemen Data',
                 'items' => [
                     ['route' => 'dapurs.index', 'match' => 'dapurs.*', 'label' => 'Data Dapur', 'icon' => 'dapur'],
                     ['route' => 'suppliers.index', 'match' => 'suppliers.*', 'label' => 'Data Supplier', 'icon' => 'supplier'],
                     ['route' => 'investors.index', 'match' => 'investors.*', 'label' => 'Data Investor', 'icon' => 'investor'],
-                    ['route' => 'periods.index', 'match' => 'periods.*', 'label' => 'Periode', 'icon' => 'period'],
+                    ['route' => 'finance.periods.index', 'match' => 'finance.periods.*', 'label' => 'Periode Keuangan', 'icon' => 'period'],
                 ]
             ],
             [
@@ -97,6 +108,8 @@
             'gr' => '<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />',
             'kitchen' => '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />',
             'invoice' => '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />',
+            'revenue' => '<path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />',
+            'expense' => '<path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />',
         ];
     @endphp
 

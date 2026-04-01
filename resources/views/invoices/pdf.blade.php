@@ -6,9 +6,9 @@
     <style>
         body { font-family: 'Helvetica', sans-serif; color: #333; font-size: 12px; line-height: 1.5; margin: 0; padding: 0; }
         .container { padding: 40px; }
-        .header { margin-bottom: 30px; border-bottom: 2px solid #6366f1; padding-bottom: 20px; }
+        .header { margin-bottom: 30px; border-bottom: 2px solid #059669; padding-bottom: 20px; }
         .header table { width: 100%; border-collapse: collapse; }
-        .brand { font-size: 24px; font-weight: bold; color: #6366f1; letter-spacing: -1px; }
+        .brand { font-size: 24px; font-weight: bold; color: #059669; letter-spacing: -1px; }
         .invoice-title { text-align: right; font-size: 18px; font-weight: bold; color: #1e293b; text-transform: uppercase; }
         
         .info-section { margin-bottom: 40px; }
@@ -28,7 +28,7 @@
         .total-row { padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
         .total-label { text-align: left; color: #64748b; font-weight: bold; }
         .total-value { text-align: right; font-weight: bold; color: #0f172a; }
-        .grand-total { padding: 15px 0; color: #6366f1; font-size: 16px; }
+        .grand-total { padding: 15px 0; color: #059669; font-size: 16px; }
 
         .footer { position: fixed; bottom: 40px; left: 40px; right: 40px; font-size: 10px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 20px; }
     </style>
@@ -104,8 +104,8 @@
                     <td class="total-value">Rp 0</td>
                 </tr>
                 <tr class="grand-total">
-                    <td class="total-label" style="color: #6366f1;">Total Bayar</td>
-                    <td class="total-value" style="color: #6366f1;">Rp {{ number_format($invoice->grand_total, 0, ',', '.') }}</td>
+                    <td class="total-label" style="color: #059669;">Total Bayar</td>
+                    <td class="total-value" style="color: #059669;">Rp {{ number_format($invoice->grand_total, 0, ',', '.') }}</td>
                 </tr>
             </table>
         </div>

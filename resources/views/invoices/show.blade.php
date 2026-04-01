@@ -6,7 +6,7 @@
         backLabel="Daftar Invoices"
     >
         <x-slot:actions>
-            <a href="{{ route('invoices.download', $invoice) }}">
+            <a href="{{ route('invoices.preview', $invoice) }}" target="_blank">
                 <x-btn variant="secondary">Cetak PDF</x-btn>
             </a>
 

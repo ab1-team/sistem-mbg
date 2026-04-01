@@ -32,16 +32,16 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Cetak Invoice ke PDF.
-     * Sesuai Roadmap 4.3
+     * Preview Invoice PDF di Browser.
+     * Sesuai Request User (Fase 6 Extension)
      */
-    public function downloadPdf(Invoice $invoice)
+    public function previewPdf(Invoice $invoice)
     {
         $invoice->load(['purchaseOrder', 'supplier', 'dapur', 'items.material', 'items.poItem']);
 
         $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
 
-        return $pdf->download("Invoice-{$invoice->invoice_number}.pdf");
+        return $pdf->stream("Invoice-{$invoice->invoice_number}.pdf");
     }
 
     /**

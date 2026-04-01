@@ -37,4 +37,42 @@ class Period extends Model
     {
         return $this->belongsTo(User::class, 'closed_by');
     }
+
+    public function scopeOpen($query)
+    {
+        return $query->where('status', 'open');
+    }
+
+    public function scopeClosed($query)
+    {
+        return $query->where('status', 'closed');
+    }
+
+    public function scopeLocked($query)
+    {
+        return $query->where('status', 'locked');
+    }
+
+    public function isOpen(): bool
+    {
+        return $this->status === 'open';
+    }
+
+    public function isClosed(): bool
+    {
+        return $this->status === 'closed';
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->status === 'locked';
+    }
+
+    public static function getActive()
+    {
+        return self::where('status', 'open')
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->first() ?? self::where('status', 'open')->orderBy('start_date', 'desc')->first();
+    }
 }

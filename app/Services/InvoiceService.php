@@ -7,44 +7,54 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\PurchaseOrder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class InvoiceService
 {
     /**
-     * Generate Invoice dari Purchase Order (Lengkap/Sebagian).
-     * Sesuai Roadmap 4.2
+     * Generate Invoices from Purchase Order (Split by Supplier).
+     * This ensures each supplier gets their own bill.
      */
-    public function generateFromPo(PurchaseOrder $purchaseOrder): ?Invoice
+    public function generateFromPo(PurchaseOrder $purchaseOrder): array
     {
         return DB::transaction(function () use ($purchaseOrder) {
-
-            // Generate Nomor Invoice
-            $invoiceNumber = 'INV-'.$purchaseOrder->dapur->code.'-'.now()->format('Ymd-His');
-
-            // Kalkulasi Total dari Harga Aktual PO
-            $totalAmount = $purchaseOrder->items->sum(function ($item) {
-                $price = $item->actual_unit_price ?? $item->estimated_unit_price ?? 0;
-
-                return $item->quantity_received * (float) $price;
+            $invoices = [];
+            
+            // 1. Group items by supplier_id
+            // We only care about items that were actually received
+            $receivedItems = $purchaseOrder->items->where('quantity_received', '>', 0);
+            
+            $itemsBySupplier = $receivedItems->groupBy(function ($item) {
+                // Get supplier_id from assignments
+                return $item->assignments->first()->supplier_id ?? 1;
             });
 
-            // 1. Buat Header Invoice
-            $invoice = Invoice::create([
-                'invoice_number' => $invoiceNumber,
-                'purchase_order_id' => $purchaseOrder->id,
-                'supplier_id' => $purchaseOrder->items->first()->assignments->first()->supplier_id ?? 1,
-                'dapur_id' => $purchaseOrder->dapur_id,
-                'total_amount' => $totalAmount,
-                'tax_amount' => 0,
-                'discount_amount' => 0,
-                'grand_total' => $totalAmount,
-                'status' => 'generated',
-                'due_date' => now()->addDays(14),
-            ]);
+            foreach ($itemsBySupplier as $supplierId => $items) {
+                // Generate Unique Invoice Number for this supplier
+                $invoiceNumber = 'INV-' . $purchaseOrder->dapur->code . '-' . $supplierId . '-' . now()->format('YmdHis');
 
-            // 2. Buat Detail Invoice
-            foreach ($purchaseOrder->items as $item) {
-                if ($item->quantity_received > 0) {
+                // Calculate total for this specific supplier
+                $supplierTotal = $items->sum(function ($item) {
+                    $price = $item->actual_unit_price ?? $item->estimated_unit_price ?? 0;
+                    return (float)$item->quantity_received * (float)$price;
+                });
+
+                // 2. Create Header Invoice for this Supplier
+                $invoice = Invoice::create([
+                    'invoice_number' => $invoiceNumber,
+                    'purchase_order_id' => $purchaseOrder->id,
+                    'supplier_id' => $supplierId,
+                    'dapur_id' => $purchaseOrder->dapur_id,
+                    'total_amount' => $supplierTotal,
+                    'tax_amount' => 0,
+                    'discount_amount' => 0,
+                    'grand_total' => $supplierTotal,
+                    'status' => 'generated',
+                    'due_date' => now()->addDays(14),
+                ]);
+
+                // 3. Create Detail Invoice Items
+                foreach ($items as $item) {
                     $price = $item->actual_unit_price ?? $item->estimated_unit_price ?? 0;
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
@@ -52,22 +62,25 @@ class InvoiceService
                         'material_id' => $item->material_id,
                         'quantity' => $item->quantity_received,
                         'unit_price' => $price,
-                        'total_price' => $item->quantity_received * $price,
+                        'total_price' => (float)$item->quantity_received * (float)$price,
                     ]);
                 }
+
+                // 4. Create separate Expense record for this supplier
+                Expense::create([
+                    'dapur_id' => $purchaseOrder->dapur_id,
+                    'period_id' => $purchaseOrder->menuPeriod->period_id ?? 1,
+                    'category' => 'bahan_baku',
+                    'amount' => $supplierTotal,
+                    'notes' => "Tagihan otomatis dari {$invoice->invoice_number} (Supplier ID: {$supplierId}, PO: {$purchaseOrder->po_number})",
+                    'created_by' => auth()->id() ?? $purchaseOrder->created_by ?? 1,
+                    'expense_date' => now(),
+                ]);
+
+                $invoices[] = $invoice;
             }
 
-            // 3. Otomasi Pencatatan Beban (Fase 4.2)
-            Expense::create([
-                'dapur_id' => $purchaseOrder->dapur_id,
-                'period_id' => $purchaseOrder->menuPeriod->period_id ?? 1, // Link ke periode akuntansi
-                'category' => 'bahan_baku',
-                'amount' => $totalAmount,
-                'notes' => "Tagihan otomatis dari {$invoice->invoice_number} (PO: {$purchaseOrder->po_number})",
-                'created_by' => auth()->id() ?? $purchaseOrder->created_by,
-            ]);
-
-            return $invoice;
+            return $invoices;
         });
     }
 }
