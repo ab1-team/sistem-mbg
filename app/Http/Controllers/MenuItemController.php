@@ -17,6 +17,7 @@ class MenuItemController extends Controller
     public function index()
     {
         $dapurs = Dapur::orderBy('name')->get();
+
         return view('menu-items.index', compact('dapurs'));
     }
 
@@ -82,11 +83,11 @@ class MenuItemController extends Controller
             fputcsv($file, $columns);
             // Tambahkan baris instruksi
             fputcsv($file, [
-                '--- PETUNJUK PENGISIAN ---', 
-                'Format komposisi_bahan -> KODE:JUMLAH|KODE:JUMLAH', 
-                'Contoh: BB-BER-01:0.1', 
-                'Pemisah antar bahan gunakan tanda |', 
-                '', '', '', '', '', ''
+                '--- PETUNJUK PENGISIAN ---',
+                'Format komposisi_bahan -> KODE:JUMLAH|KODE:JUMLAH',
+                'Contoh: BB-BER-01:0.1',
+                'Pemisah antar bahan gunakan tanda |',
+                '', '', '', '', '', '',
             ]);
             // Baris contoh data nyata
             fputcsv($file, ['Nasi Putih', 'siang', '1', 'Nasi putih pulen', '130', '2.7', '28', '0.3', '0.4', 'BB-BER-01:0.1']);

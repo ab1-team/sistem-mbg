@@ -2,9 +2,9 @@
 
 namespace App\Imports;
 
-use App\Models\MenuItem;
-use App\Models\MenuBom;
 use App\Models\Material;
+use App\Models\MenuBom;
+use App\Models\MenuItem;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -20,7 +20,7 @@ class MenuItemsImport implements ToCollection, WithHeadingRow, WithValidation
     }
 
     /**
-     * @param Collection $collection
+     * @param  Collection  $collection
      */
     public function collection(Collection $rows)
     {
@@ -31,30 +31,30 @@ class MenuItemsImport implements ToCollection, WithHeadingRow, WithValidation
             }
 
             $menuItem = MenuItem::create([
-                'name'         => $row['nama'],
-                'meal_type'    => strtolower($this->mapTipeMakan($row['tipe_makan'])),
+                'name' => $row['nama'],
+                'meal_type' => strtolower($this->mapTipeMakan($row['tipe_makan'])),
                 'portion_size' => $row['porsi'] ?? 1,
-                'description'  => $row['keterangan'] ?? null,
-                'calories'     => $row['kalori'] ?? 0,
-                'protein'      => $row['protein'] ?? 0,
-                'carbs'        => $row['karbo'] ?? 0,
-                'fat'          => $row['lemak'] ?? 0,
-                'fiber'        => $row['serat'] ?? 0,
-                'is_active'    => true,
-                'created_by'   => auth()->id() ?? 1,
-                'dapur_id'     => $this->dapur_id,
+                'description' => $row['keterangan'] ?? null,
+                'calories' => $row['kalori'] ?? 0,
+                'protein' => $row['protein'] ?? 0,
+                'carbs' => $row['karbo'] ?? 0,
+                'fat' => $row['lemak'] ?? 0,
+                'fiber' => $row['serat'] ?? 0,
+                'is_active' => true,
+                'created_by' => auth()->id() ?? 1,
+                'dapur_id' => $this->dapur_id,
             ]);
 
             // Handle komposisi bahan jika ada
             // Format: KODE:JUMLAH|KODE:JUMLAH
-            if (!empty($row['komposisi_bahan'])) {
+            if (! empty($row['komposisi_bahan'])) {
                 $items = explode('|', $row['komposisi_bahan']);
                 foreach ($items as $item) {
                     $parts = explode(':', $item);
                     if (count($parts) >= 2) {
                         $code = trim($parts[0]);
                         $qty = (float) trim($parts[1]);
-                        
+
                         $material = Material::where('code', $code)->first();
                         if ($material) {
                             MenuBom::create([
@@ -66,7 +66,7 @@ class MenuItemsImport implements ToCollection, WithHeadingRow, WithValidation
                         }
                     }
                 }
-                
+
                 // Recalculate nutrition logic based on BOMs
                 $menuItem->recalculateNutrition();
             }
@@ -81,6 +81,7 @@ class MenuItemsImport implements ToCollection, WithHeadingRow, WithValidation
             'makan_malam' => 'sore',
         ];
         $val = strtolower(str_replace(' ', '_', $tipe));
+
         return $map[$val] ?? $val;
     }
 

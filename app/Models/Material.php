@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Material extends Model
 {
@@ -36,7 +37,7 @@ class Material extends Model
         'is_active' => 'boolean',
     ];
 
-    public function dapur(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function dapur(): BelongsTo
     {
         return $this->belongsTo(Dapur::class);
     }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MenuItem extends Model
 {
@@ -24,7 +25,7 @@ class MenuItem extends Model
         'dapur_id',
     ];
 
-    public function dapur(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function dapur(): BelongsTo
     {
         return $this->belongsTo(Dapur::class);
     }

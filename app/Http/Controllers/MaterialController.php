@@ -57,10 +57,10 @@ class MaterialController extends Controller
             fputcsv($file, $columns);
             // Tambahkan baris instruksi
             fputcsv($file, [
-                '--- PETUNJUK PENGISIAN ---', 
-                'Semua kolom nutrisi (kalori-serat) opsional', 
-                'Kategori harus sesuai: sayuran,daging,ikan,bumbu,sembako,minuman,lainnya', 
-                '', '', '', '', '', '', '', ''
+                '--- PETUNJUK PENGISIAN ---',
+                'Semua kolom nutrisi (kalori-serat) opsional',
+                'Kategori harus sesuai: sayuran,daging,ikan,bumbu,sembako,minuman,lainnya',
+                '', '', '', '', '', '', '', '',
             ]);
             // Add example row
             fputcsv($file, ['BB-BER-01', 'Beras Ramos', 'sembako', 'Kg', '365', '7', '80', '0.6', '1.3', '15000', '50']);

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Dapur;
 use App\Models\MenuItem;
 use App\Traits\WithSmartTable;
 use Livewire\Component;
@@ -29,7 +30,7 @@ class MenuItemTable extends Component
         return view('livewire.menu-item-table', [
             'menuItems' => $menuItems,
             'mealTypes' => ['pagi', 'siang', 'sore', 'snack', 'lainnya'],
-            'dapurs' => \App\Models\Dapur::all(),
+            'dapurs' => Dapur::all(),
         ]);
     }
 }
