@@ -1,6 +1,14 @@
 <div>
     <x-smart-table-actions>
         <div class="flex flex-wrap items-center gap-3">
+            @if(count($dapurs) > 1)
+                <x-form-searchable-select wire:model.live="dapurId" class="w-48 text-[13px]" placeholder="Semua Dapur"
+                    :selected="$dapurId" :options="collect($dapurs)
+                        ->map(fn($d) => ['value' => $d->id, 'label' => $d->name])
+                        ->prepend(['value' => '', 'label' => 'Semua Dapur'])
+                        ->toArray()" />
+            @endif
+
             <x-form-searchable-select wire:model.live="mealType" class="w-48 text-[13px]" placeholder="Semua Tipe Makan"
                 :selected="$mealType" :options="collect($mealTypes)
                     ->map(fn($t) => ['value' => $t, 'label' => ucfirst($t)])
@@ -34,13 +42,17 @@
                             required>
                     </div>
 
-                    <x-form-searchable-select 
-                        name="dapur_id" 
-                        label="Pilih Unit Dapur"
-                        class="text-[12px]"
-                        :options="array_merge([['value' => '', 'label' => 'Global (Semua Dapur)']], $dapurs->map(fn($d) => ['value' => $d->id, 'label' => $d->name])->toArray())" 
-                        selected=""
-                    />
+                    @if(count($dapurs) > 1)
+                        <x-form-searchable-select 
+                            name="dapur_id" 
+                            label="Pilih Unit Dapur"
+                            class="text-[12px]"
+                            :options="array_merge([['value' => '', 'label' => 'Global (Semua Dapur)']], $dapurs->map(fn($d) => ['value' => $d->id, 'label' => $d->name])->toArray())" 
+                            selected=""
+                        />
+                    @else
+                        <input type="hidden" name="dapur_id" value="{{ $dapurs->first()?->id }}">
+                    @endif
 
                     <div class="bg-green-50 border border-green-100 rounded-xl p-3 flex gap-3">
                         <svg class="w-4 h-4 text-green-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">

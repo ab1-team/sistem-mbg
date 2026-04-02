@@ -31,20 +31,33 @@ class MenuPeriodForm extends Component
 
     public function mount($menuPeriodId = null)
     {
+        $user = auth()->user();
+
         if ($menuPeriodId) {
             $this->menuPeriodId = $menuPeriodId;
             $mp = MenuPeriod::with('schedules.items')->findOrFail($menuPeriodId);
+
+            // Cek akses edit jika user terikat dapur tertentu
+            if ($user->dapur_id && $mp->dapur_id && $mp->dapur_id !== $user->dapur_id) {
+                return redirect()->route('menu-periods.index')->with('error', 'Anda tidak memiliki akses ke rencana menu ini.');
+            }
+
             $this->dapur_id = $mp->dapur_id;
             $this->period_id = $mp->period_id;
             $this->title = $mp->title;
 
             // Map existing schedules to our local array
             $this->loadExistingSchedules($mp->schedules);
-        } elseif ($this->period_id) {
-            // Support generation from query string
-            $period = Period::find($this->period_id);
-            if ($period) {
-                $this->generateScheduleSlots($period);
+        } else {
+            // Default dapur_id dari user jika ada
+            $this->dapur_id = $user->dapur_id;
+            
+            if ($this->period_id) {
+                // Support generation from query string
+                $period = Period::find($this->period_id);
+                if ($period) {
+                    $this->generateScheduleSlots($period);
+                }
             }
         }
     }
@@ -103,6 +116,7 @@ class MenuPeriodForm extends Component
 
     public function save()
     {
+        $user = auth()->user();
         $this->validate([
             'dapur_id' => 'required|exists:dapurs,id',
             'period_id' => 'required|exists:periods,id',
@@ -111,6 +125,11 @@ class MenuPeriodForm extends Component
             'schedules.*.meals.*.menu_item_ids.*' => 'exists:menu_items,id',
             'schedules.*.meals.*.portions' => 'required|integer|min:0',
         ]);
+
+        // Force dapur_id jika user terikat dapur
+        if ($user->dapur_id) {
+            $this->dapur_id = $user->dapur_id;
+        }
 
         // Ensure at least one menu is selected
         $hasAnyMenu = false;
@@ -173,8 +192,13 @@ class MenuPeriodForm extends Component
 
     public function render()
     {
+        $user = auth()->user();
+        $dapurs = $user->dapur_id 
+            ? Dapur::where('id', $user->dapur_id)->get() 
+            : Dapur::orderBy('name')->get();
+
         return view('livewire.menu-period-form', [
-            'dapurs' => Dapur::orderBy('name')->get(),
+            'dapurs' => $dapurs,
             'periods' => Period::where('status', 'open')->orderBy('start_date', 'desc')->get(),
             'menuItems' => MenuItem::query()
                 ->where('is_active', true)

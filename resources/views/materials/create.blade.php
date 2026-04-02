@@ -38,13 +38,17 @@
                     required 
                 />
 
-                <x-form-searchable-select 
-                    label="Dapur (Opsional)" 
-                    name="dapur_id" 
-                    :selected="old('dapur_id')"
-                    :options="collect($dapurs)->map(fn($d) => ['value' => $d->id, 'label' => $d->name])->prepend(['value' => '', 'label' => 'Global (Semua Dapur)'])->toArray()"
-                    hint="Pilih jika bahan ini hanya ada di dapur tertentu."
-                />
+                @if(count($dapurs) > 1)
+                    <x-form-searchable-select 
+                        label="Dapur (Opsional)" 
+                        name="dapur_id" 
+                        :selected="old('dapur_id')"
+                        :options="collect($dapurs)->map(fn($d) => ['value' => $d->id, 'label' => $d->name])->prepend(['value' => '', 'label' => 'Global (Semua Dapur)'])->toArray()"
+                        hint="Pilih jika bahan ini hanya ada di dapur tertentu."
+                    />
+                @else
+                    <input type="hidden" name="dapur_id" value="{{ $dapurs->first()?->id }}">
+                @endif
             </div>
 
             <div class="grid grid-cols-2 gap-5 pb-6 border-b border-slate-50">

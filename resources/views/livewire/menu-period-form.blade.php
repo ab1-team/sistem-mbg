@@ -13,15 +13,19 @@
                         <x-form-input label="Judul Perencanaan" wire:model="title" id="title" name="title" placeholder="Contoh: Rencana Januari 2024 - Dapur A" required />
                     </div>
                     <div>
-                        <x-form-searchable-select 
-                            label="Unit Dapur" 
-                            name="dapur_id" 
-                            wire:model="dapur_id" 
-                            :selected="$dapur_id"
-                            :options="$dapurs->map(fn($d) => ['value' => (string)$d->id, 'label' => $d->name])"
-                            placeholder="Pilih Dapur"
-                            required 
-                        />
+                        @if(count($dapurs) > 1)
+                            <x-form-searchable-select 
+                                label="Unit Dapur" 
+                                name="dapur_id" 
+                                wire:model="dapur_id" 
+                                :selected="$dapur_id"
+                                :options="$dapurs->map(fn($d) => ['value' => (string)$d->id, 'label' => $d->name])"
+                                placeholder="Pilih Dapur"
+                                required 
+                            />
+                        @else
+                            <input type="hidden" wire:model="dapur_id">
+                        @endif
                     </div>
                     <div>
                         <x-form-searchable-select 

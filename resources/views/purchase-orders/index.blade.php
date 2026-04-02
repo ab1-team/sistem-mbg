@@ -4,6 +4,22 @@
             <h1 class="text-[28px] font-extrabold text-slate-900 tracking-tight leading-none">Purchase Orders</h1>
             <p class="text-[13px] text-slate-500 font-medium mt-2">Daftar pesanan bahan baku ke supplier.</p>
         </div>
+
+        @if(count($dapurs) > 1)
+            <div class="flex items-center gap-2">
+                <form action="{{ route('purchase-orders.index') }}" method="GET" class="flex items-center gap-2">
+                    <select name="dapur_id" onchange="this.form.submit()" 
+                        class="text-[13px] border-slate-200 rounded-xl focus:ring-emerald-500/20 focus:border-emerald-500 transition-all bg-white text-slate-700 px-4 py-2 font-bold shadow-sm min-w-[200px]">
+                        <option value="">Semua Dapur</option>
+                        @foreach($dapurs as $d)
+                            <option value="{{ $d->id }}" {{ request('dapur_id') == $d->id ? 'selected' : '' }}>
+                                {{ $d->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
+        @endif
     </div>
 
     <x-card :padding="false" class="overflow-hidden">

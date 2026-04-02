@@ -25,12 +25,19 @@ class GrController extends Controller
      */
     public function index()
     {
-        $purchaseOrders = PurchaseOrder::whereIn('status', [
+        $user = auth()->user();
+        $query = PurchaseOrder::whereIn('status', [
             PoStatus::DITERUSKAN_KE_SUPPLIER,
             PoStatus::DIPROSES_SUPPLIER,
             PoStatus::DALAM_PENGIRIMAN,
             PoStatus::DITERIMA_SEBAGIAN,
-        ])->latest()->paginate(10);
+        ])->latest();
+
+        if ($user->dapur_id) {
+            $query->where('dapur_id', $user->dapur_id);
+        }
+
+        $purchaseOrders = $query->paginate(10);
 
         return view('gr.index', compact('purchaseOrders'));
     }
@@ -40,6 +47,13 @@ class GrController extends Controller
      */
     public function create(PurchaseOrder $purchaseOrder)
     {
+        $user = auth()->user();
+
+        // Cek akses jika user terikat dapur tertentu
+        if ($user->dapur_id && $purchaseOrder->dapur_id !== $user->dapur_id) {
+            return redirect()->route('gr.index')->with('error', 'Anda tidak memiliki akses ke Purchase Order ini.');
+        }
+
         // Pastikan status PO valid untuk diterima
         $allowedStatuses = [
             PoStatus::DITERUSKAN_KE_SUPPLIER,
@@ -63,6 +77,13 @@ class GrController extends Controller
      */
     public function store(Request $request, PurchaseOrder $purchaseOrder)
     {
+        $user = auth()->user();
+
+        // Cek akses jika user terikat dapur tertentu
+        if ($user->dapur_id && $purchaseOrder->dapur_id !== $user->dapur_id) {
+            abort(403, 'Anda tidak memiliki akses ke Purchase Order ini.');
+        }
+
         $validated = $request->validate([
             'received_at' => 'required|date',
             'notes' => 'nullable|string',

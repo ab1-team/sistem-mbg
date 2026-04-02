@@ -6,15 +6,19 @@
         <form wire:submit="save" class="space-y-5">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="md:col-span-2">
-                    <x-form-searchable-select 
-                        label="Dapur Penanggung" 
-                        name="dapur_id" 
-                        wire:model="dapur_id" 
-                        :selected="$dapur_id"
-                        :options="$dapurs->map(fn($d) => ['value' => (string)$d->id, 'label' => $d->nama])"
-                        placeholder="Pilih Dapur"
-                        required 
-                    />
+                    @if(count($dapurs) > 1)
+                        <x-form-searchable-select 
+                            label="Dapur Penanggung" 
+                            name="dapur_id" 
+                            wire:model="dapur_id" 
+                            :selected="$dapur_id"
+                            :options="$dapurs->map(fn($d) => ['value' => (string)$d->id, 'label' => $d->name])"
+                            placeholder="Pilih Dapur"
+                            required 
+                        />
+                    @else
+                        <input type="hidden" wire:model="dapur_id">
+                    @endif
                 </div>
 
                 <div>

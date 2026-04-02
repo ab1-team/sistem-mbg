@@ -1,11 +1,21 @@
 <div>
     <x-smart-table-actions>
-        <x-btn href="{{ route('finance.expenses.create') }}">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                <path d="M12 5v14M5 12h14" />
-            </svg>
-            Catat Pengeluaran
-        </x-btn>
+        <div class="flex flex-wrap items-center gap-3">
+            @if(count($dapurs) > 1)
+                <x-form-searchable-select wire:model.live="dapurId" class="w-48 text-[13px]" placeholder="Semua Dapur"
+                    :selected="$dapurId" :options="collect($dapurs)
+                        ->map(fn($d) => ['value' => $d->id, 'label' => $d->name])
+                        ->prepend(['value' => '', 'label' => 'Semua Dapur'])
+                        ->toArray()" />
+            @endif
+
+            <x-btn href="{{ route('finance.expenses.create') }}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path d="M12 5v14M5 12h14" />
+                </svg>
+                Catat Pengeluaran
+            </x-btn>
+        </div>
     </x-smart-table-actions>
 
     <x-card :padding="false" class="overflow-hidden">
@@ -25,7 +35,7 @@
                         <span class="text-slate-500 font-medium">{{ $expense->created_at->format('d/m/Y') }}</span>
                     </x-table-td>
                     <x-table-td>
-                        <span class="font-bold text-slate-900 group-hover:text-amber-700 transition-colors">{{ $expense->dapur->nama }}</span>
+                        <span class="font-bold text-slate-900 group-hover:text-amber-700 transition-colors">{{ $expense->dapur->name }}</span>
                     </x-table-td>
                     <x-table-td>
                         <x-badge :variant="$expense->category === 'bahan_baku' ? 'warning' : 'secondary'">

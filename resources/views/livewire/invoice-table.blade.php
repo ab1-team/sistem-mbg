@@ -1,7 +1,13 @@
 <div>
     <x-smart-table-actions>
-        <div class="flex items-center gap-3">
-            {{-- Slot Filter Tambahan jika diperlukan --}}
+        <div class="flex flex-wrap items-center gap-3">
+            @if(count($dapurs) > 1)
+                <x-form-searchable-select wire:model.live="dapurId" class="w-48 text-[13px]" placeholder="Semua Dapur"
+                    :selected="$dapurId" :options="collect($dapurs)
+                        ->map(fn($d) => ['value' => $d->id, 'label' => $d->name])
+                        ->prepend(['value' => '', 'label' => 'Semua Dapur'])
+                        ->toArray()" />
+            @endif
         </div>
     </x-smart-table-actions>
 

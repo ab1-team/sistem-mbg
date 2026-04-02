@@ -1,15 +1,20 @@
-<div>
     <x-smart-table-actions>
-        <div class="flex items-center gap-3">
-            <x-slot name="actions">
-                <select wire:model.live="category"
-                    class="text-[13px] border-slate-200 rounded-xl focus:ring-emerald-500/20 focus:border-emerald-500 transition-all bg-white text-slate-700 px-4 py-2.5 font-bold shadow-sm">
-                    <option value="">Semua Kategori</option>
-                    @foreach ($categories as $cat)
-                        <option value="{{ $cat }}">{{ Str::headline($cat) }}</option>
-                    @endforeach
-                </select>
-            </x-slot>
+        <div class="flex flex-wrap items-center gap-3">
+            @if(count($dapurs) > 1)
+                <x-form-searchable-select wire:model.live="dapur_id" class="w-48 text-[13px]" placeholder="Semua Dapur"
+                    :selected="$dapur_id" :options="collect($dapurs)
+                        ->map(fn($d) => ['value' => $d->id, 'label' => $d->name])
+                        ->prepend(['value' => '', 'label' => 'Semua Dapur'])
+                        ->toArray()" />
+            @endif
+
+            <select wire:model.live="category"
+                class="text-[13px] border-slate-200 rounded-xl focus:ring-emerald-500/20 focus:border-emerald-500 transition-all bg-white text-slate-700 px-4 py-2.5 font-bold shadow-sm">
+                <option value="">Semua Kategori</option>
+                @foreach ($categories as $cat)
+                    <option value="{{ $cat }}">{{ Str::headline($cat) }}</option>
+                @endforeach
+            </select>
         </div>
     </x-smart-table-actions>
 

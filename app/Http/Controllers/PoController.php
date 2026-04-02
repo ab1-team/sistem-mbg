@@ -11,17 +11,33 @@ use Illuminate\Support\Facades\DB;
 
 class PoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $purchaseOrders = PurchaseOrder::with(['dapur', 'creator'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $user = auth()->user();
+        $query = PurchaseOrder::with(['dapur', 'creator'])
+            ->orderBy('created_at', 'desc');
 
-        return view('purchase-orders.index', compact('purchaseOrders'));
+        if ($user->dapur_id) {
+            $query->where('dapur_id', $user->dapur_id);
+        } elseif ($request->dapur_id) {
+            $query->where('dapur_id', $request->dapur_id);
+        }
+
+        $purchaseOrders = $query->paginate(10);
+        $dapurs = $user->dapur_id ? collect([$user->dapur]) : \App\Models\Dapur::orderBy('name')->get();
+
+        return view('purchase-orders.index', compact('purchaseOrders', 'dapurs'));
     }
 
     public function show(PurchaseOrder $purchaseOrder)
     {
+        $user = auth()->user();
+
+        // Cek akses jika user terikat dapur tertentu
+        if ($user->dapur_id && $purchaseOrder->dapur_id !== $user->dapur_id) {
+            return redirect()->route('purchase-orders.index')->with('error', 'Anda tidak memiliki akses ke Purchase Order ini.');
+        }
+
         // Audit Trail Yayasan Review (Fase 3.3)
         // Jika status draf/dikirim, ubah ke DIREVIEW_YAYASAN saat dibuka Admin
         if (in_array($purchaseOrder->status, [PoStatus::DRAF, PoStatus::DIKIRIM_KE_YAYASAN])) {
@@ -73,6 +89,13 @@ class PoController extends Controller
 
     public function generateFromMenu(MenuPeriod $menuPeriod)
     {
+        $user = auth()->user();
+
+        // Cek akses jika user terikat dapur tertentu
+        if ($user->dapur_id && $menuPeriod->dapur_id !== $user->dapur_id) {
+            return back()->with('error', 'Anda tidak memiliki akses ke rencana menu ini.');
+        }
+
         // 1. Validation
         if ($menuPeriod->status !== MenuPeriod::STATUS_APPROVED) {
             return back()->with('error', 'Hanya rencana menu yang sudah disetujui yang dapat dibuatkan PO.');

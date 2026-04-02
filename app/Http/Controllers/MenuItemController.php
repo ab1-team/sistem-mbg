@@ -52,13 +52,16 @@ class MenuItemController extends Controller
      */
     public function import(Request $request)
     {
+        $user = auth()->user();
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv|max:5120',
             'dapur_id' => 'nullable|exists:dapurs,id',
         ]);
 
+        $dapurId = $user->dapur_id ?: $request->dapur_id;
+
         try {
-            Excel::import(new MenuItemsImport($request->dapur_id), $request->file('file'));
+            Excel::import(new MenuItemsImport($dapurId), $request->file('file'));
 
             return redirect()->route('menu-items.index')->with('success', 'Data menu berhasil diimport.');
         } catch (\Exception $e) {

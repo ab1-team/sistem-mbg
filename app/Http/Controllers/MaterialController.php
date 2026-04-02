@@ -73,8 +73,11 @@ class MaterialController extends Controller
      */
     public function create()
     {
+        $user = auth()->user();
         $categories = ['sayuran', 'daging', 'ikan', 'bumbu', 'sembako', 'minuman', 'lainnya'];
-        $dapurs = Dapur::orderBy('name')->get();
+        $dapurs = $user->dapur_id 
+            ? Dapur::where('id', $user->dapur_id)->get() 
+            : Dapur::orderBy('name')->get();
 
         return view('materials.create', compact('categories', 'dapurs'));
     }
@@ -84,6 +87,7 @@ class MaterialController extends Controller
      */
     public function store(Request $request)
     {
+        $user = auth()->user();
         $validated = $request->validate([
             'code' => 'required|string|max:30|unique:materials',
             'name' => 'required|string|max:150',
@@ -99,6 +103,10 @@ class MaterialController extends Controller
             'is_active' => 'boolean',
             'dapur_id' => 'nullable|exists:dapurs,id',
         ]);
+
+        if ($user->dapur_id) {
+            $validated['dapur_id'] = $user->dapur_id;
+        }
 
         Material::create($validated);
 
@@ -119,8 +127,17 @@ class MaterialController extends Controller
      */
     public function edit(Material $material)
     {
+        $user = auth()->user();
+        
+        // Cek akses: Kepala dapur hanya bisa edit bahan di dapurnya sendiri atau bahan global
+        if ($user->dapur_id && $material->dapur_id && $material->dapur_id !== $user->dapur_id) {
+            return redirect()->route('materials.index')->with('error', 'Anda tidak memiliki akses ke bahan ini.');
+        }
+
         $categories = ['sayuran', 'daging', 'ikan', 'bumbu', 'sembako', 'minuman', 'lainnya'];
-        $dapurs = Dapur::orderBy('name')->get();
+        $dapurs = $user->dapur_id 
+            ? Dapur::where('id', $user->dapur_id)->get() 
+            : Dapur::orderBy('name')->get();
 
         return view('materials.edit', compact('material', 'categories', 'dapurs'));
     }
@@ -130,6 +147,13 @@ class MaterialController extends Controller
      */
     public function update(Request $request, Material $material)
     {
+        $user = auth()->user();
+
+        // Cek akses sebelum update
+        if ($user->dapur_id && $material->dapur_id && $material->dapur_id !== $user->dapur_id) {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'code' => ['required', 'string', 'max:30', Rule::unique('materials')->ignore($material->id)],
             'name' => 'required|string|max:150',
@@ -145,6 +169,10 @@ class MaterialController extends Controller
             'is_active' => 'boolean',
             'dapur_id' => 'nullable|exists:dapurs,id',
         ]);
+
+        if ($user->dapur_id) {
+            $validated['dapur_id'] = $user->dapur_id;
+        }
 
         $material->update($validated);
 

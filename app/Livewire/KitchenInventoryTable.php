@@ -17,11 +17,20 @@ class KitchenInventoryTable extends Component
 
     public function mount($dapur_id = null)
     {
-        $this->dapur_id = $dapur_id ?? auth()->user()->dapur_id ?? Dapur::first()->id;
+        $user = auth()->user();
+        
+        // Force dapur_id jika user terikat dapur tertentu
+        if ($user->dapur_id) {
+            $this->dapur_id = $user->dapur_id;
+        } else {
+            $this->dapur_id = $dapur_id ?? Dapur::first()?->id;
+        }
     }
 
     public function render()
     {
+        $user = auth()->user();
+
         $stocks = Stock::query()
             ->with(['material'])
             ->where('dapur_id', $this->dapur_id)
@@ -39,9 +48,14 @@ class KitchenInventoryTable extends Component
             ->orderBy($this->sortField === 'created_at' ? 'id' : $this->sortField, $this->sortAsc ? 'asc' : 'desc')
             ->paginate($this->perPage);
 
+        $dapurs = $user->dapur_id 
+            ? Dapur::where('id', $user->dapur_id)->get() 
+            : Dapur::orderBy('name')->get();
+
         return view('livewire.kitchen-inventory-table', [
             'stocks' => $stocks,
             'categories' => ['sayuran', 'daging', 'ikan', 'bumbu', 'sembako', 'minuman', 'lainnya'],
+            'dapurs' => $dapurs,
         ]);
     }
 }

@@ -53,9 +53,17 @@ class MenuItemForm extends Component
 
     public function mount($menuItem = null)
     {
+        $user = auth()->user();
+
         if ($menuItem) {
             $this->menuItem = $menuItem;
             $this->isEdit = true;
+
+            // Cek akses edit jika user terikat dapur tertentu
+            if ($user->dapur_id && $menuItem->dapur_id && $menuItem->dapur_id !== $user->dapur_id) {
+                return redirect()->route('menu-items.index')->with('error', 'Anda tidak memiliki akses ke menu ini.');
+            }
+
             $this->name = $menuItem->name;
             $this->description = $menuItem->description;
             $this->meal_type = $menuItem->meal_type;
@@ -75,6 +83,9 @@ class MenuItemForm extends Component
                     'unit' => $bom->unit,
                 ];
             }
+        } else {
+            // Default dapur_id dari user jika ada
+            $this->dapur_id = $user->dapur_id;
         }
 
         $this->loadMaterials();
@@ -95,11 +106,14 @@ class MenuItemForm extends Component
 
     protected function loadMaterials(): void
     {
+        $user = auth()->user();
+        $targetDapurId = $user->dapur_id ?? $this->dapur_id;
+
         $this->allMaterials = Material::where('is_active', true)
-            ->where(function ($query) {
+            ->where(function ($query) use ($targetDapurId) {
                 $query->whereNull('dapur_id')
-                    ->when($this->dapur_id, function ($q) {
-                        $q->orWhere('dapur_id', $this->dapur_id);
+                    ->when($targetDapurId, function ($q) use ($targetDapurId) {
+                        $q->orWhere('dapur_id', $targetDapurId);
                     });
             })
             ->orderBy('name')
@@ -137,6 +151,7 @@ class MenuItemForm extends Component
 
     public function save()
     {
+        $user = auth()->user();
         $this->validate();
 
         DB::beginTransaction();
@@ -151,11 +166,15 @@ class MenuItemForm extends Component
                 'carbs' => $this->carbs ?: 0,
                 'fat' => $this->fat ?: 0,
                 'fiber' => $this->fiber ?: 0,
-                'created_by' => auth()->id() ?? 1, // Fallback ke user ID 1 jika guest (dev mode)
-                'dapur_id' => $this->dapur_id ?: null,
+                'created_by' => auth()->id() ?? 1,
+                'dapur_id' => $user->dapur_id ?: ($this->dapur_id ?: null),
             ];
 
             if ($this->isEdit) {
+                // Double check akses sebelum update
+                if ($user->dapur_id && $this->menuItem->dapur_id && $this->menuItem->dapur_id !== $user->dapur_id) {
+                    throw new \Exception('Anda tidak memiliki akses untuk mengubah menu ini.');
+                }
                 $this->menuItem->update($data);
                 $this->menuItem->boms()->delete();
             } else {
@@ -195,8 +214,13 @@ class MenuItemForm extends Component
 
     public function render()
     {
+        $user = auth()->user();
+        $dapurs = $user->dapur_id 
+            ? Dapur::where('id', $user->dapur_id)->get() 
+            : Dapur::orderBy('name')->get();
+
         return view('livewire.menu-item-form', [
-            'dapurs' => Dapur::orderBy('name')->get(),
+            'dapurs' => $dapurs,
         ]);
     }
 }

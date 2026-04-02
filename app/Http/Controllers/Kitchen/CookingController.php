@@ -23,23 +23,34 @@ class CookingController extends Controller
      */
     public function index(Request $request)
     {
-        // Untuk Superadmin, izinkan pindah dapur via request
+        $user = auth()->user();
         $dapurId = $request->get('dapur_id');
 
-        if ($dapurId && auth()->user()->hasRole('superadmin')) {
-            $dapur = Dapur::findOrFail($dapurId);
-        } else {
-            $dapur = auth()->user()->dapur ?? Dapur::first();
+        // Force dapur_id jika user terikat dapur tertentu
+        if ($user->dapur_id) {
+            $dapur = $user->dapur;
+        } elseif ($dapurId) {
+            $dapur = Dapur::find($dapurId);
         }
 
-        if (! $dapur) {
+        // Fallback jika belum ada yang terpilih
+        if (!isset($dapur) || !$dapur) {
+            $dapur = Dapur::first();
+        }
+
+        if (!$dapur) {
             return redirect()->back()->with('error', 'Dapur tidak ditemukan.');
+        }
+
+        // Cek akses (Double check)
+        if ($user->dapur_id && $dapur->id !== $user->dapur_id) {
+            $dapur = $user->dapur;
         }
 
         // Sinkronisasi jadwal hari ini
         $schedules = $this->productionService->syncDailySchedules($dapur);
 
-        $allDapurs = auth()->user()->hasRole('superadmin') ? Dapur::all() : collect([$dapur]);
+        $allDapurs = $user->dapur_id ? collect([$dapur]) : Dapur::orderBy('name')->get();
 
         return view('kitchen.index', [
             'dapur' => $dapur,
@@ -98,15 +109,31 @@ class CookingController extends Controller
      */
     public function inventory(Request $request)
     {
+        $user = auth()->user();
         $dapurId = $request->get('dapur_id');
 
-        if ($dapurId && auth()->user()->hasRole('superadmin')) {
-            $dapur = Dapur::findOrFail($dapurId);
-        } else {
-            $dapur = auth()->user()->dapur ?? Dapur::first();
+        // Force dapur_id jika user terikat dapur tertentu
+        if ($user->dapur_id) {
+            $dapur = $user->dapur;
+        } elseif ($dapurId) {
+            $dapur = Dapur::find($dapurId);
         }
 
-        $allDapurs = auth()->user()->hasRole('superadmin') ? Dapur::all() : collect([$dapur]);
+        // Fallback jika belum ada yang terpilih
+        if (!isset($dapur) || !$dapur) {
+            $dapur = Dapur::first();
+        }
+
+        if (!$dapur) {
+            return redirect()->back()->with('error', 'Dapur tidak ditemukan.');
+        }
+
+        // Cek akses (Double check)
+        if ($user->dapur_id && $dapur->id !== $user->dapur_id) {
+            $dapur = $user->dapur;
+        }
+
+        $allDapurs = $user->dapur_id ? collect([$dapur]) : Dapur::orderBy('name')->get();
 
         return view('kitchen.inventory', [
             'dapur' => $dapur,

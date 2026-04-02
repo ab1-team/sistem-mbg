@@ -14,9 +14,15 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        $invoices = Invoice::with(['purchaseOrder', 'supplier', 'dapur'])
-            ->latest()
-            ->paginate(15);
+        $user = auth()->user();
+        $query = Invoice::with(['purchaseOrder', 'supplier', 'dapur'])
+            ->latest();
+
+        if ($user->dapur_id) {
+            $query->where('dapur_id', $user->dapur_id);
+        }
+
+        $invoices = $query->paginate(15);
 
         return view('invoices.index', compact('invoices'));
     }
@@ -26,6 +32,13 @@ class InvoiceController extends Controller
      */
     public function show(Invoice $invoice)
     {
+        $user = auth()->user();
+
+        // Cek akses jika user terikat dapur tertentu
+        if ($user->dapur_id && $invoice->dapur_id !== $user->dapur_id) {
+            return redirect()->route('invoices.index')->with('error', 'Anda tidak memiliki akses ke Invoice ini.');
+        }
+
         $invoice->load(['purchaseOrder', 'supplier', 'dapur', 'items.material', 'items.poItem']);
 
         return view('invoices.show', compact('invoice'));
@@ -37,6 +50,13 @@ class InvoiceController extends Controller
      */
     public function previewPdf(Invoice $invoice)
     {
+        $user = auth()->user();
+
+        // Cek akses jika user terikat dapur tertentu
+        if ($user->dapur_id && $invoice->dapur_id !== $user->dapur_id) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $invoice->load(['purchaseOrder', 'supplier', 'dapur', 'items.material', 'items.poItem']);
 
         $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
@@ -49,6 +69,13 @@ class InvoiceController extends Controller
      */
     public function verify(Invoice $invoice)
     {
+        $user = auth()->user();
+
+        // Cek akses jika user terikat dapur tertentu
+        if ($user->dapur_id && $invoice->dapur_id !== $user->dapur_id) {
+            abort(403);
+        }
+
         $invoice->update(['status' => 'diverifikasi']);
 
         return redirect()->back()->with('success', 'Penagihan telah diverifikasi.');
@@ -59,6 +86,13 @@ class InvoiceController extends Controller
      */
     public function pay(Request $request, Invoice $invoice)
     {
+        $user = auth()->user();
+
+        // Cek akses jika user terikat dapur tertentu
+        if ($user->dapur_id && $invoice->dapur_id !== $user->dapur_id) {
+            abort(403);
+        }
+
         $request->validate([
             'payment_proof' => 'required|image|max:2048',
         ]);
