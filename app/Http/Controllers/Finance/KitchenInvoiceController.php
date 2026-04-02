@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\PurchaseOrder;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 
 class KitchenInvoiceController extends Controller
 {

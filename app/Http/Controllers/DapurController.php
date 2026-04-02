@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DapurRequest;
 use App\Models\Dapur;
-use Illuminate\Http\Request;
 
 class DapurController extends Controller
 {

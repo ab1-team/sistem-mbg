@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Finance\ExpenseController;
 use App\Http\Controllers\Finance\FinancialPeriodController;
 use App\Http\Controllers\Finance\InvoiceController;
+use App\Http\Controllers\Finance\KitchenInvoiceController;
 use App\Http\Controllers\Finance\RevenueController;
 use App\Http\Controllers\InvestorController;
 use App\Http\Controllers\Kitchen\CookingController;
@@ -46,7 +47,6 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
     ScopeDapurBySubdomain::class,
 ])->group(function () {
-
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -109,8 +109,8 @@ Route::middleware([
 
                 // Kitchen Invoices (Consolidated)
                 Route::prefix('kitchen-invoices')->name('kitchen-invoices.')->group(function () {
-                    Route::get('/', [\App\Http\Controllers\Finance\KitchenInvoiceController::class, 'index'])->name('index');
-                    Route::get('/{purchaseOrder}/download', [\App\Http\Controllers\Finance\KitchenInvoiceController::class, 'downloadPdf'])->name('download');
+                    Route::get('/', [KitchenInvoiceController::class, 'index'])->name('index');
+                    Route::get('/{purchaseOrder}/download', [KitchenInvoiceController::class, 'downloadPdf'])->name('download');
                 });
             });
         });

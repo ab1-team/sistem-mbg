@@ -20,17 +20,17 @@ class ScopeDapurBySubdomain
 
         // Expecting: {dapur_slug}.{foundation_domain}.{tld}
         // or {foundation_domain}.{tld} (Central/Yayasan level)
-        
+
         if (count($parts) >= 3) {
             $subdomain = $parts[0];
-            
+
             // Check if this subdomain matches a Dapur slug
             $dapur = Dapur::where('slug', $subdomain)->first();
 
             if ($dapur) {
                 // Store the detected dapur in the request/session/config for global scoping
                 session(['active_dapur_id' => $dapur->id]);
-                
+
                 // Add to request for easy access
                 $request->merge(['active_dapur' => $dapur]);
             }

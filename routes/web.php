@@ -6,11 +6,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     $host = request()->getHost();
     $centralDomains = config('tenancy.central_domains', ['localhost', '127.0.0.1']);
-    
-    if (!in_array($host, $centralDomains)) {
+
+    if (! in_array($host, $centralDomains)) {
         return redirect('/login');
     }
-    
+
     return view('landing');
 })->name('landing');
 

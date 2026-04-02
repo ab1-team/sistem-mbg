@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Stancl\Tenancy\Database\Models\Domain;
 use Stancl\Tenancy\Database\Models\Tenant;
 
@@ -47,7 +48,7 @@ class CreateYayasan extends Command
             'tenant_id' => $tenant->id,
         ]);
 
-        $this->info("Database and Domain created. Initializing SuperAdmin in tenant context...");
+        $this->info('Database and Domain created. Initializing SuperAdmin in tenant context...');
 
         // 3. Create SuperAdmin in Tenant Context
         $tenant->run(function () use ($email, $name) {
@@ -56,7 +57,7 @@ class CreateYayasan extends Command
                 [
                     'name' => "Admin {$name}",
                     'password' => Hash::make('password'), // Direct password for first setup
-                    'uuid' => (string) \Illuminate\Support\Str::uuid(),
+                    'uuid' => (string) Str::uuid(),
                 ]
             );
 
@@ -65,6 +66,6 @@ class CreateYayasan extends Command
         });
 
         $this->info("Success! Yayasan {$name} is ready at http://{$domain}");
-        $this->comment("Default Password: password (Please change immediately)");
+        $this->comment('Default Password: password (Please change immediately)');
     }
 }
