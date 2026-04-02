@@ -3,7 +3,7 @@
         subtitle="{{ $dapur->name }} — {{ now()->translatedFormat('d F Y') }} — Unit Operasional Aktif">
         <x-slot name="actions">
             @if (auth()->user()->hasRole('superadmin'))
-                @if(count($allDapurs) > 1)
+                @if (count($allDapurs) > 1)
                     <div class="w-[240px]">
                         <x-form-searchable-select name="dapur_id" :options="$allDapurs->map(fn($d) => ['value' => $d->id, 'label' => $d->name])->toArray()" :selected="$dapur->id"
                             placeholder="Cari Unit Dapur..."
@@ -49,39 +49,101 @@
                     {{-- TIMELINE & PETUGAS --}}
                     <div class="space-y-2 p-3 bg-slate-50/50 rounded-2xl border border-slate-100/50">
                         <div class="flex items-center justify-between">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Alur Produksi</span>
-                            @if($schedule->koki)
-                                <span class="text-[10px] font-black text-slate-900 bg-white px-2 py-0.5 rounded-lg border border-slate-100 shadow-sm">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Alur
+                                Produksi</span>
+                            @if ($schedule->koki)
+                                <span
+                                    class="text-[10px] font-black text-slate-900 bg-white px-2 py-0.5 rounded-lg border border-slate-100 shadow-sm">
                                     {{ $schedule->koki->name }}
                                 </span>
                             @endif
                         </div>
-                        
+
                         <div class="grid grid-cols-2 gap-y-2 gap-x-4">
                             <div class="flex items-center justify-between text-[11px]">
                                 <span class="text-slate-400">Persiapan:</span>
-                                <span class="font-bold {{ $schedule->prepared_at ? 'text-slate-700' : 'text-slate-300 italic' }}">
+                                <span
+                                    class="font-bold {{ $schedule->prepared_at ? 'text-slate-700' : 'text-slate-300 italic' }}">
                                     {{ $schedule->prepared_at ? $schedule->prepared_at->format('H:i') : '--:--' }}
                                 </span>
                             </div>
                             <div class="flex items-center justify-between text-[11px]">
                                 <span class="text-slate-400">Masak:</span>
-                                <span class="font-bold {{ $schedule->started_at ? 'text-slate-700' : 'text-slate-300 italic' }}">
+                                <span
+                                    class="font-bold {{ $schedule->started_at ? 'text-slate-700' : 'text-slate-300 italic' }}">
                                     {{ $schedule->started_at ? $schedule->started_at->format('H:i') : '--:--' }}
                                 </span>
                             </div>
                             <div class="flex items-center justify-between text-[11px]">
                                 <span class="text-slate-400">Selesai:</span>
-                                <span class="font-bold {{ $schedule->completed_at ? 'text-slate-700' : 'text-slate-300 italic' }}">
+                                <span
+                                    class="font-bold {{ $schedule->completed_at ? 'text-slate-700' : 'text-slate-300 italic' }}">
                                     {{ $schedule->completed_at ? $schedule->completed_at->format('H:i') : '--:--' }}
                                 </span>
                             </div>
                             <div class="flex items-center justify-between text-[11px]">
                                 <span class="text-slate-400">Distribusi:</span>
-                                <span class="font-bold {{ $schedule->distributed_at ? 'text-slate-700' : 'text-slate-300 italic' }}">
+                                <span
+                                    class="font-bold {{ $schedule->distributed_at ? 'text-slate-700' : 'text-slate-300 italic' }}">
                                     {{ $schedule->distributed_at ? $schedule->distributed_at->format('H:i') : '--:--' }}
                                 </span>
                             </div>
+                        </div>
+                    </div>
+
+                    {{-- BAHAN BAKU (Expandable) --}}
+                    <div x-data="{ open: false }"
+                        class="px-3 py-2 bg-emerald-50/30 rounded-2xl border border-emerald-100/50">
+                        <button @click="open = !open"
+                            class="flex items-center justify-between w-full text-[10px] font-black text-emerald-700 uppercase tracking-widest">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                    </path>
+                                </svg>
+                                <span>Bahan Baku (BOM)</span>
+                            </div>
+                            <svg :class="open ? 'rotate-180' : ''" class="w-2.5 h-2.5 transition-transform"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+
+                        <div x-show="open" x-collapse class="mt-3 space-y-3">
+                            @php
+                                $itemsForBom = $schedule->menuSchedule->items->isNotEmpty()
+                                    ? $schedule->menuSchedule->items
+                                    : ($schedule->menuSchedule->menuItem
+                                        ? collect([$schedule->menuSchedule->menuItem])
+                                        : collect());
+                            @endphp
+
+                            @foreach ($itemsForBom as $menuItem)
+                                <div class="space-y-1.5">
+                                    <span
+                                        class="text-[10px] font-black text-emerald-800 flex items-center gap-1.5 overflow-hidden">
+                                        <span class="shrink-0 w-1 h-1 rounded-full bg-emerald-400"></span>
+                                        <span class="truncate">{{ $menuItem->name }}</span>
+                                    </span>
+                                    <div class="grid grid-cols-1 gap-1 pl-2.5">
+                                        @foreach ($menuItem->boms as $bom)
+                                            <div
+                                                class="flex items-center justify-between text-[11px] leading-tight group">
+                                                <span
+                                                    class="text-slate-500 group-hover:text-slate-700 transition-colors">{{ $bom->material->name }}</span>
+                                                <span
+                                                    class="font-bold text-slate-900 bg-white px-1.5 py-0.5 rounded-md border border-slate-100 shadow-sm">
+                                                    {{ number_format($bom->quantity_per_portion * $schedule->menuSchedule->target_portions, 2) }}
+                                                    <span
+                                                        class="text-[9px] text-slate-400 font-medium lowercase">{{ $bom->material->unit }}</span>
+                                                </span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
 

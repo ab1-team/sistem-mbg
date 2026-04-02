@@ -17,6 +17,7 @@ use App\Http\Controllers\MenuPeriodController;
 use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\PoController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Supplier\PoController as SupplierPoController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
@@ -54,6 +55,10 @@ Route::middleware([
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        // Adaptive System Settings
+        Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+        Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
         Route::middleware('role:admin_yayasan|superadmin')->group(function () {
             Route::resource('dapurs', DapurController::class);

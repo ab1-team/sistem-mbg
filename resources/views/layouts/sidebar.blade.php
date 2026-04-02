@@ -13,8 +13,8 @@
                         d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
                 </svg>
             </div>
-            <span class="text-[17px] font-extrabold text-slate-900 tracking-tight">Yayasan <span
-                    class="text-green-800">MBG</span></span>
+            <span
+                class="text-[17px] font-extrabold text-slate-900 tracking-tight">{{ tenant('name') ?? config('app.name', 'Yayasan MBG') }}</span>
         </div>
 
         {{-- MENU GROUPS --}}
@@ -177,6 +177,12 @@
                         [
                             'route' => 'profile.edit',
                             'match' => 'profile.edit',
+                            'label' => 'Profil Saya',
+                            'icon' => 'team',
+                        ],
+                        [
+                            'route' => 'settings.index',
+                            'match' => 'settings.*',
                             'label' => 'Pengaturan',
                             'icon' => 'settings',
                         ],

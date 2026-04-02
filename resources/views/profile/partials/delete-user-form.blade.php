@@ -19,18 +19,15 @@
             <p class="text-[13px] text-slate-600 mb-4">
                 Tindakan ini tidak dapat dibatalkan. Masukkan password untuk konfirmasi.
             </p>
-            <x-form-input
-                label="Password"
-                name="password"
-                type="password"
-                placeholder="Password Anda"
-            />
+            <x-form-input label="Password" name="password" type="password" placeholder="Password Anda" />
             <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
         </form>
 
         <x-slot:footer>
-            <x-btn variant="secondary" size="sm" x-on:click="$dispatch('close-modal', 'confirm-user-deletion')">Batal</x-btn>
-            <x-btn variant="danger" size="sm" x-on:click="document.getElementById('delete-account-form').submit()">Ya, Hapus Akun</x-btn>
+            <x-btn variant="secondary" size="md"
+                x-on:click="$dispatch('close-modal', 'confirm-user-deletion')">Batal</x-btn>
+            <x-btn variant="danger" size="md"
+                x-on:click="document.getElementById('delete-account-form').submit()">Ya, Hapus Akun</x-btn>
         </x-slot:footer>
     </x-dialog>
 </section>

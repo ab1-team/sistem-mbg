@@ -50,7 +50,7 @@ class ProductionService
             ->whereHas('menuSchedule', function ($q) use ($date) {
                 $q->where('serve_date', $date);
             })
-            ->with(['menuSchedule.items', 'menuSchedule.menuItem', 'koki'])
+            ->with(['menuSchedule.items.boms.material', 'menuSchedule.menuItem.boms.material', 'koki'])
             ->get();
     }
 
