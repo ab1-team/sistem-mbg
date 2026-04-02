@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DapurRequest;
 use App\Models\Dapur;
 use Illuminate\Http\Request;
 
@@ -28,19 +29,9 @@ class DapurController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(DapurRequest $request)
     {
-        $validated = $request->validate([
-            'code' => 'required|string|max:10|unique:dapurs',
-            'name' => 'required|string|max:100',
-            'address' => 'nullable|string',
-            'city' => 'nullable|string|max:50',
-            'province' => 'nullable|string|max:50',
-            'capacity_portions' => 'required|integer|min:0',
-            'is_active' => 'boolean',
-        ]);
-
-        Dapur::create($validated);
+        Dapur::create($request->validated());
 
         return redirect()->route('dapurs.index')
             ->with('success', 'Dapur berhasil ditambahkan.');
@@ -65,19 +56,9 @@ class DapurController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Dapur $dapur)
+    public function update(DapurRequest $request, Dapur $dapur)
     {
-        $validated = $request->validate([
-            'code' => 'required|string|max:10|unique:dapurs,code,'.$dapur->id,
-            'name' => 'required|string|max:100',
-            'address' => 'nullable|string',
-            'city' => 'nullable|string|max:50',
-            'province' => 'nullable|string|max:50',
-            'capacity_portions' => 'required|integer|min:0',
-            'is_active' => 'boolean',
-        ]);
-
-        $dapur->update($validated);
+        $dapur->update($request->validated());
 
         return redirect()->route('dapurs.index')
             ->with('success', 'Dapur berhasil diperbarui.');

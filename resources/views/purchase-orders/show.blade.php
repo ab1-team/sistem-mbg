@@ -1,23 +1,24 @@
 <x-app-layout title="Detail Purchase Order">
-    <x-page-header 
-        title="{{ $purchaseOrder->po_number }}"
+    <x-page-header title="{{ $purchaseOrder->po_number }}"
         subtitle="Dipesan oleh {{ ucwords($purchaseOrder->creator->name) }} pada {{ $purchaseOrder->created_at->translatedFormat('d F Y, H:i') }}"
-        back="{{ route('purchase-orders.index') }}"
-    >
+        back="{{ route('purchase-orders.index') }}">
         <x-slot name="actions">
             @if (in_array($purchaseOrder->status->value, [
                     'diteruskan_ke_supplier',
                     'diproses_supplier',
                     'dalam_pengiriman',
                     'diterima_sebagian',
-                ]) && auth()->user()->hasRole(['logistik', 'admin', 'superadmin']))
-                <x-btn href="{{ route('gr.create', $purchaseOrder) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white">
+                ]) &&
+                    auth()->user()->hasRole(['logistik', 'admin', 'superadmin']))
+                <x-btn href="{{ route('gr.create', $purchaseOrder) }}"
+                    class="bg-emerald-600 hover:bg-emerald-700 text-white">
                     Terima Barang
                 </x-btn>
             @endif
 
             @if ($purchaseOrder->status->value !== 'dibatalkan' && $purchaseOrder->status->value !== 'selesai')
-                <x-btn @click="showCancelModal = true" variant="secondary" class="border-red-200! text-red-600! hover:bg-red-50!">
+                <x-btn @click="showCancelModal = true" variant="secondary"
+                    class="border-red-200! text-red-600! hover:bg-red-50!">
                     Batalkan PO
                 </x-btn>
             @endif
@@ -26,12 +27,16 @@
                 <form action="{{ route('purchase-orders.update', $purchaseOrder) }}" method="POST" class="inline">
                     @csrf @method('PUT')
                     <input type="hidden" name="status" value="dikirim_ke_yayasan">
-                    <x-btn type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white">Kirim ke Yayasan</x-btn>
+                    <x-btn type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white">Kirim ke
+                        Yayasan</x-btn>
                 </form>
             @endif
 
-            @if ($purchaseOrder->status->value === 'direview_yayasan' && auth()->user()->hasRole(['admin', 'superadmin']))
-                <form action="{{ route('purchase-orders.submit-to-supplier', $purchaseOrder) }}" method="POST" class="inline">
+            @if (
+                $purchaseOrder->status->value === 'direview_yayasan' &&
+                    auth()->user()->hasRole(['admin', 'superadmin']))
+                <form action="{{ route('purchase-orders.submit-to-supplier', $purchaseOrder) }}" method="POST"
+                    class="inline">
                     @csrf
                     <x-btn type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white">
                         Teruskan Ke Supplier
@@ -40,15 +45,19 @@
             @endif
 
             @if ($purchaseOrder->invoices()->exists())
-                <x-btn href="{{ route('invoices.show', $purchaseOrder->invoices->first()) }}" variant="secondary" class="bg-white border-emerald-200 text-emerald-700 hover:bg-emerald-50">
+                <x-btn href="{{ route('finance.invoices.show', $purchaseOrder->invoices->first()) }}"
+                    variant="secondary" class="bg-white border-emerald-200 text-emerald-700 hover:bg-emerald-50">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        <path
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     Lihat Tagihan (Invoice)
                 </x-btn>
             @endif
 
-            @if ($purchaseOrder->status->value === 'diterima_lengkap' && auth()->user()->hasRole(['admin', 'superadmin', 'finance']))
+            @if (
+                $purchaseOrder->status->value === 'diterima_lengkap' &&
+                    auth()->user()->hasRole(['admin', 'superadmin', 'finance']))
                 <form action="{{ route('purchase-orders.update', $purchaseOrder) }}" method="POST" class="inline">
                     @csrf @method('PUT')
                     <input type="hidden" name="status" value="selesai">
@@ -72,12 +81,14 @@
                 x-transition:enter-start="scale-95 opacity-0" x-transition:enter-end="scale-100 opacity-100">
                 <div class="p-8">
                     <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5"
+                            viewBox="0 0 24 24">
                             <path d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </div>
                     <h3 class="text-[20px] font-black text-slate-900 mb-2">Batalkan Pesanan?</h3>
-                    <p class="text-[14px] text-slate-500 mb-6">Tandai pesanan ini sebagai batal. Anda wajib memberikan alasan pembatalan untuk catatan audit.</p>
+                    <p class="text-[14px] text-slate-500 mb-6">Tandai pesanan ini sebagai batal. Anda wajib memberikan
+                        alasan pembatalan untuk catatan audit.</p>
 
                     <form action="{{ route('purchase-orders.cancel', $purchaseOrder) }}" method="POST">
                         @csrf
@@ -86,8 +97,10 @@
                             placeholder="Alasan pembatalan..."></textarea>
 
                         <div class="flex gap-3">
-                            <x-btn @click="showCancelModal = false" type="button" variant="secondary" class="flex-1">Tutup</x-btn>
-                            <x-btn type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold">Konfirmasi Batal</x-btn>
+                            <x-btn @click="showCancelModal = false" type="button" variant="secondary"
+                                class="flex-1">Tutup</x-btn>
+                            <x-btn type="submit"
+                                class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold">Konfirmasi Batal</x-btn>
                         </div>
                     </form>
                 </div>
@@ -114,13 +127,14 @@
             <x-card title="Informasi Pesanan">
                 <div class="space-y-5">
                     <x-show-field label="Unit Dapur" :value="ucwords($purchaseOrder->dapur->name)" />
-                    
+
                     <x-show-field label="Tujuan Rencana Menu">
                         <a href="{{ route('menu-periods.show', $purchaseOrder->menuPeriod) }}"
                             class="text-[13px] font-bold text-emerald-700 hover:underline">
                             {{ $purchaseOrder->menuPeriod->title }}
                         </a>
-                        <span class="ml-2 px-2.5 py-1 rounded-full text-[11px] font-bold border {{ $purchaseOrder->status->color() }} whitespace-nowrap">
+                        <span
+                            class="ml-2 px-2.5 py-1 rounded-full text-[11px] font-bold border {{ $purchaseOrder->status->color() }} whitespace-nowrap">
                             {{ $purchaseOrder->status->label() }}
                         </span>
                         <p class="text-[11px] text-slate-400 mt-0.5">{{ $purchaseOrder->menuPeriod->period->name }}</p>
@@ -143,24 +157,53 @@
                         $hasInvoice = $purchaseOrder->invoices()->exists();
                         $steps = [
                             ['label' => 'Generate PO', 'done' => true],
-                            ['label' => 'Review Yayasan', 'done' => in_array($statusVal, ['direview_yayasan', 'diteruskan_ke_supplier', 'diproses_supplier', 'dalam_pengiriman', 'diterima_sebagian', 'diterima_lengkap', 'selesai'])],
-                            ['label' => 'Proses Supplier', 'done' => in_array($statusVal, ['diteruskan_ke_supplier', 'diproses_supplier', 'dalam_pengiriman', 'diterima_sebagian', 'diterima_lengkap', 'selesai'])],
-                            ['label' => 'Penerimaan (GR)', 'done' => in_array($statusVal, ['diterima_sebagian', 'diterima_lengkap', 'selesai'])],
+                            [
+                                'label' => 'Review Yayasan',
+                                'done' => in_array($statusVal, [
+                                    'direview_yayasan',
+                                    'diteruskan_ke_supplier',
+                                    'diproses_supplier',
+                                    'dalam_pengiriman',
+                                    'diterima_sebagian',
+                                    'diterima_lengkap',
+                                    'selesai',
+                                ]),
+                            ],
+                            [
+                                'label' => 'Proses Supplier',
+                                'done' => in_array($statusVal, [
+                                    'diteruskan_ke_supplier',
+                                    'diproses_supplier',
+                                    'dalam_pengiriman',
+                                    'diterima_sebagian',
+                                    'diterima_lengkap',
+                                    'selesai',
+                                ]),
+                            ],
+                            [
+                                'label' => 'Penerimaan (GR)',
+                                'done' => in_array($statusVal, ['diterima_sebagian', 'diterima_lengkap', 'selesai']),
+                            ],
                             ['label' => 'Tagihan (Invoice)', 'done' => $hasInvoice],
                             ['label' => 'Selesai', 'done' => $statusVal === 'selesai'],
                         ];
                     @endphp
 
-                    @foreach($steps as $index => $step)
+                    @foreach ($steps as $index => $step)
                         <div class="flex items-center gap-3">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 {{ $step['done'] ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-400' }}">
-                                @if($step['done'])
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
+                            <div
+                                class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 {{ $step['done'] ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-400' }}">
+                                @if ($step['done'])
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3"
+                                        viewBox="0 0 24 24">
+                                        <path d="M5 13l4 4L19 7" />
+                                    </svg>
                                 @else
                                     <span class="text-[10px] font-bold text-emerald-600">{{ $index + 1 }}</span>
                                 @endif
                             </div>
-                            <p class="text-[12px] font-semibold {{ $step['done'] ? 'text-emerald-900/40 line-through' : 'text-emerald-900' }}">
+                            <p
+                                class="text-[12px] font-semibold {{ $step['done'] ? 'text-emerald-900/40 line-through' : 'text-emerald-900' }}">
                                 {{ $step['label'] }}
                             </p>
                         </div>
@@ -170,16 +213,22 @@
 
             {{-- AUDIT TRAIL / HISTORY --}}
             <x-card title="Riwayat Status">
-                <div class="space-y-6 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-slate-100">
+                <div
+                    class="space-y-6 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-slate-100">
                     @foreach ($purchaseOrder->statusHistory->sortByDesc('created_at') as $history)
                         <div class="relative pl-8">
-                            <div class="absolute left-0 top-1 w-[22px] h-[22px] rounded-full border bg-white flex items-center justify-center ring-4 ring-white {{ $loop->first ? 'border-emerald-600 text-emerald-600' : 'border-slate-200 text-slate-300' }}">
-                                <div class="w-1.5 h-1.5 rounded-full {{ $loop->first ? 'bg-emerald-600' : 'bg-slate-300' }}"></div>
+                            <div
+                                class="absolute left-0 top-1 w-[22px] h-[22px] rounded-full border bg-white flex items-center justify-center ring-4 ring-white {{ $loop->first ? 'border-emerald-600 text-emerald-600' : 'border-slate-200 text-slate-300' }}">
+                                <div
+                                    class="w-1.5 h-1.5 rounded-full {{ $loop->first ? 'bg-emerald-600' : 'bg-slate-300' }}">
+                                </div>
                             </div>
                             <div class="flex items-center flex-wrap gap-x-2 gap-y-0.5 mb-1">
-                                <span class="text-[12px] font-bold text-slate-900">{{ $history->to_status->label() }}</span>
+                                <span
+                                    class="text-[12px] font-bold text-slate-900">{{ $history->to_status->label() }}</span>
                                 @if ($history->from_status)
-                                    <span class="text-[10px] text-slate-400">← {{ $history->from_status->label() }}</span>
+                                    <span class="text-[10px] text-slate-400">←
+                                        {{ $history->from_status->label() }}</span>
                                 @endif
                             </div>
                             <p class="text-[11px] text-slate-500">

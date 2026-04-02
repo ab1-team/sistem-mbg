@@ -110,6 +110,9 @@ class PoController extends Controller
 
         return DB::transaction(function () use ($menuPeriod) {
             // 2. Aggregate Requirements (Logic from MenuPeriodShow)
+            // Eager load to avoid N+1 in loops
+            $menuPeriod->load(['schedules.items.boms.material']);
+
             $requirements = [];
             foreach ($menuPeriod->schedules as $s) {
                 foreach ($s->items as $item) {

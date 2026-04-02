@@ -36,7 +36,7 @@ class InvoiceController extends Controller
 
         // Cek akses jika user terikat dapur tertentu
         if ($user->dapur_id && $invoice->dapur_id !== $user->dapur_id) {
-            return redirect()->route('invoices.index')->with('error', 'Anda tidak memiliki akses ke Invoice ini.');
+            return redirect()->route('finance.invoices.index')->with('error', 'Anda tidak memiliki akses ke Invoice ini.');
         }
 
         $invoice->load(['purchaseOrder', 'supplier', 'dapur', 'items.material', 'items.poItem']);

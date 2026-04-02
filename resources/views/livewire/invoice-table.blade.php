@@ -1,7 +1,7 @@
 <div>
     <x-smart-table-actions>
         <div class="flex flex-wrap items-center gap-3">
-            @if(count($dapurs) > 1)
+            @if (count($dapurs) > 1)
                 <x-form-searchable-select wire:model.live="dapurId" class="w-48 text-[13px]" placeholder="Semua Dapur"
                     :selected="$dapurId" :options="collect($dapurs)
                         ->map(fn($d) => ['value' => $d->id, 'label' => $d->name])
@@ -58,7 +58,7 @@
                         </span>
                     </x-table-td>
                     <x-table-td class="text-right py-3 px-4">
-                        <x-btn href="{{ route('invoices.show', $invoice) }}" variant="secondary"
+                        <x-btn href="{{ route('finance.invoices.show', $invoice) }}" variant="secondary"
                             class="py-1.5! px-3! text-[11px]!">
                             Detail
                         </x-btn>

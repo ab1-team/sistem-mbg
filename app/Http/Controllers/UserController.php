@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Models\Dapur;
 use App\Models\Supplier;
 use App\Models\User;
@@ -37,18 +38,8 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:100',
-            'email' => 'required|string|email|max:150|unique:users',
-            'password' => 'required|string|min:8',
-            'role' => 'required|exists:roles,name',
-            'dapur_id' => 'nullable|exists:dapurs,id',
-            'supplier_id' => 'nullable|exists:suppliers,id',
-            'is_active' => 'boolean',
-        ]);
-
         $user = User::create([
             'uuid' => (string) Str::uuid(),
             'name' => $request->name,
@@ -88,18 +79,8 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UserRequest $request, User $user)
     {
-        $request->validate([
-            'name' => 'required|string|max:100',
-            'email' => 'required|string|email|max:150|unique:users,email,'.$user->id,
-            'password' => 'nullable|string|min:8',
-            'role' => 'required|exists:roles,name',
-            'dapur_id' => 'nullable|exists:dapurs,id',
-            'supplier_id' => 'nullable|exists:suppliers,id',
-            'is_active' => 'boolean',
-        ]);
-
         $data = [
             'name' => $request->name,
             'email' => $request->email,

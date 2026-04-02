@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('dapurs', function (Blueprint $table) {
             $table->id();
             $table->string('code', 20)->unique();
+            $table->string('slug', 100)->unique();
             $table->string('name', 150);
             $table->text('address')->nullable();
             $table->string('city', 100)->nullable();

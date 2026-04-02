@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MaterialRequest;
 use App\Imports\MaterialsImport;
 use App\Models\Dapur;
 use App\Models\Material;
@@ -85,24 +86,10 @@ class MaterialController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(MaterialRequest $request)
     {
         $user = auth()->user();
-        $validated = $request->validate([
-            'code' => 'required|string|max:30|unique:materials',
-            'name' => 'required|string|max:150',
-            'category' => ['required', Rule::in(['sayuran', 'daging', 'ikan', 'bumbu', 'sembako', 'minuman', 'lainnya'])],
-            'unit' => 'required|string|max:20',
-            'calories' => 'nullable|numeric|min:0',
-            'protein' => 'nullable|numeric|min:0',
-            'carbs' => 'nullable|numeric|min:0',
-            'fat' => 'nullable|numeric|min:0',
-            'fiber' => 'nullable|numeric|min:0',
-            'price_estimate' => 'required|numeric|min:0',
-            'min_stock_threshold' => 'required|numeric|min:0',
-            'is_active' => 'boolean',
-            'dapur_id' => 'nullable|exists:dapurs,id',
-        ]);
+        $validated = $request->validated();
 
         if ($user->dapur_id) {
             $validated['dapur_id'] = $user->dapur_id;
@@ -145,7 +132,7 @@ class MaterialController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Material $material)
+    public function update(MaterialRequest $request, Material $material)
     {
         $user = auth()->user();
 
@@ -154,21 +141,7 @@ class MaterialController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'code' => ['required', 'string', 'max:30', Rule::unique('materials')->ignore($material->id)],
-            'name' => 'required|string|max:150',
-            'category' => ['required', Rule::in(['sayuran', 'daging', 'ikan', 'bumbu', 'sembako', 'minuman', 'lainnya'])],
-            'unit' => 'required|string|max:20',
-            'calories' => 'nullable|numeric|min:0',
-            'protein' => 'nullable|numeric|min:0',
-            'carbs' => 'nullable|numeric|min:0',
-            'fat' => 'nullable|numeric|min:0',
-            'fiber' => 'nullable|numeric|min:0',
-            'price_estimate' => 'required|numeric|min:0',
-            'min_stock_threshold' => 'required|numeric|min:0',
-            'is_active' => 'boolean',
-            'dapur_id' => 'nullable|exists:dapurs,id',
-        ]);
+        $validated = $request->validated();
 
         if ($user->dapur_id) {
             $validated['dapur_id'] = $user->dapur_id;

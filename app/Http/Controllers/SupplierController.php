@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SupplierRequest;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
@@ -28,23 +29,9 @@ class SupplierController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SupplierRequest $request)
     {
-        $validated = $request->validate([
-            'code' => 'required|string|max:10|unique:suppliers',
-            'name' => 'required|string|max:100',
-            'contact_person' => 'nullable|string|max:100',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:100',
-            'address' => 'nullable|string',
-            'bank_name' => 'nullable|string|max:50',
-            'bank_account' => 'nullable|string|max:50',
-            'bank_holder' => 'nullable|string|max:100',
-            'category' => 'required|string|in:sayuran,daging,bumbu,sembako,lainnya',
-            'is_active' => 'boolean',
-        ]);
-
-        Supplier::create($validated);
+        Supplier::create($request->validated());
 
         return redirect()->route('suppliers.index')
             ->with('success', 'Supplier berhasil ditambahkan.');
@@ -69,23 +56,9 @@ class SupplierController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Supplier $supplier)
+    public function update(SupplierRequest $request, Supplier $supplier)
     {
-        $validated = $request->validate([
-            'code' => 'required|string|max:10|unique:suppliers,code,'.$supplier->id,
-            'name' => 'required|string|max:100',
-            'contact_person' => 'nullable|string|max:100',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:100',
-            'address' => 'nullable|string',
-            'bank_name' => 'nullable|string|max:50',
-            'bank_account' => 'nullable|string|max:50',
-            'bank_holder' => 'nullable|string|max:100',
-            'category' => 'required|string|in:sayuran,daging,bumbu,sembako,lainnya',
-            'is_active' => 'boolean',
-        ]);
-
-        $supplier->update($validated);
+        $supplier->update($request->validated());
 
         return redirect()->route('suppliers.index')
             ->with('success', 'Supplier berhasil diperbarui.');
