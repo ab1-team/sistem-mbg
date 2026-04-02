@@ -72,10 +72,31 @@ class MenuPeriodForm extends Component
         }
     }
 
+    public function updatedDapurId($value)
+    {
+        $this->syncPortions();
+    }
+
+    public function syncPortions()
+    {
+        if ($this->dapur_id && ! empty($this->schedules)) {
+            $dapur = Dapur::find($this->dapur_id);
+            if ($dapur) {
+                foreach ($this->schedules as $date => $day) {
+                    foreach ($day['meals'] as $mIdx => $meal) {
+                        $this->schedules[$date]['meals'][$mIdx]['portions'] = $dapur->capacity_portions ?? 0;
+                    }
+                }
+            }
+        }
+    }
+
     protected function generateScheduleSlots(Period $period)
     {
         $this->schedules = [];
         $dateRange = CarbonPeriod::create($period->start_date, $period->end_date);
+        $dapur = $this->dapur_id ? Dapur::find($this->dapur_id) : null;
+        $defaultPortions = $dapur ? ($dapur->capacity_portions ?? 0) : 0;
 
         foreach ($dateRange as $date) {
             $dateStr = $date->format('Y-m-d');
@@ -83,10 +104,10 @@ class MenuPeriodForm extends Component
                 'date' => $dateStr,
                 'display' => $date->translatedFormat('D, d M'),
                 'meals' => [
-                    ['type' => 'sarapan', 'menu_item_ids' => [], 'portions' => 0],
-                    ['type' => 'makan_siang', 'menu_item_ids' => [], 'portions' => 0],
-                    ['type' => 'makan_malam', 'menu_item_ids' => [], 'portions' => 0],
-                    ['type' => 'snack', 'menu_item_ids' => [], 'portions' => 0],
+                    ['type' => 'sarapan', 'menu_item_ids' => [], 'portions' => $defaultPortions],
+                    ['type' => 'makan_siang', 'menu_item_ids' => [], 'portions' => $defaultPortions],
+                    ['type' => 'makan_malam', 'menu_item_ids' => [], 'portions' => $defaultPortions],
+                    ['type' => 'snack', 'menu_item_ids' => [], 'portions' => $defaultPortions],
                 ],
             ];
         }
@@ -161,6 +182,19 @@ class MenuPeriodForm extends Component
                 ]
             );
 
+            // Validasi Kapasitas Dapur
+            $dapur = Dapur::find($this->dapur_id);
+            if ($dapur && $dapur->capacity_portions > 0) {
+                foreach ($this->schedules as $date => $day) {
+                    foreach ($day['meals'] as $meal) {
+                        if ($meal['portions'] > $dapur->capacity_portions) {
+                            $mealLabel = str_replace('_', ' ', $meal['type']);
+                            throw new \Exception("Porsi {$mealLabel} pada {$date} ({$meal['portions']}) melebihi kapasitas dapur ({$dapur->capacity_portions}).");
+                        }
+                    }
+                }
+            }
+
             // Clear old schedules for this period if updating
             MenuSchedule::where('menu_period_id', $mp->id)->delete();
 
@@ -196,6 +230,12 @@ class MenuPeriodForm extends Component
         $dapurs = $user->dapur_id
             ? Dapur::where('id', $user->dapur_id)->get()
             : Dapur::orderBy('name')->get();
+
+        // Auto-select if only one dapur and none selected (for HQ users)
+        if (! $this->dapur_id && $dapurs->count() === 1) {
+            $this->dapur_id = $dapurs->first()->id;
+            $this->syncPortions();
+        }
 
         return view('livewire.menu-period-form', [
             'dapurs' => $dapurs,

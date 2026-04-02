@@ -79,7 +79,7 @@ class MenuItemForm extends Component
                 $this->rows[] = [
                     'id' => $bom->id,
                     'material_id' => $bom->material_id,
-                    'quantity' => $bom->quantity_per_portion,
+                    'quantity' => (float) $bom->quantity_per_portion * (int) $this->portion_size,
                     'unit' => $bom->unit,
                 ];
             }
@@ -193,7 +193,7 @@ class MenuItemForm extends Component
 
                 $this->menuItem->boms()->create([
                     'material_id' => $row['material_id'],
-                    'quantity_per_portion' => $row['quantity'],
+                    'quantity_per_portion' => (float) $row['quantity'] / (int) $this->portion_size,
                     'unit' => $material->unit,
                 ]);
             }
