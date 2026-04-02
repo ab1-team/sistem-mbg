@@ -12,6 +12,7 @@ class MaterialTable extends Component
     use WithSmartTable;
 
     public $category = '';
+
     public $dapurId = '';
 
     public function render()
@@ -27,18 +28,18 @@ class MaterialTable extends Component
                 $query->where('category', $this->category);
             })
             ->when($user->dapur_id, function ($query) use ($user) {
-                $query->where(function($q) use ($user) {
+                $query->where(function ($q) use ($user) {
                     $q->whereNull('dapur_id')->orWhere('dapur_id', $user->dapur_id);
                 });
             })
-            ->when(!$user->dapur_id && $this->dapurId, function ($query) {
+            ->when(! $user->dapur_id && $this->dapurId, function ($query) {
                 $query->where('dapur_id', $this->dapurId);
             })
             ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
             ->paginate($this->perPage);
 
-        $dapurs = $user->dapur_id 
-            ? Dapur::where('id', $user->dapur_id)->get() 
+        $dapurs = $user->dapur_id
+            ? Dapur::where('id', $user->dapur_id)->get()
             : Dapur::all();
 
         return view('livewire.material-table', [

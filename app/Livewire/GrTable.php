@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Enums\PoStatus;
+use App\Models\Dapur;
 use App\Models\PurchaseOrder;
 use App\Traits\WithSmartTable;
 use Livewire\Component;
@@ -33,17 +34,17 @@ class GrTable extends Component
         }
 
         $purchaseOrders = $query->when($this->search, function ($query) {
-                $query->where('po_number', 'like', '%'.$this->search.'%')
-                    ->orWhereHas('dapur', function ($q) {
-                        $q->where('name', 'like', '%'.$this->search.'%');
-                    });
-            })
+            $query->where('po_number', 'like', '%'.$this->search.'%')
+                ->orWhereHas('dapur', function ($q) {
+                    $q->where('name', 'like', '%'.$this->search.'%');
+                });
+        })
             ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
             ->paginate($this->perPage);
 
-        $dapurs = $user->dapur_id 
-            ? \App\Models\Dapur::where('id', $user->dapur_id)->get() 
-            : \App\Models\Dapur::orderBy('name')->get();
+        $dapurs = $user->dapur_id
+            ? Dapur::where('id', $user->dapur_id)->get()
+            : Dapur::orderBy('name')->get();
 
         return view('livewire.gr-table', [
             'purchaseOrders' => $purchaseOrders,

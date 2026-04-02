@@ -64,7 +64,7 @@ class RevenueForm extends Component
 
         if ($this->revenueId) {
             $revenue = Revenue::findOrFail($this->revenueId);
-            
+
             // Cek akses simpan (Double check)
             if ($user->dapur_id && $revenue->dapur_id !== $user->dapur_id) {
                 return redirect()->route('finance.revenues.index')->with('error', 'Akses ditolak.');
@@ -93,8 +93,8 @@ class RevenueForm extends Component
     public function render()
     {
         $user = auth()->user();
-        $dapurs = $user->dapur_id 
-            ? Dapur::where('id', $user->dapur_id)->get() 
+        $dapurs = $user->dapur_id
+            ? Dapur::where('id', $user->dapur_id)->get()
             : Dapur::orderBy('name')->get();
 
         return view('livewire.finance.revenue-form', [

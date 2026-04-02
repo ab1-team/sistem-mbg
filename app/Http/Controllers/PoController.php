@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PoStatus;
+use App\Models\Dapur;
 use App\Models\MenuPeriod;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
@@ -24,7 +25,7 @@ class PoController extends Controller
         }
 
         $purchaseOrders = $query->paginate(10);
-        $dapurs = $user->dapur_id ? collect([$user->dapur]) : \App\Models\Dapur::orderBy('name')->get();
+        $dapurs = $user->dapur_id ? collect([$user->dapur]) : Dapur::orderBy('name')->get();
 
         return view('purchase-orders.index', compact('purchaseOrders', 'dapurs'));
     }

@@ -75,8 +75,8 @@ class MaterialController extends Controller
     {
         $user = auth()->user();
         $categories = ['sayuran', 'daging', 'ikan', 'bumbu', 'sembako', 'minuman', 'lainnya'];
-        $dapurs = $user->dapur_id 
-            ? Dapur::where('id', $user->dapur_id)->get() 
+        $dapurs = $user->dapur_id
+            ? Dapur::where('id', $user->dapur_id)->get()
             : Dapur::orderBy('name')->get();
 
         return view('materials.create', compact('categories', 'dapurs'));
@@ -128,15 +128,15 @@ class MaterialController extends Controller
     public function edit(Material $material)
     {
         $user = auth()->user();
-        
+
         // Cek akses: Kepala dapur hanya bisa edit bahan di dapurnya sendiri atau bahan global
         if ($user->dapur_id && $material->dapur_id && $material->dapur_id !== $user->dapur_id) {
             return redirect()->route('materials.index')->with('error', 'Anda tidak memiliki akses ke bahan ini.');
         }
 
         $categories = ['sayuran', 'daging', 'ikan', 'bumbu', 'sembako', 'minuman', 'lainnya'];
-        $dapurs = $user->dapur_id 
-            ? Dapur::where('id', $user->dapur_id)->get() 
+        $dapurs = $user->dapur_id
+            ? Dapur::where('id', $user->dapur_id)->get()
             : Dapur::orderBy('name')->get();
 
         return view('materials.edit', compact('material', 'categories', 'dapurs'));

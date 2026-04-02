@@ -115,8 +115,8 @@ class ExpenseForm extends Component
     public function render()
     {
         $user = auth()->user();
-        $dapurs = $user->dapur_id 
-            ? Dapur::where('id', $user->dapur_id)->get() 
+        $dapurs = $user->dapur_id
+            ? Dapur::where('id', $user->dapur_id)->get()
             : Dapur::orderBy('name')->get();
 
         return view('livewire.finance.expense-form', [

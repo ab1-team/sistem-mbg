@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Dapur;
 use App\Models\MenuPeriod;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -17,6 +18,7 @@ class MenuPeriodTable extends Component
     public $sortAsc = false;
 
     public $status = '';
+
     public $dapurId = '';
 
     public function sortBy($field)
@@ -33,7 +35,7 @@ class MenuPeriodTable extends Component
     public function render()
     {
         $user = auth()->user();
-        
+
         $query = MenuPeriod::with(['dapur', 'period', 'creator'])
             ->where('title', 'like', '%'.$this->search.'%');
 
@@ -50,9 +52,9 @@ class MenuPeriodTable extends Component
         $menuPeriods = $query->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
             ->paginate(10);
 
-        $dapurs = $user->dapur_id 
-            ? \App\Models\Dapur::where('id', $user->dapur_id)->get() 
-            : \App\Models\Dapur::orderBy('name')->get();
+        $dapurs = $user->dapur_id
+            ? Dapur::where('id', $user->dapur_id)->get()
+            : Dapur::orderBy('name')->get();
 
         return view('livewire.menu-period-table', [
             'menuPeriods' => $menuPeriods,

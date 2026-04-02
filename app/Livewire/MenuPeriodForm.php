@@ -51,7 +51,7 @@ class MenuPeriodForm extends Component
         } else {
             // Default dapur_id dari user jika ada
             $this->dapur_id = $user->dapur_id;
-            
+
             if ($this->period_id) {
                 // Support generation from query string
                 $period = Period::find($this->period_id);
@@ -193,8 +193,8 @@ class MenuPeriodForm extends Component
     public function render()
     {
         $user = auth()->user();
-        $dapurs = $user->dapur_id 
-            ? Dapur::where('id', $user->dapur_id)->get() 
+        $dapurs = $user->dapur_id
+            ? Dapur::where('id', $user->dapur_id)->get()
             : Dapur::orderBy('name')->get();
 
         return view('livewire.menu-period-form', [

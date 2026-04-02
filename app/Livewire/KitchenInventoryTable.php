@@ -18,7 +18,7 @@ class KitchenInventoryTable extends Component
     public function mount($dapur_id = null)
     {
         $user = auth()->user();
-        
+
         // Force dapur_id jika user terikat dapur tertentu
         if ($user->dapur_id) {
             $this->dapur_id = $user->dapur_id;
@@ -48,8 +48,8 @@ class KitchenInventoryTable extends Component
             ->orderBy($this->sortField === 'created_at' ? 'id' : $this->sortField, $this->sortAsc ? 'asc' : 'desc')
             ->paginate($this->perPage);
 
-        $dapurs = $user->dapur_id 
-            ? Dapur::where('id', $user->dapur_id)->get() 
+        $dapurs = $user->dapur_id
+            ? Dapur::where('id', $user->dapur_id)->get()
             : Dapur::orderBy('name')->get();
 
         return view('livewire.kitchen-inventory-table', [

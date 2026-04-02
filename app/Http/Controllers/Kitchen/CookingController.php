@@ -34,11 +34,11 @@ class CookingController extends Controller
         }
 
         // Fallback jika belum ada yang terpilih
-        if (!isset($dapur) || !$dapur) {
+        if (! isset($dapur) || ! $dapur) {
             $dapur = Dapur::first();
         }
 
-        if (!$dapur) {
+        if (! $dapur) {
             return redirect()->back()->with('error', 'Dapur tidak ditemukan.');
         }
 
@@ -120,11 +120,11 @@ class CookingController extends Controller
         }
 
         // Fallback jika belum ada yang terpilih
-        if (!isset($dapur) || !$dapur) {
+        if (! isset($dapur) || ! $dapur) {
             $dapur = Dapur::first();
         }
 
-        if (!$dapur) {
+        if (! $dapur) {
             return redirect()->back()->with('error', 'Dapur tidak ditemukan.');
         }
 
