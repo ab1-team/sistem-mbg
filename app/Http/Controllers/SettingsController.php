@@ -11,26 +11,28 @@ class SettingsController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         // Context 1: Kitchen Settings
         if ($user->dapur_id) {
             $dapur = Dapur::findOrFail($user->dapur_id);
+
             return view('settings.index', [
                 'type' => 'kitchen',
                 'model' => $dapur,
                 'title' => 'Pengaturan Dapur',
-                'subtitle' => 'Kelola informasi operasional unit dapur Anda.'
+                'subtitle' => 'Kelola informasi operasional unit dapur Anda.',
             ]);
         }
 
         // Context 2: Yayasan (Tenant) Settings
         if ($user->hasAnyRole(['admin_yayasan', 'superadmin'])) {
             $tenant = tenant();
+
             return view('settings.index', [
                 'type' => 'yayasan',
                 'model' => $tenant,
                 'title' => 'Pengaturan Yayasan',
-                'subtitle' => 'Kelola identitas dan konfigurasi global Yayasan.'
+                'subtitle' => 'Kelola identitas dan konfigurasi global Yayasan.',
             ]);
         }
 
@@ -51,6 +53,7 @@ class SettingsController extends Controller
                 'capacity_portions' => 'nullable|integer',
             ]);
             $dapur->update($validated);
+
             return back()->with('status', 'settings-updated');
         }
 
@@ -62,8 +65,9 @@ class SettingsController extends Controller
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string',
             ]);
-            
+
             $tenant->update($validated);
+
             return back()->with('status', 'settings-updated');
         }
 
