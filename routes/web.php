@@ -15,7 +15,9 @@ Route::get('/', function () {
 })->name('landing');
 
 // Admin Landlord Portal - Only for Central
-Route::prefix('admin')->name('admin.')->middleware(['web'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['web', 'auth.central'])->group(function () {
     Route::get('/yayasans', [YayasanController::class, 'index'])->name('yayasans.index');
     Route::post('/yayasans', [YayasanController::class, 'store'])->name('yayasans.store');
+    Route::delete('/yayasans/{tenant}', [YayasanController::class, 'destroy'])->name('yayasans.destroy');
+    Route::patch('/yayasans/{tenant}/toggle', [YayasanController::class, 'toggleStatus'])->name('yayasans.toggle');
 });

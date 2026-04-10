@@ -69,4 +69,35 @@ class YayasanController extends Controller
 
         return redirect()->route('admin.yayasans.index')->with('success', "Yayasan {$request->name} berhasil dibuat!");
     }
+
+    /**
+     * Delete a Yayasan.
+     */
+    public function destroy(Tenant $tenant)
+    {
+        if (! in_array(request()->getHost(), config('tenancy.central_domains', []))) {
+            abort(404);
+        }
+
+        $name = $tenant->name;
+        $tenant->delete();
+
+        return redirect()->route('admin.yayasans.index')->with('success', "Yayasan {$name} berhasil dihapus beserta database-nya.");
+    }
+
+    /**
+     * Toggle Yayasan active status.
+     */
+    public function toggleStatus(Tenant $tenant)
+    {
+        if (! in_array(request()->getHost(), config('tenancy.central_domains', []))) {
+            abort(404);
+        }
+
+        $tenant->update([
+            'is_active' => ! ($tenant->is_active ?? true),
+        ]);
+
+        return redirect()->route('admin.yayasans.index')->with('success', "Status Yayasan {$tenant->name} berhasil diperbarui.");
+    }
 }

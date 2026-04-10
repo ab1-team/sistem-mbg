@@ -1,5 +1,5 @@
 <x-admin-layout>
-    <div class="max-w-4xl mx-auto py-12">
+    <div class="max-w-4xl mx-auto py-12" x-data="{ deleteUrl: '', deleteName: '' }">
         <div class="flex items-center justify-between mb-12">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">SaaS Command Center</h1>
@@ -43,9 +43,24 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span
-                            class="px-3 py-1 rounded-full text-[10px] font-bold bg-slate-50 text-slate-400 uppercase">Active</span>
-                        <x-btn variant="ghost" size="sm">Manage</x-btn>
+                        <form action="{{ route('admin.yayasans.toggle', $yayasan) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit"
+                                class="px-3 py-1 rounded-full text-[10px] font-bold uppercase transition-all {{ $yayasan->is_active ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-rose-50 text-rose-600 hover:bg-rose-100' }}">
+                                {{ $yayasan->is_active ? 'Active' : 'Inactive' }}
+                            </button>
+                        </form>
+
+                        <x-btn href="http://{{ $yayasan->domains->first()->domain }}" target="_blank" variant="secondary"
+                            size="sm">Manage</x-btn>
+                        <x-btn variant="ghost" size="sm" class="text-red-500 hover:text-red-700 hover:bg-red-50"
+                            @click="deleteUrl = '{{ route('admin.yayasans.destroy', $yayasan) }}'; deleteName = '{{ $yayasan->name }}'; $dispatch('open-modal', 'confirm-deletion')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </x-btn>
                     </div>
                 </div>
             @empty
@@ -88,6 +103,39 @@
                         </svg>
                         Memproses...
                     </span>
+                </button>
+            </div>
+        </form>
+    </x-dialog>
+
+    <!-- Delete Confirmation -->
+    <x-dialog name="confirm-deletion" title="Konfirmasi Penghapusan" maxWidth="md">
+        <form method="post" :action="deleteUrl" class="space-y-4">
+            @csrf
+            @method('DELETE')
+
+            <div class="text-center">
+                <div class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-slate-900">Push the Button?</h2>
+                <p class="text-sm text-slate-500 mt-2">
+                    Apakah Anda yakin ingin menghapus <span class="font-bold text-slate-900" x-text="deleteName"></span>?
+                    Tindakan ini akan menghapus seluruh data dan database yayasan tersebut secara permanen.
+                </p>
+            </div>
+
+            <div class="mt-8 flex justify-end gap-3">
+                <button type="button" @click="open = false"
+                    class="px-6 py-2.5 rounded-2xl bg-slate-50 text-slate-500 font-bold text-[12px] hover:bg-slate-100 transition-all">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="px-8 py-2.5 rounded-2xl bg-red-600 text-white font-bold text-[12px] hover:bg-red-700 transition-all">
+                    Ya, Hapus Permanen
                 </button>
             </div>
         </form>
