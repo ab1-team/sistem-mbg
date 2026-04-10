@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Material;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
@@ -19,8 +20,7 @@ class PoItemsImport implements ToModel, WithHeadingRow, WithValidation
     }
 
     /**
-     * @param array $row
-     * @return \Illuminate\Database\Eloquent\Model|null
+     * @return Model|null
      */
     public function model(array $row)
     {
@@ -31,7 +31,7 @@ class PoItemsImport implements ToModel, WithHeadingRow, WithValidation
 
         $material = Material::where('code', $row['kode_material'])->first();
 
-        if (!$material) {
+        if (! $material) {
             throw new \Exception("Material dengan kode '{$row['kode_material']}' tidak ditemukan.");
         }
 
@@ -43,17 +43,18 @@ class PoItemsImport implements ToModel, WithHeadingRow, WithValidation
         if ($item) {
             $item->increment('quantity_to_order', $row['jumlah']);
             $item->increment('quantity_needed', $row['jumlah']);
+
             return null; // Return null because we modified existing model
         }
 
         return new PurchaseOrderItem([
-            'purchase_order_id'    => $this->purchaseOrder->id,
-            'material_id'         => $material->id,
-            'quantity_needed'     => $row['jumlah'],
-            'quantity_to_order'   => $row['jumlah'],
-            'unit'                => $material->unit,
+            'purchase_order_id' => $this->purchaseOrder->id,
+            'material_id' => $material->id,
+            'quantity_needed' => $row['jumlah'],
+            'quantity_to_order' => $row['jumlah'],
+            'unit' => $material->unit,
             'estimated_unit_price' => $material->price_estimate ?? 0,
-            'item_status'         => 'pending',
+            'item_status' => 'pending',
         ]);
     }
 
@@ -61,7 +62,7 @@ class PoItemsImport implements ToModel, WithHeadingRow, WithValidation
     {
         return [
             'kode_material' => 'required',
-            'jumlah'        => 'required|numeric|min:0.001',
+            'jumlah' => 'required|numeric|min:0.001',
         ];
     }
 }

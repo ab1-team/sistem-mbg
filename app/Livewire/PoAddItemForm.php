@@ -11,11 +11,17 @@ use Livewire\Component;
 class PoAddItemForm extends Component
 {
     public ?PurchaseOrder $purchaseOrder = null;
+
     public $isOpen = false;
+
     public $search = '';
+
     public $selectedMaterialId = '';
+
     public $quantity = 1;
+
     public $unit_price = 0;
+
     public $unit = '';
 
     protected $rules = [
@@ -72,7 +78,7 @@ class PoAddItemForm extends Component
         }
 
         $this->purchaseOrder->recalculateTotal();
-        
+
         $this->dispatch('item-added');
         $this->isOpen = false;
         session()->flash('success', 'Barang berhasil ditambahkan ke PO.');
@@ -82,23 +88,23 @@ class PoAddItemForm extends Component
     {
         // Get materials available for this kitchen or global ones
         $materialsQuery = Material::where('is_active', true)
-            ->where(function($q) {
+            ->where(function ($q) {
                 if ($this->purchaseOrder) {
                     $q->whereNull('dapur_id')
-                      ->orWhere('dapur_id', $this->purchaseOrder->dapur_id);
+                        ->orWhere('dapur_id', $this->purchaseOrder->dapur_id);
                 }
             })
             ->orderBy('name');
 
-        $materials = $materialsQuery->get()->map(function($m) {
+        $materials = $materialsQuery->get()->map(function ($m) {
             return [
                 'value' => $m->id,
-                'label' => $m->name . " ({$m->code}) - {$m->unit}"
+                'label' => $m->name." ({$m->code}) - {$m->unit}",
             ];
         })->toArray();
 
         return view('livewire.po-add-item-form', [
-            'materialOptions' => $materials
+            'materialOptions' => $materials,
         ]);
     }
 }

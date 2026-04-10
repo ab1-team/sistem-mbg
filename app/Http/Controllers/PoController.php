@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PoStatus;
+use App\Imports\PoItemsImport;
 use App\Models\Dapur;
 use App\Models\MenuPeriod;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
-use App\Imports\PoItemsImport;
-use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PoController extends Controller
 {
@@ -37,7 +37,7 @@ class PoController extends Controller
     {
         $user = auth()->user();
         $dapurs = $user->dapur_id ? collect([$user->dapur]) : Dapur::where('is_active', true)->orderBy('name')->get();
-        
+
         return view('purchase-orders.create', compact('dapurs'));
     }
 
@@ -87,7 +87,7 @@ class PoController extends Controller
         }
 
         // Audit Trail Yayasan Review (Fase 3.3)
-        // Hanya ubah ke DIREVIEW_YAYASAN jika statusnya DIKIRIM_KE_YAYASAN (bukan DRAF) 
+        // Hanya ubah ke DIREVIEW_YAYASAN jika statusnya DIKIRIM_KE_YAYASAN (bukan DRAF)
         // dan yang membuka adalah admin/superadmin
         if ($purchaseOrder->status === PoStatus::DIKIRIM_KE_YAYASAN && auth()->user()->hasRole(['admin_yayasan', 'superadmin'])) {
             $purchaseOrder->changeStatus(PoStatus::DIREVIEW_YAYASAN, 'Mulai proses review Yayasan');
@@ -267,7 +267,7 @@ class PoController extends Controller
 
         try {
             Excel::import(new PoItemsImport($purchaseOrder), $request->file('file'));
-            
+
             // Recalculate total after import
             $purchaseOrder->recalculateTotal();
 
@@ -275,7 +275,7 @@ class PoController extends Controller
                 ->with('success', 'Item berhasil di-import ke Purchase Order.');
         } catch (\Exception $e) {
             return redirect()->route('purchase-orders.show', $purchaseOrder)
-                ->with('error', 'Gagal mengimport item: ' . $e->getMessage());
+                ->with('error', 'Gagal mengimport item: '.$e->getMessage());
         }
     }
 
@@ -294,15 +294,15 @@ class PoController extends Controller
         return response()->stream(function () use ($columns) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
-            
+
             // Instructions
             fputcsv($file, ['--- PETUNJUK ---', '', '']);
             fputcsv($file, ['kode_material wajib diisi dan harus terdaftar di sistem', '', '']);
             fputcsv($file, ['jumlah harus angka positif', '', '']);
-            
+
             // Example row
             fputcsv($file, ['BHR-001', '10.5', 'Catatan pesanan']);
-            
+
             fclose($file);
         }, 200, $headers);
     }
