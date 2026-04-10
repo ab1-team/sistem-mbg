@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CentralAdminAuth;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -20,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
-            'auth.central' => \App\Http\Middleware\CentralAdminAuth::class,
+            'auth.central' => CentralAdminAuth::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
