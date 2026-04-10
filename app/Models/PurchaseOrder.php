@@ -74,6 +74,15 @@ class PurchaseOrder extends Model
         return $this;
     }
 
+    /**
+     * Recalculate total estimated cost based on items.
+     */
+    public function recalculateTotal(): void
+    {
+        $total = $this->items()->sum(\DB::raw('quantity_to_order * estimated_unit_price'));
+        $this->update(['total_estimated_cost' => $total]);
+    }
+
     public function dapur()
     {
         return $this->belongsTo(Dapur::class);

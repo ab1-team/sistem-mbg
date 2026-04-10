@@ -7,6 +7,9 @@ use App\Models\Dapur;
 use App\Models\MenuPeriod;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Imports\PoItemsImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -30,6 +33,50 @@ class PoController extends Controller
         return view('purchase-orders.index', compact('purchaseOrders', 'dapurs'));
     }
 
+    public function create()
+    {
+        $user = auth()->user();
+        $dapurs = $user->dapur_id ? collect([$user->dapur]) : Dapur::where('is_active', true)->orderBy('name')->get();
+        
+        return view('purchase-orders.create', compact('dapurs'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'dapur_id' => 'required|exists:dapurs,id',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $user = auth()->user();
+        if ($user->dapur_id && $request->dapur_id != $user->dapur_id) {
+            return back()->with('error', 'Anda hanya dapat membuat PO untuk dapur Anda sendiri.');
+        }
+
+        $poNumber = 'PO/'.now()->format('Y/m').'/'.str_pad(PurchaseOrder::count() + 1, 3, '0', STR_PAD_LEFT);
+
+        $purchaseOrder = PurchaseOrder::create([
+            'po_number' => $poNumber,
+            'dapur_id' => $request->dapur_id,
+            'status' => PoStatus::DRAF,
+            'notes' => $request->notes,
+            'created_by' => auth()->id(),
+            'total_estimated_cost' => 0,
+        ]);
+
+        // Catat histori awal
+        $purchaseOrder->statusHistory()->create([
+            'from_status' => null,
+            'to_status' => PoStatus::DRAF,
+            'changed_by' => auth()->id(),
+            'ip_address' => request()->ip(),
+            'reason' => 'Pembuatan PO manual',
+        ]);
+
+        return redirect()->route('purchase-orders.show', $purchaseOrder)
+            ->with('success', "PO {$poNumber} berhasil dibuat secara manual.");
+    }
+
     public function show(PurchaseOrder $purchaseOrder)
     {
         $user = auth()->user();
@@ -40,8 +87,9 @@ class PoController extends Controller
         }
 
         // Audit Trail Yayasan Review (Fase 3.3)
-        // Jika status draf/dikirim, ubah ke DIREVIEW_YAYASAN saat dibuka Admin
-        if (in_array($purchaseOrder->status, [PoStatus::DRAF, PoStatus::DIKIRIM_KE_YAYASAN])) {
+        // Hanya ubah ke DIREVIEW_YAYASAN jika statusnya DIKIRIM_KE_YAYASAN (bukan DRAF) 
+        // dan yang membuka adalah admin/superadmin
+        if ($purchaseOrder->status === PoStatus::DIKIRIM_KE_YAYASAN && auth()->user()->hasRole(['admin_yayasan', 'superadmin'])) {
             $purchaseOrder->changeStatus(PoStatus::DIREVIEW_YAYASAN, 'Mulai proses review Yayasan');
         }
 
@@ -206,5 +254,56 @@ class PoController extends Controller
 
         return redirect()->route('purchase-orders.show', $purchaseOrder)
             ->with('success', 'Data PO berhasil diperbarui.');
+    }
+
+    /**
+     * Import items from excel/csv to a specific PO.
+     */
+    public function importItems(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        try {
+            Excel::import(new PoItemsImport($purchaseOrder), $request->file('file'));
+            
+            // Recalculate total after import
+            $purchaseOrder->recalculateTotal();
+
+            return redirect()->route('purchase-orders.show', $purchaseOrder)
+                ->with('success', 'Item berhasil di-import ke Purchase Order.');
+        } catch (\Exception $e) {
+            return redirect()->route('purchase-orders.show', $purchaseOrder)
+                ->with('error', 'Gagal mengimport item: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Download template for PO item import.
+     */
+    public function downloadTemplate(): StreamedResponse
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="template_item_po.csv"',
+        ];
+
+        $columns = ['kode_material', 'jumlah', 'catatan'];
+
+        return response()->stream(function () use ($columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            
+            // Instructions
+            fputcsv($file, ['--- PETUNJUK ---', '', '']);
+            fputcsv($file, ['kode_material wajib diisi dan harus terdaftar di sistem', '', '']);
+            fputcsv($file, ['jumlah harus angka positif', '', '']);
+            
+            // Example row
+            fputcsv($file, ['BHR-001', '10.5', 'Catatan pesanan']);
+            
+            fclose($file);
+        }, 200, $headers);
     }
 }

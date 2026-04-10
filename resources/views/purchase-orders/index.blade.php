@@ -5,8 +5,8 @@
             <p class="text-[13px] text-slate-500 font-medium mt-2">Daftar pesanan bahan baku ke supplier.</p>
         </div>
 
-        @if (count($dapurs) > 1)
-            <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3">
+            @if (count($dapurs) > 1)
                 <form action="{{ route('purchase-orders.index') }}" method="GET" class="flex items-center gap-2">
                     <select name="dapur_id" onchange="this.form.submit()"
                         class="text-[13px] border-slate-200 rounded-xl focus:ring-emerald-500/20 focus:border-emerald-500 transition-all bg-white text-slate-700 px-4 py-2 font-bold shadow-sm min-w-[200px]">
@@ -18,8 +18,17 @@
                         @endforeach
                     </select>
                 </form>
-            </div>
-        @endif
+            @endif
+
+            @if (auth()->user()->hasRole(['admin', 'superadmin', 'logistik']))
+                <x-btn href="{{ route('purchase-orders.create') }}" class="bg-emerald-600 hover:bg-emerald-700 text-white">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path d="M12 4v16m8-8H4" />
+                    </svg>
+                    Buat PO Manual
+                </x-btn>
+            @endif
+        </div>
     </div>
 
     <x-card :padding="false" class="overflow-hidden">

@@ -17,7 +17,7 @@
             @endif
 
             @if ($purchaseOrder->status->value !== 'dibatalkan' && $purchaseOrder->status->value !== 'selesai')
-                <x-btn @click="showCancelModal = true" variant="secondary"
+                <x-btn @click="$dispatch('open-cancel-modal')" variant="secondary"
                     class="border-red-200! text-red-600! hover:bg-red-50!">
                     Batalkan PO
                 </x-btn>
@@ -69,7 +69,7 @@
         </x-slot>
     </x-page-header>
 
-    <div x-data="{ showCancelModal: false }">
+    <div x-data="{ showCancelModal: false }" @open-cancel-modal.window="showCancelModal = true">
         {{-- MODAL PEMBATALAN --}}
         <div x-show="showCancelModal"
             class="fixed inset-0 z-1000 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
@@ -129,15 +129,21 @@
                     <x-show-field label="Unit Dapur" :value="ucwords($purchaseOrder->dapur->name)" />
 
                     <x-show-field label="Tujuan Rencana Menu">
-                        <a href="{{ route('menu-periods.show', $purchaseOrder->menuPeriod) }}"
-                            class="text-[13px] font-bold text-emerald-700 hover:underline">
-                            {{ $purchaseOrder->menuPeriod->title }}
-                        </a>
-                        <span
-                            class="ml-2 px-2.5 py-1 rounded-full text-[11px] font-bold border {{ $purchaseOrder->status->color() }} whitespace-nowrap">
-                            {{ $purchaseOrder->status->label() }}
-                        </span>
-                        <p class="text-[11px] text-slate-400 mt-0.5">{{ $purchaseOrder->menuPeriod->period->name }}</p>
+                        @if ($purchaseOrder->menuPeriod)
+                            <a href="{{ route('menu-periods.show', $purchaseOrder->menuPeriod) }}"
+                                class="text-[13px] font-bold text-emerald-700 hover:underline">
+                                {{ $purchaseOrder->menuPeriod->title }}
+                            </a>
+                            <p class="text-[11px] text-slate-400 mt-0.5">{{ $purchaseOrder->menuPeriod->period->name }}</p>
+                        @else
+                            <p class="text-[13px] font-bold text-slate-500 italic">Manual (Tanpa Rencana Menu)</p>
+                        @endif
+                        <div class="mt-2">
+                            <span
+                                class="px-2.5 py-1 rounded-full text-[11px] font-bold border {{ $purchaseOrder->status->color() }} whitespace-nowrap">
+                                {{ $purchaseOrder->status->label() }}
+                            </span>
+                        </div>
                     </x-show-field>
 
                     @if ($purchaseOrder->notes)
@@ -245,4 +251,73 @@
     </div>
 
     <livewire:po-assignment-form />
+    <livewire:po-add-item-form />
+
+    {{-- MODAL IMPORT PO --}}
+    <div x-data="{ open: false, poId: null }" 
+         @open-import-po.window="open = true; poId = $event.detail.poId"
+         x-show="open" 
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+         style="display: none;"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        
+        <div class="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                <h3 class="text-base font-bold text-slate-900 tracking-tight">Import Bahan Baku</h3>
+                <button @click="open = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form :action="`/purchase-orders/${poId}/import`" method="POST" enctype="multipart/form-data" class="p-6">
+                @csrf
+                
+                {{-- Centered Upload Area --}}
+                <div class="border border-dashed border-slate-200 rounded-2xl p-8 flex flex-col items-center justify-center text-center">
+                    <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 mb-4 border border-slate-100 shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                    </div>
+                    
+                    <h4 class="text-[14px] font-bold text-slate-800 mb-1">Pilih File Excel/CSV</h4>
+                    <p class="text-[12px] text-slate-500 mb-5">Maksimal ukuran file 5MB</p>
+                    
+                    <div class="relative max-w-xs mx-auto">
+                        <input type="file" name="file" id="file" accept=".xlsx,.xls,.csv" required
+                            class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition-colors cursor-pointer" />
+                    </div>
+                </div>
+
+                {{-- Alert Note --}}
+                <div class="mt-4 p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl flex gap-3">
+                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4m0-4h.01" />
+                    </svg>
+                    <div class="text-[12px] text-emerald-800 leading-snug">
+                        Gunakan template kami untuk memastikan format data benar.
+                        <a href="{{ route('purchase-orders.download-template') }}" class="font-bold underline hover:text-emerald-900 ml-1">Unduh Template CSV</a>
+                    </div>
+                </div>
+
+                {{-- Action Buttons --}}
+                <div class="mt-6 flex justify-end gap-3">
+                    <button type="button" @click="open = false" class="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors text-[13px]">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl font-bold text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:ring-emerald-100 transition-all text-[13px]">
+                        Mulai Import
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </x-app-layout>

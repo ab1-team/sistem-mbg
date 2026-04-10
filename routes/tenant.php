@@ -84,6 +84,8 @@ Route::middleware([
         Route::resource('menu-periods', MenuPeriodController::class);
 
         // SCM - Purchase Orders
+        Route::get('purchase-orders/download-template', [PoController::class, 'downloadTemplate'])->name('purchase-orders.download-template');
+        Route::post('purchase-orders/{purchaseOrder}/import', [PoController::class, 'importItems'])->name('purchase-orders.import');
         Route::post('menu-periods/{menuPeriod}/generate-po', [PoController::class, 'generateFromMenu'])->name('menu-periods.generate-po');
         Route::post('purchase-orders/{purchaseOrder}/submit-to-supplier', [PoController::class, 'submitToSupplier'])->name('purchase-orders.submit-to-supplier');
         Route::post('purchase-orders/{purchaseOrder}/cancel', [PoController::class, 'cancel'])->name('purchase-orders.cancel');
