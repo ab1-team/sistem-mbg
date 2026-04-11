@@ -15,8 +15,8 @@ class CentralAdminAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = env('CENTRAL_ADMIN_USER', 'admin');
-        $pass = env('CENTRAL_ADMIN_PASSWORD', 'password');
+        $user = config('auth.central.user');
+        $pass = config('auth.central.password');
 
         if ($request->getUser() !== $user || $request->getPassword() !== $pass) {
             return response('Unauthorized.', 401, [
