@@ -130,7 +130,7 @@ class ExpenseForm extends Component
                 'peralatan' => 'Peralatan & Perlengkapan',
                 'bahan_baku' => 'Bahan Baku (Manual)',
                 'lain_lain' => 'Lain-lain',
-            ])->map(fn($label, $value) => ['value' => $value, 'label' => $label])->values(),
+            ])->map(fn ($label, $value) => ['value' => $value, 'label' => $label])->values(),
         ]);
     }
 }
