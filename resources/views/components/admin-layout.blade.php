@@ -16,6 +16,7 @@
 
     <!-- Scripts & Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 
 <body class="font-sans antialiased text-slate-800 bg-white min-h-screen">
@@ -55,6 +56,7 @@
         <div class="absolute -top-40 -left-40 w-120 h-120 bg-emerald-900/5 rounded-full blur-[80px] z-[-1]"></div>
         <div class="absolute -bottom-40 -right-40 w-100 h-100 bg-slate-200/40 rounded-full blur-[60px] z-[-1]"></div>
     </div>
+    @livewireScripts
 </body>
 
 </html>

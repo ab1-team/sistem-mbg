@@ -13,16 +13,5 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@mbg.yayasan'],
-            [
-                'name' => 'Super Admin',
-                'password' => bcrypt('password'),
-                'uuid' => (string) Str::uuid(),
-                'is_active' => true,
-            ]
-        );
-
-        $admin->assignRole('superadmin');
     }
 }
