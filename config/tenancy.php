@@ -28,6 +28,7 @@ return [
         '127.0.0.1',
         'localhost',
         'yayasan-mbg.test',
+        'sim-sppg.com',
     ],
 
     /**
