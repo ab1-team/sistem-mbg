@@ -66,7 +66,7 @@
     {{-- SCHEDULING GRID --}}
     @if (!empty($schedules))
         <div class="space-y-4">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between px-2">
                 <h3 class="text-[18px] font-black text-slate-900 tracking-tight">Jadwal Makanan Harian</h3>
                 <div class="flex items-center gap-3">
                     @if ($dapur_id)
@@ -219,7 +219,7 @@
     {{-- STICKY FOOTER --}}
     <div
         class="fixed bottom-0 left-0 right-0 lg:left-64 bg-white/80 backdrop-blur-lg border-t border-slate-100 p-4 z-40">
-        <div class="max-w-[1200px] mx-auto flex items-center justify-between">
+        <x-container class="!space-y-0 !pb-0 flex items-center justify-between">
             <div class="hidden sm:block">
                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status Rencana</p>
                 <p class="text-[13px] font-black text-slate-900 tracking-tight">Draf Perencanaan</p>
@@ -236,6 +236,6 @@
                     Simpan Perencanaan
                 </x-btn>
             </div>
-        </div>
+        </x-container>
     </div>
 </div>

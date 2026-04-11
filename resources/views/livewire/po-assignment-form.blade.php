@@ -5,15 +5,15 @@
      style="display: none;">
     
     {{-- BACKDROP --}}
-    <div x-show="show" 
-         x-transition:enter="ease-in-out duration-500" 
-         x-transition:enter-start="opacity-0" 
-         x-transition:enter-end="opacity-100" 
-         x-transition:leave="ease-in-out duration-500" 
-         x-transition:leave-start="opacity-100" 
-         x-transition:leave-end="opacity-0" 
-         class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" 
-         @click="show = false"></div>
+     <div x-show="show" 
+          x-transition:enter="ease-in-out duration-500" 
+          x-transition:enter-start="opacity-0" 
+          x-transition:enter-end="opacity-100" 
+          x-transition:leave="ease-in-out duration-500" 
+          x-transition:leave-start="opacity-100" 
+          x-transition:leave-end="opacity-0" 
+          class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" 
+          @click="show = false"></div>
 
     <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
         {{-- PANEL --}}
@@ -25,32 +25,34 @@
              x-transition:leave-start="translate-x-0" 
              x-transition:leave-end="translate-x-full" 
              class="relative w-screen max-w-md">
-            
-            <div class="h-full flex flex-col bg-white shadow-2xl overflow-y-scroll scrollbar-hide py-10 px-8">
+                       <div class="h-full flex flex-col bg-white shadow-2xl overflow-y-scroll scroll-smooth scrollbar-hide">
                 {{-- HEADER --}}
-                <div class="mb-10">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-[20px] font-black text-slate-900 tracking-tight">Kelola Supplier</h2>
-                        <button @click="show = false" class="p-2 -mr-2 text-slate-400 hover:text-slate-600 transition-colors">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                <path d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
+                <div class="px-8 py-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/50 sticky top-0 z-10">
+                    <div>
+                        <h3 class="text-[18px] font-black text-slate-900 leading-none">Kelola Alokasi</h3>
+                        <p class="text-[12px] text-slate-500 font-medium mt-1.5 whitespace-nowrap">Distribusi kuantitas pesanan ke supplier.</p>
                     </div>
+                    <button @click="show = false" class="p-2 -mr-2 text-slate-400 hover:text-slate-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="p-8 pb-32">
                     @if($item)
-                        <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 shadow-sm">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <div class="flex items-center gap-4 p-5 bg-emerald-50 rounded-[28px] border border-emerald-100 mb-10">
+                            <div class="w-12 h-12 rounded-2xl bg-white border border-emerald-200 flex items-center justify-center text-emerald-600 shadow-sm shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                 </svg>
                             </div>
-                            <div>
-                                <p class="text-[14px] font-black text-slate-900 leading-none mb-1">{{ ucwords($item->material->name ?? 'Bahan Tidak Diketahui') }}</p>
-                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{{ number_format($item->quantity_to_order, 2) }} {{ $item->unit }}</p>
+                            <div class="min-w-0">
+                                <p class="text-[15px] font-black text-slate-900 leading-none mb-1 truncate">{{ ucwords($item->material->name ?? 'Bahan Tidak Diketahui') }}</p>
+                                <p class="text-[11px] font-bold text-emerald-600 uppercase tracking-widest">{{ number_format($item->quantity_to_order, 2) }} {{ $item->unit }}</p>
                             </div>
                         </div>
                     @endif
-                </div>
 
                 @if($item)
                     {{-- ASSIGNMENT LIST --}}

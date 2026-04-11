@@ -1,13 +1,14 @@
 <x-app-layout title="Edit Dapur">
 
-    <x-page-header
-        title="Edit Dapur"
-        subtitle="Perbarui informasi dapur {{ $dapur->name }}."
-        :back="route('dapurs.index')"
-        back-label="Data Dapur"
-    />
+    <x-container>
+        <x-page-header
+            title="Edit Dapur"
+            subtitle="Perbarui informasi dapur {{ $dapur->name }}."
+            :back="route('dapurs.index')"
+            back-label="Data Dapur"
+        />
 
-    <x-card class="max-w-3xl">
+        <x-card>
         <form action="{{ route('dapurs.update', $dapur) }}" method="POST" class="space-y-6">
             @csrf
             @method('PATCH')
@@ -59,6 +60,6 @@
                 </x-btn>
             </div>
         </form>
-    </x-card>
-
+        </x-card>
+    </x-container>
 </x-app-layout>

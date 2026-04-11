@@ -4,6 +4,8 @@
     'id'       => null,
     'hint'     => null,
     'required' => false,
+    'options'  => [],
+    'placeholder' => 'Pilih...',
 ])
 
 @php $id = $id ?? $name; @endphp
@@ -20,11 +22,17 @@
         name="{{ $name }}"
         {{ $required ? 'required' : '' }}
         {{ $attributes->merge([
-            'class' => 'block w-full bg-slate-50 border border-slate-200 text-slate-900 text-[13px] rounded-xl px-4 py-2.5
+            'class' => 'block w-full bg-slate-50 border border-slate-200 text-slate-900 text-[13px] font-bold rounded-xl px-4 py-2.5
                         focus:bg-white focus:border-green-900 focus:ring-4 focus:ring-green-900/5
                         transition-all outline-none'
         ]) }}
     >
+        @if($placeholder)
+            <option value="" selected disabled>{{ $placeholder }}</option>
+        @endif
+        @foreach($options as $value => $label)
+            <option value="{{ $value }}">{{ $label }}</option>
+        @endforeach
         {{ $slot }}
     </select>
 

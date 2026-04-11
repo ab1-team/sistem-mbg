@@ -1,25 +1,26 @@
 <x-app-layout title="Detail Penagihan">
-    <x-page-header title="{{ $invoice->invoice_number }}"
-        subtitle="Dibuat otomatis pada {{ $invoice->created_at->translatedFormat('d F Y') }} — Status: {{ str_replace('_', ' ', $invoice->status) }}"
-        :back="route('finance.invoices.index')" backLabel="Daftar Invoices">
-        <x-slot:actions>
-            <a href="{{ route('finance.invoices.preview', $invoice) }}" target="_blank">
-                <x-btn variant="secondary">Cetak PDF</x-btn>
-            </a>
+    <x-container>
+        <x-page-header title="{{ $invoice->invoice_number }}"
+            subtitle="Dibuat otomatis pada {{ $invoice->created_at->translatedFormat('d F Y') }} — Status: {{ str_replace('_', ' ', $invoice->status) }}"
+            :back="route('finance.invoices.index')" backLabel="Daftar Invoices">
+            <x-slot:actions>
+                <a href="{{ route('finance.invoices.preview', $invoice) }}" target="_blank">
+                    <x-btn variant="secondary">Cetak PDF</x-btn>
+                </a>
 
-            @if ($invoice->status === 'generated')
-                <form action="{{ route('finance.invoices.verify', $invoice) }}" method="POST">
-                    @csrf
-                    <x-btn type="submit">Verifikasi Tagihan</x-btn>
-                </form>
-            @endif
+                @if ($invoice->status === 'generated')
+                    <form action="{{ route('finance.invoices.verify', $invoice) }}" method="POST">
+                        @csrf
+                        <x-btn type="submit">Verifikasi Tagihan</x-btn>
+                    </form>
+                @endif
 
-            @if ($invoice->status === 'diverifikasi')
-                <x-btn @click="$dispatch('open-modal', 'modal-pay')"
-                    class="bg-green-600 hover:bg-green-700 text-white">Bayar Tagihan</x-btn>
-            @endif
-        </x-slot:actions>
-    </x-page-header>
+                @if ($invoice->status === 'diverifikasi')
+                    <x-btn @click="$dispatch('open-modal', 'modal-pay')"
+                        class="bg-green-600 hover:bg-green-700 text-white">Bayar Tagihan</x-btn>
+                @endif
+            </x-slot:actions>
+        </x-page-header>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {{-- Kiri: Detail Items --}}
@@ -96,7 +97,9 @@
         </div>
     </div>
 
-    {{-- MODAL PEMBAYARAN (Phase 4.3) --}}
+    </x-container>
+
+    {{-- MODAL PEMBAYARAN --}}
     <x-dialog name="modal-pay" title="Catat Pembayaran">
         <form action="{{ route('finance.invoices.pay', $invoice) }}" method="POST" enctype="multipart/form-data">
             @csrf

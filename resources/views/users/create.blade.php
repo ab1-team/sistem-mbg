@@ -1,13 +1,14 @@
 <x-app-layout title="Tambah User">
 
-    <x-page-header
-        title="Tambah Pengguna"
-        subtitle="Buat akun baru dan tetapkan hak aksesnya."
-        :back="route('users.index')"
-        back-label="Pengguna & Akses"
-    />
+    <x-container>
+        <x-page-header
+            title="Tambah Pengguna"
+            subtitle="Buat akun baru dan tetapkan hak aksesnya."
+            :back="route('users.index')"
+            back-label="Pengguna & Akses"
+        />
 
-    <x-card class="max-w-4xl">
+        <x-card>
         <form action="{{ route('users.store') }}" method="POST" class="space-y-6">
             @csrf
 
@@ -74,6 +75,6 @@
                 </div>
             </div>
         </form>
-    </x-card>
-
+        </x-card>
+    </x-container>
 </x-app-layout>

@@ -1,4 +1,4 @@
-<div class="max-w-xl mx-auto space-y-6 pb-20">
+<x-container class="pb-20">
     <x-page-header title="Request Penarikan Dana" subtitle="Cairkan saldo bagi hasil Anda ke rekening terdaftar." />
 
     <x-card title="Rincian Penarikan" subtitle="Saldo akan dikurangi setelah pengajuan disetujui admin.">
@@ -55,4 +55,4 @@
             Proses verifikasi penarikan biasanya memakan waktu 1-3 hari kerja. Dana akan ditransfer ke rekening bank yang terdaftar di profil investor Anda.
         </p>
     </x-alert>
-</div>
+</x-container>

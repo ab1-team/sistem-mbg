@@ -1,13 +1,14 @@
 <x-app-layout title="Edit Investor">
 
-    <x-page-header
-        title="Edit Investor"
-        subtitle="Perbarui data identitas dan porsi saham {{ $investor->name }}."
-        :back="route('investors.index')"
-        back-label="Data Investor"
-    />
+    <x-container>
+        <x-page-header
+            title="Edit Investor"
+            subtitle="Perbarui data identitas dan porsi saham {{ $investor->name }}."
+            :back="route('investors.index')"
+            back-label="Data Investor"
+        />
 
-    <x-card class="max-w-4xl">
+        <x-card>
         <form action="{{ route('investors.update', $investor) }}" method="POST" class="space-y-6">
             @csrf
             @method('PATCH')
@@ -43,8 +44,8 @@
             <div class="pt-5 border-t border-slate-50">
                 <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-4">Keuangan & Rekening</p>
                 <div class="grid grid-cols-3 gap-5">
-                    <x-form-input label="Tanggal Bergabung" name="join_date" type="date" :value="old('join_date', $investor->join_date->format('Y-m-d'))" required />
-                    <x-form-input label="Tanggal Keluar (Jika Ada)" name="exit_date" type="date" :value="old('exit_date', $investor->exit_date ? $investor->exit_date->format('Y-m-d') : '')" />
+                    <x-datepicker label="Tanggal Bergabung" name="join_date" :value="old('join_date', $investor->join_date->format('Y-m-d'))" required />
+                    <x-datepicker label="Tanggal Keluar (Jika Ada)" name="exit_date" :value="old('exit_date', $investor->exit_date ? $investor->exit_date->format('Y-m-d') : '')" />
                     <div class="col-span-3 grid grid-cols-3 gap-5 border-t border-slate-50 pt-5 mt-2">
                         <x-form-input label="Nama Bank" name="bank_name" :value="old('bank_name', $investor->bank_name)" />
                         <x-form-input label="Nomor Rekening" name="bank_account" :value="old('bank_account', $investor->bank_account)" />
@@ -69,6 +70,6 @@
                 </div>
             </div>
         </form>
-    </x-card>
-
+        </x-card>
+    </x-container>
 </x-app-layout>

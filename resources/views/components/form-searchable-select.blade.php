@@ -65,7 +65,7 @@
         this.open = false;
 
         // Execute Callback (Jalur Langsung)
-        @if ($onSelected)
+        @if($onSelected)
             (function(opt) {
                 {!! $onSelected !!}
             })(opt);
@@ -84,7 +84,7 @@
     @resize.window="if(open) updatePosition()" class="relative">
 
     @if ($label)
-        <label for="{{ $id }}" class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+        <label for="{{ $id }}" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
             {{ $label }}@if ($required)
                 <span class="text-red-500 ml-0.5">*</span>
             @endif

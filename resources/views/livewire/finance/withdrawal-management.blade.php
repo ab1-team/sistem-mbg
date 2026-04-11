@@ -1,4 +1,4 @@
-<div>
+<x-container>
     <x-page-header title="Manajemen Penarikan Dana" subtitle="Verifikasi dan proses permintaan pencairan bagi hasil dari investor." />
 
     <x-card :padding="false" class="overflow-hidden">
@@ -63,8 +63,10 @@
             @endforelse
         </x-table>
 
-        <div class="mt-auto">
-            {{ $withdrawals->links() }}
-        </div>
+        @if ($withdrawals->hasPages())
+            <div class="px-6 py-4 border-t border-slate-50">
+                {{ $withdrawals->links() }}
+            </div>
+        @endif
     </x-card>
-</div>
+</x-container>

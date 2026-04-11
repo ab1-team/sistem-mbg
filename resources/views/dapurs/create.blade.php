@@ -1,13 +1,14 @@
 <x-app-layout title="Tambah Dapur">
 
-    <x-page-header
-        title="Tambah Dapur"
-        subtitle="Isi detail lokasi dan kapasitas dapur baru."
-        :back="route('dapurs.index')"
-        back-label="Data Dapur"
-    />
+    <x-container>
+        <x-page-header
+            title="Tambah Dapur"
+            subtitle="Isi detail lokasi dan kapasitas dapur baru."
+            :back="route('dapurs.index')"
+            back-label="Data Dapur"
+        />
 
-    <x-card class="max-w-3xl">
+        <x-card>
         <form action="{{ route('dapurs.store') }}" method="POST" class="space-y-6">
             @csrf
 
@@ -58,6 +59,6 @@
                 </x-btn>
             </div>
         </form>
-    </x-card>
-
+        </x-card>
+    </x-container>
 </x-app-layout>

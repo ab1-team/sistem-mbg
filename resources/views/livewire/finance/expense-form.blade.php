@@ -1,8 +1,5 @@
-<div class="max-w-2xl mx-auto space-y-6 pb-24">
-    <x-page-header title="{{ $expenseId ? 'Edit' : 'Catat' }} Pengeluaran" 
-        subtitle="Input beban operasional dapur seperti gaji, listrik, dan biaya lainnya." />
-
-    <x-card title="Rincian Pengeluaran" subtitle="Lampirkan bukti jika tersedia untuk keperluan audit.">
+<div>
+    <x-card title="Detail Transaksi" subtitle="Pastikan jumlah dan periode sudah sesuai sebelum menyimpan.">
         <form wire:submit="save" class="space-y-5">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="md:col-span-2">
@@ -34,25 +31,24 @@
                 </div>
 
                 <div>
-                    <x-form-select 
+                    <x-form-searchable-select 
                         label="Kategori Beban" 
                         name="category" 
                         wire:model="category" 
+                        :selected="$category"
                         :options="$categories"
                         placeholder="Pilih Kategori"
                         required 
                     />
                 </div>
 
-                <div>
-                    <x-form-input 
-                        label="Jumlah Beban (Rp)" 
-                        type="number" 
+                <div class="md:col-span-2">
+                    <x-form-currency 
+                        label="Jumlah Beban" 
                         wire:model="amount" 
                         id="amount" 
                         name="amount" 
                         placeholder="0" 
-                        prefix="Rp"
                         required 
                     />
                 </div>
@@ -83,7 +79,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 pb-20">
                 <x-btn href="{{ route('finance.expenses.index') }}" variant="secondary">Batal</x-btn>
                 <x-btn type="submit" loading="true" loading-target="save" loading-text="Menyimpan...">
                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">

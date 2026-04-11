@@ -1,8 +1,8 @@
 <x-app-layout title="Perencanaan Menu">
-    <div class="mb-6">
-        <h1 class="text-[28px] font-extrabold text-slate-900 tracking-tight leading-none">Perencanaan Menu</h1>
-        <p class="text-[13px] text-slate-400 mt-2">Jadwalkan menu harian per periode untuk setiap unit dapur.</p>
-    </div>
+    <x-container>
+        <x-page-header title="Perencanaan Menu"
+            subtitle="Jadwalkan menu harian per periode untuk setiap unit dapur." />
 
-    <livewire:menu-period-table />
+        <livewire:menu-period-table />
+    </x-container>
 </x-app-layout>

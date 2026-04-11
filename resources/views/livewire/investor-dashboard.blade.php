@@ -1,4 +1,4 @@
-<div class="space-y-8 pb-20">
+<x-container class="space-y-8 pb-20">
     @if(isset($error))
         <x-alert variant="danger" title="Akses Ditolak">{{ $error }}</x-alert>
     @else
@@ -157,4 +157,4 @@
             </div>
         </div>
     @endif
-</div>
+</x-container>

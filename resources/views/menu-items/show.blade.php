@@ -1,19 +1,19 @@
 <x-app-layout title="Detail Menu">
 
-    <x-page-header 
-        title="{{ $menuItem->name }}" 
-        subtitle="Detail resep, komposisi bahan (BOM), dan estimasi biaya per porsi."
-        :back="route('menu-items.index')"
-        back-label="Daftar Menu"
-    >
-        <div class="flex items-center gap-2">
-            <x-btn href="{{ route('menu-items.edit', $menuItem) }}" variant="secondary">
-                Edit Resep
-            </x-btn>
-        </div>
-    </x-page-header>
+    <x-container>
+        <x-page-header 
+            title="{{ $menuItem->name }}" 
+            subtitle="Detail resep, komposisi bahan (BOM), dan estimasi biaya per porsi."
+            :back="route('menu-items.index')"
+            back-label="Daftar Menu"
+        >
+            <div class="flex items-center gap-2">
+                <x-btn href="{{ route('menu-items.edit', $menuItem) }}" variant="secondary">
+                    Edit Resep
+                </x-btn>
+            </div>
+        </x-page-header>
 
-    <div class="space-y-6 max-w-5xl">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             {{-- Nutrition Cards --}}
             <div class="md:col-span-2 space-y-6">
@@ -110,6 +110,6 @@
                 @endif
             </div>
         </div>
-    </div>
+    </x-container>
 
 </x-app-layout>

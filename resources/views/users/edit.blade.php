@@ -1,13 +1,14 @@
 <x-app-layout title="Edit User">
 
-    <x-page-header
-        title="Edit Pengguna"
-        subtitle="Perbarui profil dan hak akses {{ $user->name }}."
-        :back="route('users.index')"
-        back-label="Pengguna & Akses"
-    />
+    <x-container>
+        <x-page-header
+            title="Edit Pengguna"
+            subtitle="Perbarui profil dan hak akses {{ $user->name }}."
+            :back="route('users.index')"
+            back-label="Pengguna & Akses"
+        />
 
-    <x-card class="max-w-4xl">
+        <x-card>
         <form action="{{ route('users.update', $user) }}" method="POST" class="space-y-6">
             @csrf
             @method('PATCH')
@@ -79,6 +80,6 @@
                 </div>
             </div>
         </form>
-    </x-card>
-
+        </x-card>
+    </x-container>
 </x-app-layout>

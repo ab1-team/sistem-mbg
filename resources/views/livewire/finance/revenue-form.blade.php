@@ -1,7 +1,4 @@
-<div class="max-w-2xl mx-auto space-y-6 pb-24">
-    <x-page-header title="{{ $revenueId ? 'Edit' : 'Entry' }} Pendapatan" 
-        subtitle="Catat penerimaan dana dari sumber eksternal untuk operasional dapur." />
-
+<div>
     <x-card title="Detail Transaksi" subtitle="Pastikan jumlah dan periode sudah sesuai sebelum menyimpan.">
         <form wire:submit="save" class="space-y-5">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -34,14 +31,12 @@
                 </div>
 
                 <div>
-                    <x-form-input 
-                        label="Jumlah Pendapatan (Rp)" 
-                        type="number" 
+                    <x-form-currency 
+                        label="Jumlah Pendapatan" 
                         wire:model="amount" 
                         id="amount" 
                         name="amount" 
                         placeholder="0" 
-                        prefix="Rp"
                         required 
                     />
                 </div>
@@ -58,7 +53,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 pb-20">
                 <x-btn href="{{ route('finance.revenues.index') }}" variant="secondary">Batal</x-btn>
                 <x-btn type="submit" loading="true" loading-target="save" loading-text="Menyimpan...">
                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
@@ -71,11 +66,13 @@
     </x-card>
 
     @if(!$revenueId)
-        <x-alert variant="info" title="Informasi">
-            <p class="text-[12px] leading-relaxed">
-                Pendapatan yang dicatat akan otomatis masuk ke perhitungan laba rugi pada periode yang dipilih. 
-                Pastikan nominal sudah termasuk seluruh dana yang diterima.
-            </p>
-        </x-alert>
+        <div class="mt-6 mb-20">
+            <x-alert variant="info" title="Informasi">
+                <p class="text-[12px] leading-relaxed">
+                    Pendapatan yang dicatat akan otomatis masuk ke perhitungan laba rugi pada periode yang dipilih. 
+                    Pastikan nominal sudah termasuk seluruh dana yang diterima.
+                </p>
+            </x-alert>
+        </div>
     @endif
 </div>

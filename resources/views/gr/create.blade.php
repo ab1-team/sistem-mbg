@@ -1,16 +1,17 @@
 <x-app-layout title="Penerimaan Barang (QC)">
-    <x-page-header 
-        title="Penerimaan: {{ $purchaseOrder->po_number }}" 
-        subtitle="Unit Dapur: {{ $purchaseOrder->dapur->name }} — Konfirmasi jumlah barang datang dan hasil pengecekan (QC)."
-        :back="route('purchase-orders.show', $purchaseOrder)"
-        backLabel="Kembali ke PO"
-    >
-        <x-slot:actions>
-            <x-btn type="submit" form="gr-form">
-                Simpan Penerimaan
-            </x-btn>
-        </x-slot:actions>
-    </x-page-header>
+    <x-container>
+        <x-page-header 
+            title="Penerimaan: {{ $purchaseOrder->po_number }}" 
+            subtitle="Unit Dapur: {{ $purchaseOrder->dapur->name }} — Konfirmasi jumlah barang datang dan hasil pengecekan (QC)."
+            :back="route('purchase-orders.show', $purchaseOrder)"
+            backLabel="Kembali ke PO"
+        >
+            <x-slot:actions>
+                <x-btn type="submit" form="gr-form">
+                    Simpan Penerimaan
+                </x-btn>
+            </x-slot:actions>
+        </x-page-header>
 
     <form id="gr-form" action="{{ route('gr.store', $purchaseOrder) }}" method="POST" enctype="multipart/form-data">
         @csrf
@@ -115,5 +116,6 @@
                 </x-card>
             </div>
         </div>
-    </form>
+        </form>
+    </x-container>
 </x-app-layout>

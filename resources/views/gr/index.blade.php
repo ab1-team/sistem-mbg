@@ -1,8 +1,10 @@
 <x-app-layout title="Daftar Penerimaan Barang">
-    <x-page-header 
-        title="Monitoring Logistik" 
-        subtitle="Daftar pesanan (PO) yang sedang dalam proses pengiriman atau siap diterima gudang."
-    />
+    <x-container>
+        <x-page-header 
+            title="Monitoring Logistik" 
+            subtitle="Daftar pesanan (PO) yang sedang dalam proses pengiriman atau siap diterima gudang."
+        />
 
-    <livewire:gr-table />
+        <livewire:gr-table />
+    </x-container>
 </x-app-layout>

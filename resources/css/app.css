@@ -5,6 +5,115 @@
     display: none !important;
 }
 
+/* FLATPICKR PREMIUM THEME - TAILWIND 4 IDIOMATIC (SUFFIX !) */
+.flatpickr-calendar {
+    @apply rounded-[24px]! border-none! shadow-2xl! p-2! bg-white/95! backdrop-blur-md! w-[310px]! animate-reveal!;
+}
+
+.flatpickr-months {
+    @apply flex! items-center! justify-between! relative!;
+}
+
+.flatpickr-month {
+    @apply text-slate-900! font-bold! fill-slate-900! mb-2! text-center! h-auto! static! overflow-visible!;
+}
+
+.flatpickr-current-month {
+    @apply static! p-0! m-0! w-full! flex! items-center! justify-center! gap-3! h-auto! text-slate-900! font-bold! text-[15px]!;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    @apply font-extrabold! text-slate-900! m-0! p-0! bg-transparent! border-none! outline-none! shadow-none! appearance-none! w-auto! inline-block! cursor-pointer!;
+}
+
+.numInputWrapper {
+    @apply w-[60px]! inline-block! relative! p-0! m-0!;
+}
+
+.numInputWrapper input.cur-year {
+    @apply px-2! py-1! m-0! font-bold! text-slate-400! bg-transparent! border-none! outline-none! shadow-none! w-full! inline-block! text-[15px]! ring-0! bg-none!;
+    -webkit-appearance: none !important;
+}
+
+.numInputWrapper span {
+    @apply absolute! right-0! w-[14px]! h-1/2! leading-0! opacity-0! cursor-pointer! border-none! transition-all! duration-200! flex! items-center! justify-center!;
+}
+
+.numInputWrapper:hover span {
+    @apply opacity-100!;
+}
+
+.numInputWrapper span:hover {
+    @apply bg-emerald-700/10!;
+}
+
+.numInputWrapper span.arrowUp {
+    @apply top-0!;
+}
+.numInputWrapper span.arrowDown {
+    @apply bottom-0!;
+}
+
+.numInputWrapper span:after {
+    @apply content-['']! block! w-0! h-0! border-l-4! border-l-transparent! border-r-4! border-r-transparent!;
+}
+
+.numInputWrapper span.arrowUp:after {
+    @apply border-b-4! border-b-emerald-700!;
+}
+.numInputWrapper span.arrowDown:after {
+    @apply border-t-4! border-t-emerald-700!;
+}
+
+.flatpickr-weekday {
+    @apply text-[11px]! font-bold! uppercase! tracking-tighter! text-slate-400!;
+}
+
+.flatpickr-day {
+    @apply rounded-[12px]! font-medium! text-[13px]! text-slate-600! border-none! m-0.5! h-[38px]! leading-[38px]! transition-all! duration-200!;
+}
+
+.flatpickr-day.selected {
+    @apply bg-emerald-700! text-white! shadow-lg! shadow-emerald-900/20! border-none!;
+}
+
+.flatpickr-day:hover {
+    @apply bg-emerald-50! text-emerald-700! border-none!;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    @apply text-slate-200! font-normal!;
+}
+
+/* NAVIGATION ARROWS COLOR - BRAND CONSISTENCY */
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month,
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg,
+.flatpickr-months .flatpickr-prev-month svg path,
+.flatpickr-months .flatpickr-next-month svg path {
+    @apply text-emerald-600! fill-emerald-600! stroke-emerald-600! transition-colors! duration-200!;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover,
+.flatpickr-months .flatpickr-prev-month:hover svg path,
+.flatpickr-months .flatpickr-next-month:hover svg path {
+    @apply text-emerald-800! fill-emerald-800! stroke-emerald-800! bg-emerald-50! rounded-full!;
+}
+
+/* ANTI-TRASH: Hide NATIVE browser spin buttons only */
+input.cur-year::-webkit-outer-spin-button,
+input.cur-year::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+input.cur-year {
+    -moz-appearance: textfield !important;
+    outline: none !important;
+}
+
 @theme {
     --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
@@ -14,6 +123,8 @@
 
     --shadow-luxury:
         0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+
+    --animate-reveal: reveal-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
 
     @keyframes reveal-up {
         from {
@@ -28,5 +139,5 @@
 }
 
 .animate-reveal {
-    animation: reveal-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+    @apply animate-reveal!;
 }

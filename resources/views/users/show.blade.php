@@ -1,22 +1,23 @@
 <x-app-layout title="Profil Pengguna">
 
-    <div class="flex items-center justify-between mb-8">
-        <x-page-header
-            title="Profil Pengguna: {{ $user->name }}"
-            subtitle="Detail akun, hak akses, dan aktivitas sistem dari {{ $user->email }}."
-            class="mb-0"
-        />
-        <div class="flex items-center gap-3">
-             <x-btn href="{{ route('users.index') }}" variant="secondary">
-                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
-                 Kembali
-             </x-btn>
-             <x-btn href="{{ route('users.edit', $user) }}">
-                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                 Edit Akses
-             </x-btn>
+    <x-container>
+        <div class="flex items-center justify-between mb-8">
+            <x-page-header
+                title="Profil Pengguna: {{ $user->name }}"
+                subtitle="Detail akun, hak akses, dan aktivitas sistem dari {{ $user->email }}."
+                class="mb-0"
+            />
+            <div class="flex items-center gap-3">
+                 <x-btn href="{{ route('users.index') }}" variant="secondary">
+                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+                     Kembali
+                 </x-btn>
+                 <x-btn href="{{ route('users.edit', $user) }}">
+                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                     Edit Akses
+                 </x-btn>
+            </div>
         </div>
-    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-8">
@@ -69,4 +70,5 @@
         </div>
     </div>
 
+    </x-container>
 </x-app-layout>

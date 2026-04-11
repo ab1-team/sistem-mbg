@@ -122,7 +122,7 @@ class ExpenseForm extends Component
         return view('livewire.finance.expense-form', [
             'dapurs' => $dapurs,
             'periods' => Period::where('status', '!=', 'locked')->orderBy('start_date', 'desc')->get(),
-            'categories' => [
+            'categories' => collect([
                 'gaji' => 'Gaji & Upah',
                 'listrik_air' => 'Listrik, Air & Internet',
                 'sewa' => 'Sewa Bangunan',
@@ -130,7 +130,7 @@ class ExpenseForm extends Component
                 'peralatan' => 'Peralatan & Perlengkapan',
                 'bahan_baku' => 'Bahan Baku (Manual)',
                 'lain_lain' => 'Lain-lain',
-            ],
+            ])->map(fn($label, $value) => ['value' => $value, 'label' => $label])->values(),
         ]);
     }
 }

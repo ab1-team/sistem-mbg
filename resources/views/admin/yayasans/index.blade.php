@@ -1,5 +1,5 @@
 <x-admin-layout>
-    <div class="max-w-4xl mx-auto py-12" x-data="{ deleteUrl: '', deleteName: '' }">
+    <x-container class="py-12" x-data="{ deleteUrl: '', deleteName: '' }">
         <div class="flex items-center justify-between mb-12">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">SaaS Command Center</h1>
@@ -69,7 +69,7 @@
                 </div>
             @endforelse
         </div>
-    </div>
+    </x-container>
 
     <!-- Create Dialog -->
     <x-dialog name="create-foundation" title="Daftarkan Yayasan Baru" maxWidth="lg" :show="$errors->isNotEmpty()">

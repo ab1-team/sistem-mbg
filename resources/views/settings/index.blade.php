@@ -1,7 +1,7 @@
 <x-app-layout title="{{ $title }}">
-    <x-page-header :title="$title" :subtitle="$subtitle" />
+    <x-container>
+        <x-page-header :title="$title" :subtitle="$subtitle" />
 
-    <div class="max-w-3xl">
         <x-card :padding="true">
             <form action="{{ route('settings.update') }}" method="POST" class="space-y-6">
                 @csrf
@@ -47,5 +47,5 @@
                 </div>
             </form>
         </x-card>
-    </div>
+    </x-container>
 </x-app-layout>

@@ -83,12 +83,14 @@
             @endforelse
         </x-table>
 
-        <div class="mt-auto">
-            {{ $periods->links() }}
-        </div>
+        @if ($periods->hasPages())
+            <div class="px-6 py-4 border-t border-slate-50">
+                {{ $periods->links() }}
+            </div>
+        @endif
     </x-card>
 
-    <div class="bg-amber-50 border border-amber-100 rounded-[24px] p-6">
+    <div class="bg-amber-50 border border-amber-100 rounded-[24px] p-6 mb-20">
         <h5 class="text-amber-900 font-black text-[14px] uppercase tracking-wider mb-2">💡 Alur Periode</h5>
         <ul class="text-amber-800 text-[12px] space-y-2 list-disc list-inside leading-relaxed opacity-90">
             <li><strong>OPEN:</strong> Pencatatan pendapatan dan beban diizinkan.</li>
