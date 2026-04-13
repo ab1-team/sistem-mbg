@@ -4,6 +4,9 @@ namespace App\Livewire;
 
 use App\Models\MenuPeriod;
 use App\Notifications\MenuPeriodStatusChanged;
+use App\Notifications\MenuPeriodSubmitted;
+use App\Models\User;
+use Filament\Notifications\Notification;
 use Livewire\Component;
 
 class MenuPeriodActions extends Component
@@ -20,10 +23,17 @@ class MenuPeriodActions extends Component
             'status' => MenuPeriod::STATUS_PENDING,
         ]);
 
-        // Notify Admins (Future: Notify all users with admin role)
-        // For now, notification logic is prepared
+        // Notify Kitchen Head & Admins
+        $recipients = User::role(['kepala_dapur', 'admin_yayasan'])->get();
+        foreach ($recipients as $recipient) {
+            $recipient->notify(new MenuPeriodSubmitted($this->menuPeriod, auth()->user()->name));
+        }
 
-        session()->flash('success', 'Rencana Menu telah diajukan untuk approval.');
+        Notification::make()
+            ->title('Berhasil Diajukan')
+            ->body('Rencana Menu telah diajukan untuk approval.')
+            ->success()
+            ->send();
 
         return redirect()->route('menu-periods.show', $this->menuPeriod);
     }
@@ -39,7 +49,11 @@ class MenuPeriodActions extends Component
         // Notify Creator
         $this->menuPeriod->creator->notify(new MenuPeriodStatusChanged($this->menuPeriod, 'disetujui'));
 
-        session()->flash('success', 'Rencana Menu telah disetujui.');
+        Notification::make()
+            ->title('Rencana Disetujui')
+            ->body('Rencana Menu telah disetujui.')
+            ->success()
+            ->send();
 
         return redirect()->route('menu-periods.show', $this->menuPeriod);
     }
@@ -59,7 +73,11 @@ class MenuPeriodActions extends Component
         $this->menuPeriod->creator->notify(new MenuPeriodStatusChanged($this->menuPeriod, 'ditolak'));
 
         $this->showRejectModal = false;
-        session()->flash('success', 'Rencana Menu telah ditolak.');
+        Notification::make()
+            ->title('Rencana Ditolak')
+            ->body('Rencana Menu telah ditolak.')
+            ->danger()
+            ->send();
 
         return redirect()->route('menu-periods.show', $this->menuPeriod);
     }

@@ -4,6 +4,7 @@ namespace App\Livewire\Finance;
 
 use App\Models\Wallet;
 use App\Models\WithdrawalRequest;
+use App\Notifications\WithdrawalStatusChanged;
 use App\Traits\WithSmartTable;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -44,6 +45,9 @@ class WithdrawalManagement extends Component
             ]);
         });
 
+        // Notify Investor
+        $request->investor?->user?->notify(new WithdrawalStatusChanged($request, 'disetujui'));
+
         $this->dispatch('notify', message: 'Penarikan berhasil disetujui dan saldo investor telah dikurangi.', variant: 'success');
     }
 
@@ -62,6 +66,9 @@ class WithdrawalManagement extends Component
             'processed_at' => now(),
             'processed_by' => auth()->id(),
         ]);
+
+        // Notify Investor
+        $request->investor?->user?->notify(new WithdrawalStatusChanged($request, 'ditolak'));
 
         $this->dispatch('notify', message: 'Permintaan penarikan telah ditolak.', variant: 'success');
     }

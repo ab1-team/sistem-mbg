@@ -7,6 +7,8 @@ use App\Models\GoodsReceipt;
 use App\Models\Material;
 use App\Models\Stock;
 use App\Models\StockMovement;
+use App\Models\User;
+use App\Notifications\LowStockAlert;
 use Illuminate\Support\Facades\DB;
 
 class StockService
@@ -66,6 +68,16 @@ class StockService
                 'created_by' => auth()->id(),
                 'notes' => $notes ?? 'Pengeluaran stok barang',
             ]);
+
+            // Check for Low Stock (Roadmap 3.2)
+            $threshold = $stock->material?->min_stock_threshold ?? 5; // Fallback to 5 units
+            if ($stock->current_stock <= $threshold) {
+                // Notify Logistics/Admins
+                $logistiks = User::role(['logistik', 'admin_yayasan'])->get();
+                foreach ($logistiks as $logistik) {
+                    $logistik->notify(new LowStockAlert($stock));
+                }
+            }
 
             return $stock;
         });

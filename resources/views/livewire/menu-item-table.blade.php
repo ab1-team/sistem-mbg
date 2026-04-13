@@ -11,8 +11,9 @@
 
             <x-form-searchable-select wire:model.live="mealType" class="w-48 text-[13px]" placeholder="Semua Tipe Makan"
                 :selected="$mealType" :options="collect($mealTypes)
-                    ->map(fn($t) => ['value' => $t, 'label' => ucfirst($t)])
+                    ->map(fn($label, $value) => ['value' => $value, 'label' => $label])
                     ->prepend(['value' => '', 'label' => 'Semua Tipe Makan'])
+                    ->values()
                     ->toArray()" />
 
             <x-dialog title="Import Menu Masakan" name="import-menu-modal">
@@ -101,7 +102,7 @@
                         </div>
                     </x-table-td>
                     <x-table-td>
-                        <x-badge variant="info">{{ $menu->meal_type }}</x-badge>
+                        <x-badge variant="info">{{ $menu->meal_type_label }}</x-badge>
                     </x-table-td>
                     <x-table-td class="text-center font-medium text-slate-600">
                         {{ $menu->portion_size }} <span class="text-[10px] text-slate-400 uppercase">Porsi</span>

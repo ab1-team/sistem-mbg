@@ -9,6 +9,7 @@ use App\Models\Period;
 use App\Models\ProfitCalculation;
 use App\Models\Revenue;
 use App\Models\Wallet;
+use App\Notifications\ProfitDistributed;
 use Illuminate\Support\Facades\DB;
 
 class ProfitDistributionService
@@ -54,8 +55,8 @@ class ProfitDistributionService
                     'total_expenses' => $totalOtherExpenses,
                     'gross_profit' => $grossProfit,
                     'net_profit' => $netProfit,
-                    'yayasan_share' => $netProfit > 0 ? ($netProfit * 0.20) : 0,
-                    'investor_total_share' => $netProfit > 0 ? ($netProfit * 0.80) : 0,
+                    'yayasan_share' => $netProfit > 0 ? ($netProfit * (\App\Models\Setting::get('profit_share_yayasan', 20)) / 100) : 0,
+                    'investor_total_share' => $netProfit > 0 ? ($netProfit * (\App\Models\Setting::get('profit_share_investor', 80)) / 100) : 0,
                     'status' => 'final',
                     'calculated_by' => auth()->id() ?? 1,
                 ]);
@@ -69,7 +70,7 @@ class ProfitDistributionService
                         $investorShare = $investorPool * ($investor->share_percentage / 100);
 
                         // Create distribution record
-                        DividendDistribution::create([
+                        $distribution = DividendDistribution::create([
                             'profit_calculation_id' => $calculation->id,
                             'investor_id' => $investor->id,
                             'share_percentage' => $investor->share_percentage,
@@ -80,6 +81,9 @@ class ProfitDistributionService
 
                         // Credit Investor's Wallet
                         $this->creditWallet($investor, $investorShare, "Dividen Periode: {$period->name} (Dapur: {$calculation->dapur->nama})");
+
+                        // Notify Investor
+                        $investor->user?->notify(new ProfitDistributed($distribution, $period->name));
                     }
 
                     // Credit Yayasan's Wallet (mapped to Dapur wallet for now or a general Yayasan account)

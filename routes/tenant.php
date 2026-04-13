@@ -23,6 +23,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Warehouse\GrController;
 use App\Http\Middleware\ScopeDapurBySubdomain;
+use App\Livewire\Finance\ProfitSharing;
 use App\Livewire\Finance\WithdrawalManagement;
 use App\Livewire\Investor\WithdrawalRequestForm;
 use App\Livewire\InvestorDashboard;
@@ -103,6 +104,7 @@ Route::middleware([
                 Route::resource('revenues', RevenueController::class);
                 Route::resource('expenses', ExpenseController::class);
                 Route::get('periods', [FinancialPeriodController::class, 'index'])->name('periods.index');
+                Route::get('profit-sharing', ProfitSharing::class)->name('profit-sharing.index');
                 Route::get('withdrawals', WithdrawalManagement::class)->name('withdrawals.index');
 
                 // Invoices

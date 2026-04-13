@@ -4,6 +4,8 @@ namespace App\Livewire\Investor;
 
 use App\Models\Investor;
 use App\Models\WithdrawalRequest;
+use App\Models\User;
+use App\Notifications\WithdrawalRequested;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -35,12 +37,18 @@ class WithdrawalRequestForm extends Component
             'amount.min' => 'Minimal penarikan adalah Rp 10.000.',
         ]);
 
-        WithdrawalRequest::create([
+        $request = WithdrawalRequest::create([
             'investor_id' => $investor->id,
             'amount' => $this->amount,
             'status' => 'pending',
             'notes' => $this->notes,
         ]);
+
+        // Notify Finance
+        $finances = User::role('finance_yayasan')->get();
+        foreach ($finances as $finance) {
+            $finance->notify(new WithdrawalRequested($request, $user->name));
+        }
 
         session()->flash('success', 'Permintaan penarikan berhasil diajukan. Mohon tunggu verifikasi admin.');
 

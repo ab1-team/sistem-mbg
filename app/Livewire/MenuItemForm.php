@@ -19,7 +19,7 @@ class MenuItemForm extends Component
 
     public $description;
 
-    public $meal_type = 'sarapan';
+    public $meal_type = 'anak_anak';
 
     public $portion_size = 1;
 
@@ -45,7 +45,7 @@ class MenuItemForm extends Component
     protected $rules = [
         'name' => 'required|string|max:150',
         'description' => 'nullable|string',
-        'meal_type' => 'required|in:sarapan,makan_siang,makan_malam,snack',
+        'meal_type' => 'required|in:anak_anak,dewasa',
         'portion_size' => 'required|integer|min:1',
         'rows.*.material_id' => 'required|exists:materials,id',
         'rows.*.quantity' => 'required|numeric|min:0.0001',
@@ -130,7 +130,35 @@ class MenuItemForm extends Component
                 $this->rows[$index]['unit'] = $material?->unit ?? '-';
             }
         }
+
+        // Recalculate nutrition server-side
+        $this->recalcNutrition();
     }
+
+    protected function recalcNutrition(): void
+    {
+        $materialsMap = collect($this->allMaterials)->keyBy('id');
+        $cal = $pro = $car = $fat = $fib = 0;
+
+        foreach ($this->rows as $row) {
+            if (empty($row['material_id']) || empty($row['quantity'])) continue;
+            $m = $materialsMap->get($row['material_id']);
+            if (!$m) continue;
+            $q = (float) $row['quantity'];
+            $cal += (float) $m->calories * $q;
+            $pro += (float) $m->protein  * $q;
+            $car += (float) $m->carbs    * $q;
+            $fat += (float) $m->fat      * $q;
+            $fib += (float) $m->fiber    * $q;
+        }
+
+        $this->calories = round($cal, 2);
+        $this->protein  = round($pro, 2);
+        $this->carbs    = round($car, 2);
+        $this->fat      = round($fat, 2);
+        $this->fiber    = round($fib, 2);
+    }
+
 
     public function addRow(): void
     {

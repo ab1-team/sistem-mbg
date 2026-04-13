@@ -104,10 +104,8 @@ class MenuPeriodForm extends Component
                 'date' => $dateStr,
                 'display' => $date->translatedFormat('D, d M'),
                 'meals' => [
-                    ['type' => 'sarapan', 'menu_item_ids' => [], 'portions' => $defaultPortions],
-                    ['type' => 'makan_siang', 'menu_item_ids' => [], 'portions' => $defaultPortions],
-                    ['type' => 'makan_malam', 'menu_item_ids' => [], 'portions' => $defaultPortions],
-                    ['type' => 'snack', 'menu_item_ids' => [], 'portions' => $defaultPortions],
+                    ['type' => 'anak_anak', 'menu_item_ids' => [], 'portions' => $defaultPortions],
+                    ['type' => 'dewasa', 'menu_item_ids' => [], 'portions' => $defaultPortions],
                 ],
             ];
         }
@@ -250,7 +248,10 @@ class MenuPeriodForm extends Component
                 })
                 ->orderBy('name')
                 ->get(),
-            'mealTypes' => ['sarapan', 'makan_siang', 'makan_malam', 'snack'],
+            'mealTypes' => [
+                'anak_anak' => 'Anak-anak',
+                'dewasa' => 'Dewasa',
+            ],
         ]);
     }
 }

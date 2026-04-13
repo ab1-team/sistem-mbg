@@ -1,3 +1,4 @@
+<div>
     <x-smart-table-actions>
         <div class="flex flex-wrap items-center gap-3">
             @if(count($dapurs) > 1)

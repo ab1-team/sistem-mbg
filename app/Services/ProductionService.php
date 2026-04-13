@@ -6,6 +6,8 @@ use App\Enums\CookingStatus;
 use App\Models\CookingSchedule;
 use App\Models\Dapur;
 use App\Models\MenuSchedule;
+use App\Models\User;
+use App\Notifications\CookingStatusUpdated;
 use Illuminate\Support\Facades\DB;
 
 class ProductionService
@@ -94,6 +96,12 @@ class ProductionService
                 'cooked_by' => auth()->id() ?? 1,
             ]);
 
+            // Notify Dapur Manager / Admins
+            $recipients = User::role(['kepala_dapur', 'admin_yayasan'])->get();
+            foreach ($recipients as $recipient) {
+                $recipient->notify(new CookingStatusUpdated($schedule, 'Selesai Dimasak'));
+            }
+
             // 2. Kalkulasi & Potong Stok berdasarkan BOM (Loop Multiple Items)
             foreach ($schedule->menuSchedule->items as $menuItem) {
                 foreach ($menuItem->boms as $bom) {
@@ -119,10 +127,18 @@ class ProductionService
      */
     public function distribute(CookingSchedule $schedule)
     {
-        return $schedule->update([
+        $update = $schedule->update([
             'status' => CookingStatus::DIDISTRIBUSIKAN,
             'distributed_at' => now(),
             'cooked_by' => auth()->id() ?? 1,
         ]);
+
+        // Notify Dapur Manager / Admins
+        $recipients = User::role(['kepala_dapur', 'admin_yayasan'])->get();
+        foreach ($recipients as $recipient) {
+            $recipient->notify(new CookingStatusUpdated($schedule, 'Telah Didistribusikan'));
+        }
+
+        return $update;
     }
 }

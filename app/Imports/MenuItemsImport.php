@@ -75,14 +75,17 @@ class MenuItemsImport implements ToCollection, WithHeadingRow, WithValidation
 
     private function mapTipeMakan($tipe)
     {
-        $map = [
-            'sarapan' => 'pagi',
-            'makan_siang' => 'siang',
-            'makan_malam' => 'sore',
-        ];
-        $val = strtolower(str_replace(' ', '_', $tipe));
+        $tipe = strtolower($tipe);
+        
+        if (str_contains($tipe, 'anak') || str_contains($tipe, 'child') || str_contains($tipe, 'kid')) {
+            return 'anak_anak';
+        }
 
-        return $map[$val] ?? $val;
+        if (str_contains($tipe, 'dewasa') || str_contains($tipe, 'adult')) {
+            return 'dewasa';
+        }
+
+        return 'dewasa'; // Default
     }
 
     public function rules(): array

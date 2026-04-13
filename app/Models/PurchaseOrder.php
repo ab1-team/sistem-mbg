@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\PoStatus;
+use App\Notifications\PurchaseOrderStatusChanged;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -70,6 +72,17 @@ class PurchaseOrder extends Model
             'metadata' => $metadata,
             'ip_address' => request()->ip(),
         ]);
+
+        // Trigger Notifikasi (Roadmap 3.2)
+        $this->creator?->notify(new PurchaseOrderStatusChanged($this, $newStatus->label(), $reason));
+
+        // Jika dikirim ke yayasan, notify admin yayasan
+        if ($newStatus === PoStatus::DIKIRIM_KE_YAYASAN) {
+            $admins = User::role('admin_yayasan')->get();
+            foreach ($admins as $admin) {
+                $admin->notify(new PurchaseOrderStatusChanged($this, $newStatus->label(), $reason));
+            }
+        }
 
         return $this;
     }

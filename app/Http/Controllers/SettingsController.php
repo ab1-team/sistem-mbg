@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dapur;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,15 +59,18 @@ class SettingsController extends Controller
         }
 
         if ($user->hasAnyRole(['admin_yayasan', 'superadmin'])) {
-            $tenant = tenant();
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'nullable|email|max:255',
-                'phone' => 'nullable|string|max:20',
-                'address' => 'nullable|string',
+                'profit_share_yayasan' => 'required|integer|min:0|max:100',
+                'profit_share_investor' => 'required|integer|min:0|max:100',
             ]);
 
-            $tenant->update($validated);
+            if ($validated['profit_share_yayasan'] + $validated['profit_share_investor'] !== 100) {
+                return back()->withErrors(['profit_share_yayasan' => 'Total pembagian bagi hasil harus berjumlah 100%.'])->withInput();
+            }
+
+            // Save to Tenant Database (Setting model)
+            Setting::set('profit_share_yayasan', $validated['profit_share_yayasan'], 'finance');
+            Setting::set('profit_share_investor', $validated['profit_share_investor'], 'finance');
 
             return back()->with('status', 'settings-updated');
         }

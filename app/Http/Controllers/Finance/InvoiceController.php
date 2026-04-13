@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Finance;
 
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
+use App\Notifications\InvoicePaid;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
@@ -104,6 +105,14 @@ class InvoiceController extends Controller
             'paid_at' => now(),
             'payment_proof' => $path,
         ]);
+
+        // Notify Supplier
+        $supplierUsers = $invoice->supplier?->users;
+        if ($supplierUsers) {
+            foreach ($supplierUsers as $supplierUser) {
+                $supplierUser->notify(new InvoicePaid($invoice));
+            }
+        }
 
         return redirect()->back()->with('success', 'Pembayaran penagihan berhasil dicatat.');
     }

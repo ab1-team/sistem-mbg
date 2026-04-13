@@ -90,7 +90,7 @@
         @endif
     </x-card>
 
-    <div class="bg-amber-50 border border-amber-100 rounded-[24px] p-6 mb-20">
+    <div class="bg-amber-50 border border-amber-100 rounded-[24px] p-6 mb-20 mt-4">
         <h5 class="text-amber-900 font-black text-[14px] uppercase tracking-wider mb-2">💡 Alur Periode</h5>
         <ul class="text-amber-800 text-[12px] space-y-2 list-disc list-inside leading-relaxed opacity-90">
             <li><strong>OPEN:</strong> Pencatatan pendapatan dan beban diizinkan.</li>

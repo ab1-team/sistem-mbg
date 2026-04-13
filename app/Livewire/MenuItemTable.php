@@ -43,9 +43,14 @@ class MenuItemTable extends Component
             ? Dapur::where('id', $user->dapur_id)->get()
             : Dapur::all();
 
+        $mealTypeLabels = [
+            'anak_anak' => 'Anak-anak',
+            'dewasa' => 'Dewasa',
+        ];
+
         return view('livewire.menu-item-table', [
             'menuItems' => $menuItems,
-            'mealTypes' => ['pagi', 'siang', 'sore', 'snack', 'lainnya'],
+            'mealTypes' => $mealTypeLabels,
             'dapurs' => $dapurs,
         ]);
     }

@@ -7,7 +7,8 @@ use App\Imports\PoItemsImport;
 use App\Models\Dapur;
 use App\Models\MenuPeriod;
 use App\Models\PurchaseOrder;
-use App\Models\PurchaseOrderItem;
+use App\Models\User;
+use App\Notifications\NewPOAssigned;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -110,6 +111,21 @@ class PoController extends Controller
 
         // 2. Update Status
         $purchaseOrder->changeStatus(PoStatus::DITERUSKAN_KE_SUPPLIER, 'Alokasi supplier selesai, pesanan diteruskan.');
+
+        // Notify Suppliers
+        // Ambil semua supplier dari item di PO ini
+        $supplierIds = $purchaseOrder->items()
+            ->whereNotNull('supplier_id')
+            ->pluck('supplier_id')
+            ->unique();
+            
+        $suppliers = User::role('supplier')
+            ->whereIn('supplier_id', $supplierIds)
+            ->get();
+            
+        foreach ($suppliers as $supplier) {
+            $supplier->notify(new NewPOAssigned($purchaseOrder));
+        }
 
         return redirect()->route('purchase-orders.show', $purchaseOrder)
             ->with('success', 'Berhasil meneruskan pesanan ke Supplier.');

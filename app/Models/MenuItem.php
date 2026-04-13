@@ -38,6 +38,17 @@ class MenuItem extends Model
         'fiber' => 'decimal:2',
     ];
 
+    protected $appends = ['meal_type_label'];
+
+    public function getMealTypeLabelAttribute()
+    {
+        return match($this->meal_type) {
+            'anak_anak' => 'Anak-anak',
+            'dewasa' => 'Dewasa',
+            default => ucfirst($this->meal_type),
+        };
+    }
+
     /**
      * Hitung ulang total nilai gizi berdasarkan komposisi bahan baku (BOM).
      * Sesuai Roadmap 2.2 (Kalkulasi Gizi Otomatis)

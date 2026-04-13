@@ -109,6 +109,12 @@
                             'icon' => 'gr',
                         ],
                         [
+                            'route' => 'finance.profit-sharing.index',
+                            'match' => 'finance.profit-sharing.*',
+                            'label' => 'Bagi Hasil',
+                            'icon' => 'revenue',
+                        ],
+                        [
                             'route' => 'finance.withdrawals.index',
                             'match' => 'finance.withdrawals.*',
                             'label' => 'Penarikan Dana',

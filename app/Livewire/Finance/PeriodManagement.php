@@ -3,6 +3,8 @@
 namespace App\Livewire\Finance;
 
 use App\Models\Period;
+use App\Models\User;
+use App\Notifications\PeriodStatusChanged;
 use App\Services\Finance\ProfitDistributionService;
 use App\Traits\WithSmartTable;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +30,12 @@ class PeriodManagement extends Component
             'closed_by' => Auth::id(),
         ]);
 
+        // Broadcast to All
+        $users = User::all();
+        foreach ($users as $user) {
+            $user->notify(new PeriodStatusChanged($period, 'ditutup (Closed)'));
+        }
+
         $this->dispatch('notify', message: "Periode {$period->name} berhasil ditutup.", variant: 'success');
     }
 
@@ -46,6 +54,12 @@ class PeriodManagement extends Component
             'closed_at' => null,
             'closed_by' => null,
         ]);
+
+        // Broadcast to All
+        $users = User::all();
+        foreach ($users as $user) {
+            $user->notify(new PeriodStatusChanged($period, 'dibuka kembali (Open)'));
+        }
 
         $this->dispatch('notify', message: "Periode {$period->name} dibuka kembali.", variant: 'success');
     }
@@ -68,6 +82,12 @@ class PeriodManagement extends Component
             $period->update([
                 'status' => 'locked',
             ]);
+
+            // Broadcast to All
+            $users = User::all();
+            foreach ($users as $user) {
+                $user->notify(new PeriodStatusChanged($period, 'dikunci (Locked)'));
+            }
 
             $this->dispatch('notify', message: "Periode {$period->name} telah dikunci dan bagi hasil berhasil didistribusikan.", variant: 'success');
         } catch (\Exception $e) {

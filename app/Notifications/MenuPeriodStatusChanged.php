@@ -5,6 +5,8 @@ namespace App\Notifications;
 use App\Models\MenuPeriod;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class MenuPeriodStatusChanged extends Notification
 {
@@ -22,7 +24,12 @@ class MenuPeriodStatusChanged extends Notification
 
     public function via($notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
+    }
+
+    public function toBroadcast($notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
     }
 
     public function toArray($notifiable): array

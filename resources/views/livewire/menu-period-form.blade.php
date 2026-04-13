@@ -1,4 +1,7 @@
 <div class="space-y-8 pb-32">
+    <script>
+        window.mbgMenuItems = @js($menuItems->keyBy('id'));
+    </script>
     @if ($errors->any())
         <x-alert variant="danger" title="Terdapat Kesalahan Input">
             Beberapa data jadwal belum valid atau tidak lengkap. Periksa baris jadwal yang berwarna merah.
@@ -106,22 +109,30 @@
                                 <div class="space-y-1.5 p-3 rounded-2xl bg-slate-50/50">
                                     <div class="flex items-center justify-between mb-1">
                                         <span
-                                            class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ str_replace('_', ' ', $meal['type']) }}</span>
+                                            class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ mb_strtoupper($mealTypes[$meal['type']] ?? $meal['type']) }}</span>
                                     </div>
                                     <div class="flex gap-2">
                                         <div class="flex-1 min-w-0 relative" x-data="{
                                             open: false,
                                             search: '',
-                                            selectedIds: @entangle('schedules.' . $date . '.meals.' . $mIdx . '.menu_item_ids') || [],
-                                            menuLookup: @js($menuItems->keyBy('id')),
+                                            date: '{{ $date }}',
+                                            mIdx: {{ $mIdx }},
+                                            get selectedIds() {
+                                                if (!this.$wire) return [];
+                                                let s = this.$wire.schedules;
+                                                return s && s['{{ $date }}'] && s['{{ $date }}'].meals && s['{{ $date }}'].meals[{{ $mIdx }}] ? (s['{{ $date }}'].meals[{{ $mIdx }}].menu_item_ids || []) : [];
+                                            },
+                                            menuLookup: window.mbgMenuItems,
                                             toggle(id) {
+                                                if (!this.$wire) return;
                                                 const idInt = parseInt(id);
-                                                if (!Array.isArray(this.selectedIds)) this.selectedIds = [];
-                                                if (this.selectedIds.includes(idInt)) {
-                                                    this.selectedIds = this.selectedIds.filter(i => i != idInt);
+                                                let current = [...(this.selectedIds || [])];
+                                                if (current.includes(idInt)) {
+                                                    current = current.filter(i => i != idInt);
                                                 } else {
-                                                    this.selectedIds.push(idInt);
+                                                    current.push(idInt);
                                                 }
+                                                this.$wire.set('schedules.' + this.date + '.meals.' + this.mIdx + '.menu_item_ids', current);
                                             }
                                         }">
                                             <div @click="open = !open"
@@ -239,3 +250,4 @@
         </x-container>
     </div>
 </div>
+
