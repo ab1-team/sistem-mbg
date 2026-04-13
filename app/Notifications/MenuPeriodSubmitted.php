@@ -32,7 +32,7 @@ class MenuPeriodSubmitted extends Notification implements ShouldBroadcast
         return [
             'menu_period_id' => $this->menuPeriod->id,
             'title' => 'Pengajuan Menu Baru',
-            'message' => "{$this->submitterName} telah mengajukan rencana menu baru untuk periode: " . ($this->menuPeriod->period?->name ?? 'N/A'),
+            'message' => "{$this->submitterName} telah mengajukan rencana menu baru untuk periode: ".($this->menuPeriod->period?->name ?? 'N/A'),
             'url' => route('menu-periods.show', $this->menuPeriod),
         ];
     }

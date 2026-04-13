@@ -4,9 +4,8 @@ namespace App\Notifications;
 
 use App\Models\MenuPeriod;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Messages\BroadcastMessage;
+use Illuminate\Notifications\Notification;
 
 class MenuPeriodStatusChanged extends Notification
 {

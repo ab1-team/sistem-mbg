@@ -30,7 +30,7 @@ class WithdrawalStatusChanged extends Notification implements ShouldBroadcast
     public function toArray($notifiable): array
     {
         $amount = number_format($this->withdrawalRequest->amount, 0, ',', '.');
-        
+
         return [
             'withdrawal_request_id' => $this->withdrawalRequest->id,
             'title' => 'Update Penarikan Saldo',

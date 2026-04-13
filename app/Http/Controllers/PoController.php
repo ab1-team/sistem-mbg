@@ -118,11 +118,11 @@ class PoController extends Controller
             ->whereNotNull('supplier_id')
             ->pluck('supplier_id')
             ->unique();
-            
+
         $suppliers = User::role('supplier')
             ->whereIn('supplier_id', $supplierIds)
             ->get();
-            
+
         foreach ($suppliers as $supplier) {
             $supplier->notify(new NewPOAssigned($purchaseOrder));
         }

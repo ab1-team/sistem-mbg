@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -20,17 +20,16 @@ return new class extends Migration
 
         // Mapping: sarapan, makan_siang, makan_malam, snack -> dewasa
         DB::statement("ALTER TABLE menu_items MODIFY COLUMN meal_type ENUM('anak_anak', 'dewasa', 'sarapan', 'makan_siang', 'makan_malam', 'snack')");
-        
-        DB::table('menu_items')->update(['meal_type' => 'dewasa']);
-        
-        DB::statement("ALTER TABLE menu_items MODIFY COLUMN meal_type ENUM('anak_anak', 'dewasa') NOT NULL");
 
+        DB::table('menu_items')->update(['meal_type' => 'dewasa']);
+
+        DB::statement("ALTER TABLE menu_items MODIFY COLUMN meal_type ENUM('anak_anak', 'dewasa') NOT NULL");
 
         // 2. Update MenuSchedule table
         DB::statement("ALTER TABLE menu_schedules MODIFY COLUMN meal_type ENUM('anak_anak', 'dewasa', 'sarapan', 'makan_siang', 'makan_malam', 'snack')");
-        
+
         DB::table('menu_schedules')->update(['meal_type' => 'dewasa']);
-        
+
         DB::statement("ALTER TABLE menu_schedules MODIFY COLUMN meal_type ENUM('anak_anak', 'dewasa') NOT NULL");
     }
 

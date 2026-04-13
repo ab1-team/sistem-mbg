@@ -3,8 +3,8 @@
 namespace App\Livewire\Investor;
 
 use App\Models\Investor;
-use App\Models\WithdrawalRequest;
 use App\Models\User;
+use App\Models\WithdrawalRequest;
 use App\Notifications\WithdrawalRequested;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;

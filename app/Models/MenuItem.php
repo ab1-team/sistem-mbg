@@ -42,7 +42,7 @@ class MenuItem extends Model
 
     public function getMealTypeLabelAttribute()
     {
-        return match($this->meal_type) {
+        return match ($this->meal_type) {
             'anak_anak' => 'Anak-anak',
             'dewasa' => 'Dewasa',
             default => ucfirst($this->meal_type),

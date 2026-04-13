@@ -3,9 +3,9 @@
 namespace App\Livewire;
 
 use App\Models\MenuPeriod;
+use App\Models\User;
 use App\Notifications\MenuPeriodStatusChanged;
 use App\Notifications\MenuPeriodSubmitted;
-use App\Models\User;
 use Filament\Notifications\Notification;
 use Livewire\Component;
 

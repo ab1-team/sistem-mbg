@@ -16,7 +16,7 @@ class ProfitSharing extends Component
     {
         $this->selectedCalculation = ProfitCalculation::with(['distributions.investor', 'dapur', 'period'])
             ->findOrFail($id);
-        
+
         $this->dispatch('open-modal', 'calculation-detail');
     }
 
@@ -25,9 +25,9 @@ class ProfitSharing extends Component
         $calculations = ProfitCalculation::with(['dapur', 'period', 'calculatedBy'])
             ->when($this->search, function ($query) {
                 $query->whereHas('period', function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%');
+                    $q->where('name', 'like', '%'.$this->search.'%');
                 })->orWhereHas('dapur', function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%');
+                    $q->where('name', 'like', '%'.$this->search.'%');
                 });
             })
             ->latest()

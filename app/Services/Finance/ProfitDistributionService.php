@@ -8,6 +8,7 @@ use App\Models\Investor;
 use App\Models\Period;
 use App\Models\ProfitCalculation;
 use App\Models\Revenue;
+use App\Models\Setting;
 use App\Models\Wallet;
 use App\Notifications\ProfitDistributed;
 use Illuminate\Support\Facades\DB;
@@ -55,8 +56,8 @@ class ProfitDistributionService
                     'total_expenses' => $totalOtherExpenses,
                     'gross_profit' => $grossProfit,
                     'net_profit' => $netProfit,
-                    'yayasan_share' => $netProfit > 0 ? ($netProfit * (\App\Models\Setting::get('profit_share_yayasan', 20)) / 100) : 0,
-                    'investor_total_share' => $netProfit > 0 ? ($netProfit * (\App\Models\Setting::get('profit_share_investor', 80)) / 100) : 0,
+                    'yayasan_share' => $netProfit > 0 ? ($netProfit * (Setting::get('profit_share_yayasan', 20)) / 100) : 0,
+                    'investor_total_share' => $netProfit > 0 ? ($netProfit * (Setting::get('profit_share_investor', 80)) / 100) : 0,
                     'status' => 'final',
                     'calculated_by' => auth()->id() ?? 1,
                 ]);

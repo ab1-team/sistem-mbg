@@ -34,7 +34,7 @@ class PurchaseOrderStatusChanged extends Notification implements ShouldBroadcast
             'purchase_order_id' => $this->purchaseOrder->id,
             'po_number' => $this->purchaseOrder->po_number,
             'title' => "Update Status PO: {$this->purchaseOrder->po_number}",
-            'message' => "Pesanan {$this->purchaseOrder->po_number} kini berstatus: {$this->statusLabel}." . ($this->reason ? " Alasan: {$this->reason}" : ""),
+            'message' => "Pesanan {$this->purchaseOrder->po_number} kini berstatus: {$this->statusLabel}.".($this->reason ? " Alasan: {$this->reason}" : ''),
             'url' => route('purchase-orders.show', $this->purchaseOrder),
         ];
     }

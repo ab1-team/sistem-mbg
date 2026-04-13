@@ -76,7 +76,7 @@ class MenuItemsImport implements ToCollection, WithHeadingRow, WithValidation
     private function mapTipeMakan($tipe)
     {
         $tipe = strtolower($tipe);
-        
+
         if (str_contains($tipe, 'anak') || str_contains($tipe, 'child') || str_contains($tipe, 'kid')) {
             return 'anak_anak';
         }

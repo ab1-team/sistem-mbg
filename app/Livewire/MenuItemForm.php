@@ -141,24 +141,27 @@ class MenuItemForm extends Component
         $cal = $pro = $car = $fat = $fib = 0;
 
         foreach ($this->rows as $row) {
-            if (empty($row['material_id']) || empty($row['quantity'])) continue;
+            if (empty($row['material_id']) || empty($row['quantity'])) {
+                continue;
+            }
             $m = $materialsMap->get($row['material_id']);
-            if (!$m) continue;
+            if (! $m) {
+                continue;
+            }
             $q = (float) $row['quantity'];
             $cal += (float) $m->calories * $q;
-            $pro += (float) $m->protein  * $q;
-            $car += (float) $m->carbs    * $q;
-            $fat += (float) $m->fat      * $q;
-            $fib += (float) $m->fiber    * $q;
+            $pro += (float) $m->protein * $q;
+            $car += (float) $m->carbs * $q;
+            $fat += (float) $m->fat * $q;
+            $fib += (float) $m->fiber * $q;
         }
 
         $this->calories = round($cal, 2);
-        $this->protein  = round($pro, 2);
-        $this->carbs    = round($car, 2);
-        $this->fat      = round($fat, 2);
-        $this->fiber    = round($fib, 2);
+        $this->protein = round($pro, 2);
+        $this->carbs = round($car, 2);
+        $this->fat = round($fat, 2);
+        $this->fiber = round($fib, 2);
     }
-
 
     public function addRow(): void
     {
