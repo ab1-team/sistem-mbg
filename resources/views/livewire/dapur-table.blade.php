@@ -17,7 +17,7 @@
                 <x-table-th sort="name" :active="$sortField === 'name'" :asc="$sortAsc">Nama Dapur</x-table-th>
                 <x-table-th>Penanggung Jawab</x-table-th>
                 <x-table-th sort="created_at" :active="$sortField === 'created_at'" :asc="$sortAsc">Terdaftar</x-table-th>
-                @if(auth()->user()->hasRole('superadmin'))
+                @if(auth()->user()->hasAnyRole(['superadmin', 'admin_yayasan']))
                     <x-table-th class="text-right">Aksi</x-table-th>
                 @endif
             </x-slot>
@@ -47,34 +47,36 @@
                     <x-table-td>
                         <span class="text-slate-400 font-medium">{{ $dapur->created_at->diffForHumans() }}</span>
                     </x-table-td>
-                    @if(auth()->user()->hasRole('superadmin'))
+                    @if(auth()->user()->hasAnyRole(['superadmin', 'admin_yayasan']))
                         <x-table-td class="text-right py-3 px-4">
                             <div class="flex items-center justify-end gap-2">
                                 <x-btn href="{{ route('dapurs.edit', $dapur) }}" variant="secondary"
                                     class="py-1.5! px-3! text-[11px]!">Edit</x-btn>
 
-                                <x-dialog title="Hapus Dapur" name="delete-dapur-{{ $dapur->id }}">
-                                    <x-slot name="trigger">
-                                        <x-btn variant="danger" class="py-1.5! px-3! text-[11px]!" 
-                                            x-on:click="$dispatch('open-modal', 'delete-dapur-{{ $dapur->id }}')">
-                                            Hapus
-                                        </x-btn>
-                                    </x-slot>
+                                @if(auth()->user()->hasRole('superadmin'))
+                                    <x-dialog title="Hapus Dapur" name="delete-dapur-{{ $dapur->id }}">
+                                        <x-slot name="trigger">
+                                            <x-btn variant="danger" class="py-1.5! px-3! text-[11px]!" 
+                                                x-on:click="$dispatch('open-modal', 'delete-dapur-{{ $dapur->id }}')">
+                                                Hapus
+                                            </x-btn>
+                                        </x-slot>
 
-                                    <p class="text-[13px] text-slate-600 leading-relaxed">
-                                        Apakah Anda yakin ingin menghapus Unit Dapur <span class="font-bold text-slate-900">{{ $dapur->name }}</span>? 
-                                        Semua data operasional dan akun keuangan terkait dapur ini akan hilang secara permanen.
-                                    </p>
+                                        <p class="text-[13px] text-slate-600 leading-relaxed">
+                                            Apakah Anda yakin ingin menghapus Unit Dapur <span class="font-bold text-slate-900">{{ $dapur->name }}</span>? 
+                                            Semua data operasional dan akun keuangan terkait dapur ini akan hilang secara permanen.
+                                        </p>
 
-                                    <x-slot name="footer">
-                                        <x-btn variant="secondary" x-on:click="$dispatch('close-modal', 'delete-dapur-{{ $dapur->id }}')">Batal</x-btn>
-                                        <form action="{{ route('dapurs.destroy', $dapur) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <x-btn type="submit" variant="danger">Ya, Hapus Permanen</x-btn>
-                                        </form>
-                                    </x-slot>
-                                </x-dialog>
+                                        <x-slot name="footer">
+                                            <x-btn variant="secondary" x-on:click="$dispatch('close-modal', 'delete-dapur-{{ $dapur->id }}')">Batal</x-btn>
+                                            <form action="{{ route('dapurs.destroy', $dapur) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <x-btn type="submit" variant="danger">Ya, Hapus Permanen</x-btn>
+                                            </form>
+                                        </x-slot>
+                                    </x-dialog>
+                                @endif
                             </div>
                         </x-table-td>
                     @endif
