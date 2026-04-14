@@ -1,6 +1,6 @@
 <div class="overflow-x-auto relative">
     <table {{ $attributes->merge(['class' => 'w-full text-left border-collapse']) }}>
-        <thead class="bg-slate-50 border-b border-slate-100">
+        <thead class="bg-slate-50/80 border-b border-slate-100 backdrop-blur-sm">
             <tr>
                 {{ $thead }}
             </tr>

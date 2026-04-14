@@ -6,7 +6,9 @@ use App\Enums\PoStatus;
 use App\Imports\PoItemsImport;
 use App\Models\Dapur;
 use App\Models\MenuPeriod;
+use App\Models\PoSupplierAssignment;
 use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderItem;
 use App\Models\User;
 use App\Notifications\NewPOAssigned;
 use Illuminate\Http\Request;
@@ -16,22 +18,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PoController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $user = auth()->user();
-        $query = PurchaseOrder::with(['dapur', 'creator'])
-            ->orderBy('created_at', 'desc');
-
-        if ($user->dapur_id) {
-            $query->where('dapur_id', $user->dapur_id);
-        } elseif ($request->dapur_id) {
-            $query->where('dapur_id', $request->dapur_id);
-        }
-
-        $purchaseOrders = $query->paginate(10);
-        $dapurs = $user->dapur_id ? collect([$user->dapur]) : Dapur::orderBy('name')->get();
-
-        return view('purchase-orders.index', compact('purchaseOrders', 'dapurs'));
+        return view('purchase-orders.index');
     }
 
     public function create()
@@ -113,14 +102,13 @@ class PoController extends Controller
         $purchaseOrder->changeStatus(PoStatus::DITERUSKAN_KE_SUPPLIER, 'Alokasi supplier selesai, pesanan diteruskan.');
 
         // Notify Suppliers
-        // Ambil semua supplier dari item di PO ini
-        $supplierIds = $purchaseOrder->items()
+        // Ambil semua supplier dari assignment di PO ini
+        $supplierIds = PoSupplierAssignment::whereIn('po_item_id', $purchaseOrder->items->pluck('id'))
             ->whereNotNull('supplier_id')
             ->pluck('supplier_id')
             ->unique();
 
-        $suppliers = User::role('supplier')
-            ->whereIn('supplier_id', $supplierIds)
+        $suppliers = User::whereIn('supplier_id', $supplierIds)
             ->get();
 
         foreach ($suppliers as $supplier) {

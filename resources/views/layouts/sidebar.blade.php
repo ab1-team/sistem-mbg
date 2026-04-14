@@ -98,7 +98,7 @@
                         ],
                         [
                             'route' => 'finance.invoices.index',
-                            'match' => 'invoices.*',
+                            'match' => 'finance.invoices.*',
                             'label' => 'Invoice Supplier',
                             'icon' => 'invoice',
                         ],

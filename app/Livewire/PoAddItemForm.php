@@ -14,8 +14,6 @@ class PoAddItemForm extends Component
 
     public $isOpen = false;
 
-    public $search = '';
-
     public $selectedMaterialId = '';
 
     public $quantity = 1;
@@ -34,7 +32,7 @@ class PoAddItemForm extends Component
     public function openModal($poId)
     {
         $this->purchaseOrder = PurchaseOrder::find($poId);
-        $this->reset(['search', 'selectedMaterialId', 'quantity', 'unit_price', 'unit']);
+        $this->reset(['selectedMaterialId', 'quantity', 'unit_price', 'unit']);
         $this->isOpen = true;
     }
 
@@ -53,9 +51,6 @@ class PoAddItemForm extends Component
     {
         $this->validate();
 
-        $material = Material::find($this->selectedMaterialId);
-
-        // Check if item already exists in PO
         $existingItem = PurchaseOrderItem::where('purchase_order_id', $this->purchaseOrder->id)
             ->where('material_id', $this->selectedMaterialId)
             ->first();
@@ -71,37 +66,29 @@ class PoAddItemForm extends Component
                 'material_id' => $this->selectedMaterialId,
                 'quantity_needed' => $this->quantity,
                 'quantity_to_order' => $this->quantity,
-                'unit' => $this->unit ?: $material->unit,
+                'unit' => $this->unit ?: 'unit',
                 'estimated_unit_price' => $this->unit_price,
                 'item_status' => 'pending',
             ]);
         }
 
         $this->purchaseOrder->recalculateTotal();
-
         $this->dispatch('item-added');
         $this->isOpen = false;
-        session()->flash('success', 'Barang berhasil ditambahkan ke PO.');
+        session()->flash('success', 'Barang berhasil ditambahkan.');
     }
 
     public function render()
     {
-        // Get materials available for this kitchen or global ones
-        $materialsQuery = Material::where('is_active', true)
-            ->where(function ($q) {
-                if ($this->purchaseOrder) {
-                    $q->whereNull('dapur_id')
-                        ->orWhere('dapur_id', $this->purchaseOrder->dapur_id);
-                }
-            })
-            ->orderBy('name');
-
-        $materials = $materialsQuery->get()->map(function ($m) {
-            return [
-                'value' => $m->id,
-                'label' => $m->name." ({$m->code}) - {$m->unit}",
-            ];
-        })->toArray();
+        $materials = Material::where('is_active', true)
+            ->orderBy('name')
+            ->get()
+            ->map(function ($m) {
+                return [
+                    'value' => $m->id,
+                    'label' => $m->name." ({$m->unit})",
+                ];
+            });
 
         return view('livewire.po-add-item-form', [
             'materialOptions' => $materials,

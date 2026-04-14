@@ -47,6 +47,8 @@ class KitchenInvoiceController extends Controller
             'items' => $purchaseOrder->items,
         ]);
 
-        return $pdf->stream("Invoice-Dapur-{$purchaseOrder->po_number}.pdf");
+        $safePoNumber = str_replace(['/', '\\'], '-', $purchaseOrder->po_number);
+
+        return $pdf->stream("Invoice-Dapur-{$safePoNumber}.pdf");
     }
 }

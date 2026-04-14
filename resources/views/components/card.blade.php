@@ -3,7 +3,7 @@
     'padding' => true,
 ])
 
-<div {{ $attributes->merge(['class' => 'bg-white rounded-[20px] border border-slate-100']) }}>
+<div {{ $attributes->merge(['class' => 'bg-white rounded-[24px] border border-slate-100']) }}>
     @if ($title)
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-50">
             <h3 class="text-[14px] font-bold text-slate-900">{{ $title }}</h3>

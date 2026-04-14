@@ -71,18 +71,11 @@
     </div>
 
     {{-- Main Table Section --}}
-    <x-card :padding="false" class="overflow-hidden mb-20">
-        <div class="px-6 py-5 border-b border-slate-50 flex items-center justify-between">
-            <h4 class="text-[14px] font-bold text-slate-900 tracking-tight">Riwayat Kalkulasi Bagi Hasil</h4>
-            <div class="w-72">
-                <x-form-input wire:model.live="search" placeholder="Cari periode atau dapur...">
-                    <x-slot name="icon">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    </x-slot>
-                </x-form-input>
-            </div>
-        </div>
+    <x-smart-table-actions>
+        {{-- Slot for additional filters if needed in the future --}}
+    </x-smart-table-actions>
 
+    <x-card :padding="false" class="overflow-hidden mb-20">
         <x-table>
             <x-slot name="thead">
                 <x-table-th>Periode</x-table-th>

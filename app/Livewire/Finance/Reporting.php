@@ -74,6 +74,8 @@ class Reporting extends Component
             ['value' => 'neraca', 'label' => 'Laporan Neraca (Balance Sheet)'],
             ['value' => 'arusKas', 'label' => 'Laporan Arus Kas (Cash Flow)'],
             ['value' => 'bukuBesar', 'label' => 'Laporan Buku Besar (General Ledger)'],
+            ['value' => 'stokBahan', 'label' => 'Laporan Stok Bahan (Inventory)'],
+            ['value' => 'ringkasanPengadaan', 'label' => 'Laporan Ringkasan Pengadaan (Procurement Summary)'],
         ];
     }
 

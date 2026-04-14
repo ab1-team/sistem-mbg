@@ -129,7 +129,7 @@
 
                                 <div class="grid grid-cols-2 gap-4">
                                     <x-form-input type="number" step="0.01" label="Jumlah ({{ $item->unit }})" id="side_qty_{{ $item->id }}" name="quantity" wire:model="quantity" placeholder="0.00" required />
-                                    <x-form-input type="number" label="Harga Net" id="side_price_{{ $item->id }}" name="unit_price" wire:model="unit_price" placeholder="Rp 0" required />
+                                    <x-form-currency label="Harga Net" id="side_price_{{ $item->id }}" name="unit_price" wire:model="unit_price" placeholder="0" required />
                                 </div>
                             </div>
 

@@ -16,15 +16,30 @@
 <div
     class="space-y-1.5"
     x-data="{
+        @if($wireModel)
+        value: @entangle($wireModel),
+        @else
+        value: null,
+        @endif
         fmt(v) {
             if (v === null || v === undefined || v === '') return '';
-            return v.toString().replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            let parsed = parseFloat(v);
+            if (isNaN(parsed)) return '';
+            return Math.floor(parsed).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         }
     }"
-    x-init="$nextTick(() => {
-        let v = $wire.get('{{ $wireModel }}');
-        if (v !== null && v !== undefined) $refs.inp.value = fmt(v);
-    })"
+    x-init="
+        $watch('value', val => {
+            if (document.activeElement !== $refs.inp) {
+                $refs.inp.value = (val !== null && val !== undefined && val !== '') ? fmt(val) : '';
+            }
+        });
+        $nextTick(() => {
+            if (value !== null && value !== undefined && value !== '') {
+                $refs.inp.value = fmt(value);
+            }
+        });
+    "
 >
     @if($label)
         <label for="{{ $id }}_display" class="block text-[12px] font-medium text-slate-500">
@@ -53,7 +68,9 @@
                 el.value = formatted;
                 let pos = Math.max(0, cur + (formatted.length - old));
                 el.setSelectionRange(pos, pos);
-                $wire.$set('{{ $wireModel }}', raw ? parseInt(raw) : null);
+                
+                let parsed = raw ? parseInt(raw) : null;
+                if (value !== parsed) value = parsed;
             "
             {{ $required ? 'required' : '' }}
             {{ $attributes->whereDoesntStartWith('wire:model')->merge([

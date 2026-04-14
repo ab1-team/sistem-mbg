@@ -20,7 +20,7 @@
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
         {{-- Right Side: Selection Form --}}
         <div class="md:col-span-8 space-y-6">
-            <x-card title="Parameter Laporan" class="border-none shadow-sm">
+            <x-card title="Parameter Laporan" class="overflow-visible">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     {{-- Dapur --}}
                     @if($showDapurSelector)

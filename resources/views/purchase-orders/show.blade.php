@@ -25,16 +25,21 @@
                                 Batalkan PO
                             </x-btn>
                         </x-slot>
-                        
-                        <p class="text-[13px] text-slate-500 mb-6 font-medium leading-relaxed">Tandai pesanan ini sebagai batal. Anda wajib memberikan alasan pembatalan untuk catatan audit.</p>
+
+                        <p class="text-[13px] text-slate-500 mb-6 font-medium leading-relaxed">Tandai pesanan ini
+                            sebagai batal. Anda wajib memberikan alasan pembatalan untuk catatan audit.</p>
 
                         <form action="{{ route('purchase-orders.cancel', $purchaseOrder) }}" method="POST">
                             @csrf
-                            <x-form-textarea label="Alasan Pembatalan" name="reason" required rows="3" placeholder="Contoh: Kesalahan input atau stok supplier habis..." />
-                            
+                            <x-form-textarea label="Alasan Pembatalan" name="reason" required rows="3"
+                                placeholder="Contoh: Kesalahan input atau stok supplier habis..." />
+
                             <div class="mt-8 flex gap-3">
-                                <x-btn @click="$dispatch('close-modal', 'cancel-po')" type="button" variant="secondary" class="flex-1">Batal</x-btn>
-                                <x-btn type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold">Konfirmasi Batal</x-btn>
+                                <x-btn @click="$dispatch('close-modal', 'cancel-po')" type="button" variant="secondary"
+                                    class="flex-1">Batal</x-btn>
+                                <x-btn type="submit"
+                                    class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold">Konfirmasi
+                                    Batal</x-btn>
                             </div>
                         </form>
                     </x-dialog>
@@ -64,7 +69,8 @@
                 @if ($purchaseOrder->invoices()->exists())
                     <x-btn href="{{ route('finance.invoices.show', $purchaseOrder->invoices->first()) }}"
                         variant="secondary" class="bg-white border-emerald-200 text-emerald-700 hover:bg-emerald-50">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
                             <path
                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
@@ -100,7 +106,8 @@
                                     class="text-[13px] font-bold text-emerald-700 hover:underline">
                                     {{ $purchaseOrder->menuPeriod->title }}
                                 </a>
-                                <p class="text-[11px] text-slate-400 mt-0.5">{{ $purchaseOrder->menuPeriod->period->name }}</p>
+                                <p class="text-[11px] text-slate-400 mt-0.5">
+                                    {{ $purchaseOrder->menuPeriod->period->name }}</p>
                             @else
                                 <p class="text-[13px] font-bold text-slate-500 italic">Manual (Tanpa Rencana Menu)</p>
                             @endif
@@ -129,9 +136,37 @@
                             $hasInvoice = $purchaseOrder->invoices()->exists();
                             $steps = [
                                 ['label' => 'Generate PO', 'done' => true],
-                                ['label' => 'Review Yayasan', 'done' => in_array($statusVal, ['direview_yayasan', 'diteruskan_ke_supplier', 'diproses_supplier', 'dalam_pengiriman', 'diterima_sebagian', 'diterima_lengkap', 'selesai'])],
-                                ['label' => 'Proses Supplier', 'done' => in_array($statusVal, ['diteruskan_ke_supplier', 'diproses_supplier', 'dalam_pengiriman', 'diterima_sebagian', 'diterima_lengkap', 'selesai'])],
-                                ['label' => 'Penerimaan (GR)', 'done' => in_array($statusVal, ['diterima_sebagian', 'diterima_lengkap', 'selesai'])],
+                                [
+                                    'label' => 'Review Yayasan',
+                                    'done' => in_array($statusVal, [
+                                        'direview_yayasan',
+                                        'diteruskan_ke_supplier',
+                                        'diproses_supplier',
+                                        'dalam_pengiriman',
+                                        'diterima_sebagian',
+                                        'diterima_lengkap',
+                                        'selesai',
+                                    ]),
+                                ],
+                                [
+                                    'label' => 'Proses Supplier',
+                                    'done' => in_array($statusVal, [
+                                        'diteruskan_ke_supplier',
+                                        'diproses_supplier',
+                                        'dalam_pengiriman',
+                                        'diterima_sebagian',
+                                        'diterima_lengkap',
+                                        'selesai',
+                                    ]),
+                                ],
+                                [
+                                    'label' => 'Penerimaan (GR)',
+                                    'done' => in_array($statusVal, [
+                                        'diterima_sebagian',
+                                        'diterima_lengkap',
+                                        'selesai',
+                                    ]),
+                                ],
                                 ['label' => 'Tagihan (Invoice)', 'done' => $hasInvoice],
                                 ['label' => 'Selesai', 'done' => $statusVal === 'selesai'],
                             ];
@@ -139,14 +174,20 @@
 
                         @foreach ($steps as $index => $step)
                             <div class="flex items-center gap-3">
-                                <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 {{ $step['done'] ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-400' }}">
+                                <div
+                                    class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 {{ $step['done'] ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-400' }}">
                                     @if ($step['done'])
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3"
+                                            viewBox="0 0 24 24">
+                                            <path d="M5 13l4 4L19 7" />
+                                        </svg>
                                     @else
                                         <span class="text-[10px] font-bold text-emerald-600">{{ $index + 1 }}</span>
                                     @endif
                                 </div>
-                                <p class="text-[12px] font-semibold {{ $step['done'] ? 'text-emerald-900/40 line-through' : 'text-emerald-900' }}">{{ $step['label'] }}</p>
+                                <p
+                                    class="text-[12px] font-semibold {{ $step['done'] ? 'text-emerald-900/40 line-through' : 'text-emerald-900' }}">
+                                    {{ $step['label'] }}</p>
                             </div>
                         @endforeach
                     </div>
@@ -154,16 +195,22 @@
 
                 {{-- AUDIT TRAIL / HISTORY --}}
                 <x-card title="Riwayat Status">
-                    <div class="space-y-6 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-slate-100">
+                    <div
+                        class="space-y-6 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-slate-100">
                         @foreach ($purchaseOrder->statusHistory->sortByDesc('created_at') as $history)
                             <div class="relative pl-8">
-                                <div class="absolute left-0 top-1 w-[22px] h-[22px] rounded-full border bg-white flex items-center justify-center ring-4 ring-white {{ $loop->first ? 'border-emerald-600 text-emerald-600' : 'border-slate-200 text-slate-300' }}">
-                                    <div class="w-1.5 h-1.5 rounded-full {{ $loop->first ? 'bg-emerald-600' : 'bg-slate-300' }}"></div>
+                                <div
+                                    class="absolute left-0 top-1 w-[22px] h-[22px] rounded-full border bg-white flex items-center justify-center ring-4 ring-white {{ $loop->first ? 'border-emerald-600 text-emerald-600' : 'border-slate-200 text-slate-300' }}">
+                                    <div
+                                        class="w-1.5 h-1.5 rounded-full {{ $loop->first ? 'bg-emerald-600' : 'bg-slate-300' }}">
+                                    </div>
                                 </div>
                                 <div class="flex items-center flex-wrap gap-x-2 gap-y-0.5 mb-1">
-                                    <span class="text-[12px] font-bold text-slate-900">{{ $history->to_status->label() }}</span>
+                                    <span
+                                        class="text-[12px] font-bold text-slate-900">{{ $history->to_status->label() }}</span>
                                 </div>
-                                <p class="text-[11px] text-slate-500">{{ $history->user->name }} • {{ $history->created_at->format('d/m/y H:i') }}</p>
+                                <p class="text-[11px] text-slate-500">{{ $history->user->name }} •
+                                    {{ $history->created_at->format('d/m/y H:i') }}</p>
                             </div>
                         @endforeach
                     </div>
@@ -172,44 +219,53 @@
         </div>
     </x-container>
 
-
-    <livewire:po-assignment-form />
+    {{-- MODALS & LIVEWIRE COMPONENTS --}}
     <livewire:po-add-item-form />
+    <livewire:po-assignment-form />
 
-    {{-- MODAL IMPORT PO --}}
     <x-dialog name="import-po" title="Import Bahan Baku">
-        <div x-data="{ poId: null }" @open-import-po.window="poId = $event.detail.poId; $dispatch('open-modal', 'import-po')">
-            <form :action="`/purchase-orders/${poId}/import`" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <div x-data="{ poId: null }"
+            @open-modal.window="if (typeof $event.detail === 'object' && $event.detail.name === 'import-po') { poId = $event.detail.poId; }">
+            <form :action="`/purchase-orders/${poId}/import`" method="POST" enctype="multipart/form-data"
+                class="space-y-6">
                 @csrf
-                <div class="border border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center bg-slate-50/50">
-                    <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-emerald-600 mb-4 border border-slate-100 shadow-sm">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                <div
+                    class="p-4 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/50 flex flex-col items-center gap-3 text-center">
+                    <div
+                        class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path
+                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                     </div>
-                    <h4 class="text-[15px] font-black text-slate-800 mb-1">Pilih File Excel/CSV</h4>
-                    <p class="text-[12px] text-slate-500 mb-6 font-medium leading-relaxed">Pastikan file mengikuti format template untuk menghindari kesalahan pembacaan data.</p>
-                    
-                    <div class="w-full max-w-xs mx-auto">
-                        <input type="file" name="file" id="file" accept=".xlsx,.xls,.csv" required 
-                            class="block w-full text-[12px] text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-[11px] file:font-black file:uppercase file:tracking-widest file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 transition-all cursor-pointer shadow-lg shadow-emerald-900/10" />
+                    <div>
+                        <p class="text-[13px] font-bold text-slate-700">Pilih File Excel/CSV</p>
+                        <p class="text-[11px] text-slate-500">Maksimal ukuran file 5MB</p>
                     </div>
+                    <input type="file" name="file" id="file" accept=".xlsx,.xls,.csv" required
+                        class="text-[12px] text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[11px] file:font-bold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 transition-all cursor-pointer">
                 </div>
 
                 <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex gap-3">
-                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor"
+                        stroke-width="2.5" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="10" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4m0-4h.01" />
                     </svg>
                     <div class="text-[11px] text-emerald-800 leading-relaxed font-bold">
-                        Gunakan template kami untuk memastikan format data benar. 
-                        <a href="{{ route('purchase-orders.download-template') }}" class="block mt-1 text-emerald-600 underline hover:text-emerald-900">Unduh Template CSV</a>
+                        Gunakan template kami untuk memastikan format data benar.
+                        <a href="{{ route('purchase-orders.download-template') }}"
+                            class="block mt-1 text-emerald-600 underline hover:text-emerald-900">Unduh Template CSV</a>
                     </div>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4">
-                    <x-btn @click="$dispatch('close-modal', 'import-po')" type="button" variant="secondary" class="flex-1">Batal</x-btn>
-                    <x-btn type="submit" class="flex-1 bg-emerald-700 hover:bg-emerald-800 shadow-lg shadow-emerald-900/20">Mulai Import</x-btn>
+                    <x-btn @click="$dispatch('close-modal', 'import-po')" type="button" variant="secondary"
+                        class="flex-1">Batal</x-btn>
+                    <x-btn type="submit"
+                        class="flex-1 bg-emerald-700 hover:bg-emerald-800 shadow-lg shadow-emerald-900/20">Mulai
+                        Import</x-btn>
                 </div>
             </form>
         </div>

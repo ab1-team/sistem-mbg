@@ -6,10 +6,12 @@ use App\Http\Middleware\ScopeDapurBySubdomain;
 use App\Models\Dapur;
 use App\Models\Investor;
 use App\Models\MenuBom;
+use App\Models\PurchaseOrder;
 use App\Models\User;
 use App\Observers\DapurObserver;
 use App\Observers\InvestorObserver;
 use App\Observers\MenuBomObserver;
+use App\Observers\PurchaseOrderObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -42,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
         // Register Observers for Wallet Auto-creation (Fase 1.2)
         Dapur::observe(DapurObserver::class);
         Investor::observe(InvestorObserver::class);
+        PurchaseOrder::observe(PurchaseOrderObserver::class);
 
         // Register Observers for Nutrition Sync (Fase 2.2)
         MenuBom::observe(MenuBomObserver::class);

@@ -1,4 +1,4 @@
-<div class="overflow-hidden" x-data="{ confirmingDelete: null }">
+<div x-data="{ confirmingDelete: null }">
     <table class="w-full text-left border-collapse">
         <thead class="bg-slate-50 border-b border-slate-100">
             <tr>
@@ -9,10 +9,9 @@
         </thead>
         <tbody class="divide-y divide-slate-50">
             @foreach ($purchaseOrder->items as $item)
-                <tr class="group hover:bg-slate-50/30 transition-colors">
+                <tr class="group hover:bg-slate-50/30 transition-colors" wire:key="item-row-{{ $item->id }}">
                     <td class="px-6 py-5">
                         <div class="flex items-start gap-3">
-                            {{-- STATUS DOT (Muted) --}}
                             <div class="mt-1">
                                 @if ($item->assignments->count() > 0)
                                     <div class="w-2 h-2 rounded-full bg-green-500"></div>
@@ -71,12 +70,13 @@
                     <td class="px-6 py-5 text-right whitespace-nowrap">
                         <div class="flex items-center justify-end gap-2">
                             @if (auth()->user()->hasRole(['admin', 'superadmin', 'logistik']) &&
-                                    in_array($purchaseOrder->status->value, ['draf', 'dikirim_ke_yayasan', 'direview_yayasan']))
+                                    $purchaseOrder->status->value === 'draf')
                                 <button @click="confirmingDelete = {{ $item->id }}"
                                     class="p-1.5 text-slate-400 hover:text-rose-600 transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
                                         viewBox="0 0 24 24">
-                                        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        <path
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
                                 </button>
                             @endif
@@ -98,9 +98,9 @@
 
     {{-- FOOTER: ADD ITEM --}}
     @if (auth()->user()->hasRole(['admin', 'superadmin', 'logistik']) &&
-            in_array($purchaseOrder->status->value, ['draf', 'dikirim_ke_yayasan', 'direview_yayasan']))
+            $purchaseOrder->status->value === 'draf')
         <div class="p-6 bg-slate-50/50 border-t border-slate-100 flex justify-center gap-4">
-            <button @click="$dispatch('open-add-item', { poId: {{ $purchaseOrder->id }} })"
+            <button @click="$dispatch('open-modal', { name: 'po-add-item-manual' })"
                 class="inline-flex items-center gap-2 text-[13px] font-bold text-emerald-700 hover:text-emerald-800 transition-colors py-2 px-4 rounded-xl hover:bg-emerald-50">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                     <path d="M12 4v16m8-8H4" />
@@ -108,7 +108,7 @@
                 Tambah Barang Baru Manual
             </button>
 
-            <button @click="$dispatch('open-import-po', { poId: {{ $purchaseOrder->id }} })"
+            <button @click="$dispatch('open-modal', { name: 'import-po', poId: {{ $purchaseOrder->id }} })"
                 class="inline-flex items-center gap-2 text-[13px] font-bold text-blue-700 hover:text-blue-800 transition-colors py-2 px-4 rounded-xl hover:bg-blue-50">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                     <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -118,33 +118,81 @@
         </div>
     @endif
 
+    <x-dialog name="po-add-item-manual" title="Tambah Barang Manual" :show="$isOpen">
+        <form wire:submit.prevent="addItem" class="space-y-4">
+            <x-form-searchable-select label="Cari Bahan Baku" wire:model.live="selectedMaterialId"
+                :options="$materialOptions" placeholder="Pilih Bahan..." required />
+
+            @if ($errors->any())
+                <div class="px-4 py-3 bg-rose-50 border border-rose-100 rounded-xl">
+                    <ul class="list-disc list-inside text-[12px] text-rose-600 font-bold">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if ($selectedMaterialId)
+                <div class="grid grid-cols-2 gap-4">
+                    <x-form-input label="Kuantitas" name="quantity" type="number" step="0.01"
+                        wire:model="quantity">
+                        <x-slot name="icon">
+                            <span class="text-[10px] font-black uppercase">{{ $unit }}</span>
+                        </x-slot>
+                    </x-form-input>
+
+                    <x-form-currency label="Harga Satuan" name="unit_price" 
+                        wire:model="unit_price" />
+                </div>
+            @endif
+
+            <div class="flex items-center gap-3 mt-6">
+                <x-btn @click="$dispatch('close-modal', 'po-add-item-manual')" type="button" variant="secondary" class="flex-1">
+                    Batal
+                </x-btn>
+                <x-btn type="submit"
+                    class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+                    wire:loading.attr="disabled" :disabled="!$selectedMaterialId" wire:target="addItem">
+                    <span wire:loading.remove wire:target="addItem">Tambahkan ke PO</span>
+                    <span wire:loading wire:target="addItem">Menyimpan...</span>
+                </x-btn>
+            </div>
+        </form>
+
+        <x-slot name="footer">
+            {{-- Footer moved inside form for better submit handling --}}
+        </x-slot>
+    </x-dialog>
+
     {{-- MODAL KONFIRMASI HAPUS --}}
-    <div x-show="confirmingDelete !== null" 
-         class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
-         style="display: none;"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0">
-        
-        <div @click.away="confirmingDelete = null" 
-             class="bg-white rounded-[24px] shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-300">
+    <div x-show="confirmingDelete !== null"
+        class="fixed inset-0 z-1000 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+        style="display: none;" x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0">
+
+        <div @click.away="confirmingDelete = null"
+            class="bg-white rounded-[24px] shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-300">
             <div class="p-6">
-                <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mb-4 border border-rose-100 shadow-sm">
+                <div
+                    class="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mb-4 border border-red-100 shadow-sm">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <path
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                 </div>
                 <h3 class="text-[16px] font-bold text-slate-900 mb-2 tracking-tight">Hapus Barang?</h3>
-                <p class="text-[13px] text-slate-500 mb-6 leading-relaxed">Barang ini akan dihapus dari daftar pesanan. Tindakan ini tidak dapat dibatalkan.</p>
-                
+                <p class="text-[13px] text-slate-500 mb-6 leading-relaxed">Barang ini akan dihapus dari daftar pesanan.</p>
+
                 <div class="flex gap-3">
-                    <button @click="confirmingDelete = null" type="button" class="flex-1 px-4 py-2.5 rounded-xl font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors text-[13px]">
+                    <button @click="confirmingDelete = null" type="button"
+                        class="flex-1 px-4 py-2.5 rounded-xl font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors text-[13px]">
                         Batal
                     </button>
-                    <button @click="$wire.removeItem(confirmingDelete); confirmingDelete = null" type="button" class="flex-1 px-4 py-2.5 rounded-xl font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm transition-all text-[13px]">
+                    <button @click="$wire.removeItem(confirmingDelete); confirmingDelete = null" type="button"
+                        class="flex-1 px-4 py-2.5 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-sm transition-all text-[13px]">
                         Ya, Hapus
                     </button>
                 </div>

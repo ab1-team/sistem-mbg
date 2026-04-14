@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Finance;
 
 use App\Http\Controllers\Controller;
 use App\Models\Dapur;
+use App\Models\PurchaseOrder;
+use App\Models\Stock;
 use App\Utils\AccountingUtil;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -86,6 +88,42 @@ class ReportController extends Controller
         ]));
 
         return $pdf->stream("laporan-buku-besar-{$data['akun']->kode}.pdf");
+    }
+
+    protected function stokBahan($tahun, $bulan, $periode, $subLaporan, $dapur_id, $dapurObj)
+    {
+        $query = Stock::with(['material', 'dapur']);
+
+        if ($dapur_id !== 'all') {
+            $query->where('dapur_id', $dapur_id);
+        }
+
+        $stocks = $query->get();
+        $title = 'Laporan Stok Bahan (Inventory)';
+        $subtitle = 'Per Tanggal: '.date('d M Y').($dapurObj ? ' - '.$dapurObj->name : ' - Konsolidasi Yayasan');
+
+        $pdf = Pdf::loadView('finance.reports.pdf.stok_bahan', compact('stocks', 'title', 'subtitle', 'dapurObj'));
+
+        return $pdf->stream('laporan-stok-bahan-'.date('Ymd').'.pdf');
+    }
+
+    protected function ringkasanPengadaan($tahun, $bulan, $periode, $subLaporan, $dapur_id, $dapurObj)
+    {
+        $query = PurchaseOrder::with(['dapur', 'items', 'creator'])
+            ->whereYear('created_at', $tahun)
+            ->whereMonth('created_at', $bulan);
+
+        if ($dapur_id !== 'all') {
+            $query->where('dapur_id', $dapur_id);
+        }
+
+        $pos = $query->latest()->get();
+        $title = 'Laporan Ringkasan Pengadaan (Procurement Summary)';
+        $subtitle = $this->getSubtitle($tahun, $bulan).($dapurObj ? ' - '.$dapurObj->name : ' - Konsolidasi Yayasan');
+
+        $pdf = Pdf::loadView('finance.reports.pdf.ringkasan_pengadaan', compact('pos', 'title', 'subtitle', 'dapurObj'));
+
+        return $pdf->stream("laporan-pengadaan-{$tahun}-{$bulan}.pdf");
     }
 
     private function getSubtitle($tahun, $bulan, $periode = '-')

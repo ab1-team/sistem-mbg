@@ -17,8 +17,9 @@
 
 {{-- Trigger slot: wrap any button with x-on:click="$dispatch('open-modal', '{{ $name }}')" --}}
 
-<div x-data="{ open: @js($show) }" x-on:open-modal.window="if ($event.detail === '{{ $name }}') open = true"
-    x-on:close-modal.window="if ($event.detail === '{{ $name }}') open = false"
+<div x-data="{ open: @js($show) }"
+    x-on:open-modal.window="if ($event.detail === '{{ $name }}' || $event.detail.name === '{{ $name }}') open = true"
+    x-on:close-modal.window="if ($event.detail === '{{ $name }}' || $event.detail.name === '{{ $name }}') open = false"
     x-on:keydown.escape.window="open = false">
     {{-- Trigger --}}
     {{ $trigger ?? '' }}

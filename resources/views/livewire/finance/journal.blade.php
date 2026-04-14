@@ -1,9 +1,12 @@
 <x-container class="max-w-6xl">
+    <x-page-header title="Input Jurnal Umum"
+        subtitle="Catat transaksi keuangan (Aset Masuk, Keluar, atau Pemindahan Saldo) untuk laporan buku besar." />
+
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
         {{-- Main Form Section --}}
         <div class="lg:col-span-3">
-            <x-card padding="false" class="shadow-sm border-slate-200 overflow-visible">
+            <x-card padding="false" class="overflow-visible">
                 <form wire:submit.prevent="save" class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
 
@@ -85,7 +88,7 @@
 
         {{-- Sidebar Section --}}
         <div class="lg:col-span-1">
-            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+            <x-card>
                 <div class="flex items-center justify-between mb-1" wire:loading.class="opacity-50">
                     <span class="text-[13px] text-slate-500 font-medium">Saldo</span>
                     <div class="flex flex-col items-end">
@@ -96,7 +99,7 @@
                             class="text-[10px] text-emerald-600 font-bold italic">Menghitung...</div>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             @if (session()->has('success'))
                 <div class="mt-4 bg-emerald-50 border border-emerald-100 p-4 rounded-xl flex items-start gap-3">

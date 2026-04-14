@@ -61,8 +61,10 @@
         </x-table>
 
         {{-- Pagination --}}
-        <div class="mt-auto">
-            {{ $users->links() }}
-        </div>
+        @if ($users->hasPages())
+            <div class="px-6 py-4 border-t border-slate-50">
+                {{ $users->links() }}
+            </div>
+        @endif
     </x-card>
 </div>

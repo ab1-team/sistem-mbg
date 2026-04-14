@@ -97,43 +97,40 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {{-- Left Column: Recent Menus --}}
             <div class="lg:col-span-2">
-                <x-card title="Masakan Terbaru" subtitle="Daftar menu yang baru saja ditambahkan ke sistem.">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="bg-slate-50 border-b border-slate-100">
-                                <tr>
-                                    <th class="px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Nama Masakan</th>
-                                    <th class="px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tipe</th>
-                                    <th class="px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Kalori</th>
-                                    <th class="px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-50">
-                                @forelse($recentMenus as $menu)
-                                    <tr class="hover:bg-slate-50/50 transition-colors group">
-                                        <td class="px-5 py-4">
-                                            <p class="font-bold text-slate-900 tracking-tight leading-none">{{ $menu->name }}</p>
-                                            <p class="text-[11px] text-slate-400 mt-1 truncate max-w-xs">{{ $menu->description }}</p>
-                                        </td>
-                                        <td class="px-5 py-4">
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 uppercase">{{ $menu->meal_type }}</span>
-                                        </td>
-                                        <td class="px-5 py-4 text-right font-mono text-[13px] font-bold text-slate-600">
-                                            {{ number_format($menu->calories, 0) }} <span class="text-[10px] text-slate-400">kcal</span>
-                                        </td>
-                                        <td class="px-5 py-4 text-right">
-                                            <a href="{{ route('menu-items.show', $menu) }}" class="text-[11px] font-bold text-green-700 hover:text-green-900 underline transition-colors">Lihat Detail</a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="px-5 py-10 text-center text-slate-400 text-[13px]">Belum ada data menu tersedia.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-slate-50">
+                <x-card title="Masakan Terbaru" :padding="false" class="overflow-hidden">
+                    <x-table>
+                        <x-slot name="thead">
+                            <x-table-th>Nama Masakan</x-table-th>
+                            <x-table-th>Tipe</x-table-th>
+                            <x-table-th class="text-right">Kalori</x-table-th>
+                            <x-table-th class="text-right">Aksi</x-table-th>
+                        </x-slot>
+
+                        @forelse($recentMenus as $menu)
+                            <tr class="hover:bg-slate-50/50 transition-colors group">
+                                <x-table-td>
+                                    <p class="font-bold text-slate-900 tracking-tight leading-none">{{ $menu->name }}</p>
+                                    <p class="text-[11px] text-slate-400 mt-1 truncate max-w-xs">{{ $menu->description }}</p>
+                                </x-table-td>
+                                <x-table-td>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 uppercase">{{ $menu->meal_type }}</span>
+                                </x-table-td>
+                                <x-table-td class="text-right font-mono text-[13px] font-bold text-slate-600">
+                                    {{ number_format($menu->calories, 0) }} <span class="text-[10px] text-slate-400">kcal</span>
+                                </x-table-td>
+                                <x-table-td class="text-right">
+                                    <a href="{{ route('menu-items.show', $menu) }}" class="text-[11px] font-bold text-green-700 hover:text-green-900 underline transition-colors">Lihat Detail</a>
+                                </x-table-td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4">
+                                    <x-empty-state title="Belum ada data menu tersedia" subtitle="Mulai tambahkan resep masakan baru ke sistem." />
+                                </td>
+                            </tr>
+                        @endforelse
+                    </x-table>
+                    <div class="px-6 py-4 border-t border-slate-50 bg-slate-50/10">
                         <a href="{{ route('menu-items.index') }}" class="text-[12px] font-bold text-slate-500 hover:text-green-800 flex items-center justify-center gap-2 transition-colors">
                             Lihat Semua Menu
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
