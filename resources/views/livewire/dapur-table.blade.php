@@ -1,12 +1,14 @@
 <div>
-    <x-smart-table-actions>
-        <x-btn href="{{ route('dapurs.create') }}">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                <path d="M12 5v14M5 12h14" />
-            </svg>
-            Tambah Dapur
-        </x-btn>
-    </x-smart-table-actions>
+    @if(auth()->user()->hasRole('superadmin'))
+        <x-smart-table-actions>
+            <x-btn href="{{ route('dapurs.create') }}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path d="M12 5v14M5 12h14" />
+                </svg>
+                Tambah Dapur
+            </x-btn>
+        </x-smart-table-actions>
+    @endif
 
     <x-card :padding="false" class="overflow-hidden">
         <x-table>
@@ -15,7 +17,9 @@
                 <x-table-th sort="name" :active="$sortField === 'name'" :asc="$sortAsc">Nama Dapur</x-table-th>
                 <x-table-th>Penanggung Jawab</x-table-th>
                 <x-table-th sort="created_at" :active="$sortField === 'created_at'" :asc="$sortAsc">Terdaftar</x-table-th>
-                <x-table-th class="text-right">Aksi</x-table-th>
+                @if(auth()->user()->hasRole('superadmin'))
+                    <x-table-th class="text-right">Aksi</x-table-th>
+                @endif
             </x-slot>
 
             @forelse($dapurs as $dapur)
@@ -43,16 +47,37 @@
                     <x-table-td>
                         <span class="text-slate-400 font-medium">{{ $dapur->created_at->diffForHumans() }}</span>
                     </x-table-td>
-                    <x-table-td class="text-right py-3 px-4">
-                        <div class="flex items-center justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200">
-                            <x-btn href="{{ route('dapurs.edit', $dapur) }}" variant="secondary" class="py-1.5! px-3! text-[11px]!">Edit</x-btn>
-                            <x-dialog title="Hapus Dapur" 
-                                description="Apakah Anda yakin ingin menghapus Unit Dapur {{ $dapur->name }}? Data operasional terkait dapur ini mungkin akan terpengaruh."
-                                action-label="Ya, Hapus" :action-url="route('dapurs.destroy', $dapur)" method="DELETE">
-                                <x-btn variant="danger" class="py-1.5! px-3! text-[11px]!">Hapus</x-btn>
-                            </x-dialog>
-                        </div>
-                    </x-table-td>
+                    @if(auth()->user()->hasRole('superadmin'))
+                        <x-table-td class="text-right py-3 px-4">
+                            <div class="flex items-center justify-end gap-2">
+                                <x-btn href="{{ route('dapurs.edit', $dapur) }}" variant="secondary"
+                                    class="py-1.5! px-3! text-[11px]!">Edit</x-btn>
+
+                                <x-dialog title="Hapus Dapur" name="delete-dapur-{{ $dapur->id }}">
+                                    <x-slot name="trigger">
+                                        <x-btn variant="danger" class="py-1.5! px-3! text-[11px]!" 
+                                            x-on:click="$dispatch('open-modal', 'delete-dapur-{{ $dapur->id }}')">
+                                            Hapus
+                                        </x-btn>
+                                    </x-slot>
+
+                                    <p class="text-[13px] text-slate-600 leading-relaxed">
+                                        Apakah Anda yakin ingin menghapus Unit Dapur <span class="font-bold text-slate-900">{{ $dapur->name }}</span>? 
+                                        Semua data operasional dan akun keuangan terkait dapur ini akan hilang secara permanen.
+                                    </p>
+
+                                    <x-slot name="footer">
+                                        <x-btn variant="secondary" x-on:click="$dispatch('close-modal', 'delete-dapur-{{ $dapur->id }}')">Batal</x-btn>
+                                        <form action="{{ route('dapurs.destroy', $dapur) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <x-btn type="submit" variant="danger">Ya, Hapus Permanen</x-btn>
+                                        </form>
+                                    </x-slot>
+                                </x-dialog>
+                            </div>
+                        </x-table-td>
+                    @endif
                 </tr>
             @empty
                 <tr>

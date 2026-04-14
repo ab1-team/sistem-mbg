@@ -12,6 +12,7 @@
 @endphp
 
 <div class="space-y-1.5"
+     wire:ignore
      x-data="{ 
         value: '{{ $value }}',
         instance: null,

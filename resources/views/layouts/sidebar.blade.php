@@ -85,16 +85,16 @@
                     'role' => ['finance_yayasan', 'superadmin'],
                     'items' => [
                         [
-                            'route' => 'finance.revenues.index',
-                            'match' => 'finance.revenues.*',
-                            'label' => 'Pemasukan (Revenue)',
+                            'route' => 'finance.journal.index',
+                            'match' => 'finance.journal.*',
+                            'label' => 'Jurnal Umum',
                             'icon' => 'revenue',
                         ],
                         [
-                            'route' => 'finance.expenses.index',
-                            'match' => 'finance.expenses.*',
-                            'label' => 'Pengeluaran (Expense)',
-                            'icon' => 'expense',
+                            'route' => 'finance.reports.index',
+                            'match' => 'finance.reports.*',
+                            'label' => 'Pelaporan',
+                            'icon' => 'planning',
                         ],
                         [
                             'route' => 'finance.invoices.index',

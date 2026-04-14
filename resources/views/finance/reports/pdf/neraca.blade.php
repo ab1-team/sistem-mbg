@@ -1,0 +1,81 @@
+@php
+    use App\Utils\AccountingUtil;
+    $saldoAkunLevel1 = [];
+@endphp
+
+@extends('finance.reports.pdf.layout')
+
+@section('content')
+    <table style="width: 100%; border: 0;">
+        @foreach ($akunLevel1s as $akunLevel1)
+            {{-- Make it an object if it was array passed from controller --}}
+            @php $akunLevel1 = (object)$akunLevel1; @endphp
+            
+            <tr style="background-color: #b0b0b0;">
+                <td colspan="3" style="text-align: center; border: 0; font-weight: bold;">
+                    {{ $akunLevel1->kode }}. {{ $akunLevel1->nama }}
+                </td>
+            </tr>
+
+            @php
+                $saldoAkunLevel1[$akunLevel1->id] = 0;
+            @endphp
+            
+            @foreach ($akunLevel1->level2s as $akunLevel2)
+                @php $akunLevel2 = (object)$akunLevel2; @endphp
+                <tr style="background-color: #d0d0d0;">
+                    <td style="border: 0; width: 5%;">
+                        {{ $akunLevel2->kode }}.
+                    </td>
+                    <td colspan="2" style="border: 0;">
+                        {{ $akunLevel2->nama }}
+                    </td>
+                </tr>
+
+                @foreach ($akunLevel2->level3s as $index => $akunLevel3)
+                    @php 
+                        $akunLevel3 = (object)$akunLevel3;
+                        $saldoAkun = 0;
+                        foreach ($akunLevel3->accounts as $account) {
+                            $account = (object)$account;
+                            $saldo = AccountingUtil::sumSaldo($account, $bulan, $tahun);
+                            
+                            // Special Logic from Bumdesmart: link to P&L for specific account
+                            if ($account->kode == '3.2.01.01') {
+                                $saldo = AccountingUtil::saldoLabaRugi($tahun, $bulan);
+                            }
+
+                            $saldoAkun += $saldo;
+                        }
+
+                        $saldoAkunLevel1[$akunLevel1->id] += $saldoAkun;
+                    @endphp
+
+                    <tr style="background-color: {{ $index % 2 == 0 ? '#f0f0f0' : '#fefefe' }};">
+                        <td style="border: 0; width: 10%;">
+                            {{ $akunLevel3->kode }}.
+                        </td>
+                        <td style="border: 0; width: 60%;">
+                            {{ $akunLevel3->nama }}
+                        </td>
+                        <td style="border: 0; text-align: right; width: 30%;">
+                            {{ number_format($saldoAkun, 2) }}
+                        </td>
+                    </tr>
+                @endforeach
+            @endforeach
+
+            <tr style="background-color: #b0b0b0;">
+                <td colspan="2" style="text-align: left; border: 0; font-weight: bold;">
+                    Jumlah {{ $akunLevel1->nama }}
+                </td>
+                <td style="text-align: right; border: 0; font-weight: bold;">
+                    {{ number_format($saldoAkunLevel1[$akunLevel1->id], 2) }}
+                </td>
+            </tr>
+            <tr>
+                <td style="height: 8px !important; border: 0; padding: 0;"></td>
+            </tr>
+        @endforeach
+    </table>
+@endsection

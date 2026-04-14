@@ -3,11 +3,10 @@
 namespace App\Services\Finance;
 
 use App\Models\DividendDistribution;
-use App\Models\Expense;
 use App\Models\Investor;
+use App\Models\Payment;
 use App\Models\Period;
 use App\Models\ProfitCalculation;
-use App\Models\Revenue;
 use App\Models\Setting;
 use App\Models\Wallet;
 use App\Notifications\ProfitDistributed;
@@ -22,27 +21,30 @@ class ProfitDistributionService
     {
         return DB::transaction(function () use ($period) {
             // Get all dapurs that have activity in this period
-            $dapurIds = Revenue::where('period_id', $period->id)->pluck('dapur_id')
-                ->merge(Expense::where('period_id', $period->id)->pluck('dapur_id'))
+            $dapurIds = Payment::whereBetween('tanggal_pembayaran', [$period->start_date, $period->end_date])
+                ->pluck('dapur_id')
                 ->unique();
 
             $results = [];
 
             foreach ($dapurIds as $dapurId) {
-                // 1. Calculate Totals
-                $totalRevenue = Revenue::where('period_id', $period->id)->where('dapur_id', $dapurId)->sum('amount');
+                // 1. Calculate Totals based on Payment types
+                $totalRevenue = Payment::where('dapur_id', $dapurId)
+                    ->whereBetween('tanggal_pembayaran', [$period->start_date, $period->end_date])
+                    ->where('jenis_transaksi', 'pendapatan_dana')
+                    ->sum('total_harga');
 
-                // COGS (HPP) - In our case, expenses with category 'bahan_baku'
-                $totalCogs = Expense::where('period_id', $period->id)
-                    ->where('dapur_id', $dapurId)
-                    ->where('category', 'bahan_baku')
-                    ->sum('amount');
+                // COGS (HPP) - pembelian_bahan
+                $totalCogs = Payment::where('dapur_id', $dapurId)
+                    ->whereBetween('tanggal_pembayaran', [$period->start_date, $period->end_date])
+                    ->where('jenis_transaksi', 'pembelian_bahan')
+                    ->sum('total_harga');
 
-                // Other Expenses
-                $totalOtherExpenses = Expense::where('period_id', $period->id)
-                    ->where('dapur_id', $dapurId)
-                    ->where('category', '!=', 'bahan_baku')
-                    ->sum('amount');
+                // Other Expenses - operasional_dapur, gaji_staf, lainnya
+                $totalOtherExpenses = Payment::where('dapur_id', $dapurId)
+                    ->whereBetween('tanggal_pembayaran', [$period->start_date, $period->end_date])
+                    ->whereIn('jenis_transaksi', ['operasional_dapur', 'gaji_staf', 'lainnya'])
+                    ->sum('total_harga');
 
                 $grossProfit = $totalRevenue - $totalCogs;
                 $netProfit = $grossProfit - $totalOtherExpenses;

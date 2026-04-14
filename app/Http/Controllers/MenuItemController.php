@@ -87,14 +87,15 @@ class MenuItemController extends Controller
             // Tambahkan baris instruksi
             fputcsv($file, [
                 '--- PETUNJUK PENGISIAN ---',
+                'tipe_makan wajib diisi: anak_anak atau dewasa',
                 'Format komposisi_bahan -> KODE:JUMLAH|KODE:JUMLAH',
-                'Contoh: BB-BER-01:0.1',
+                'Contoh: BB-BER-01:0.1 (0.1 adalah kuantitas)',
                 'Pemisah antar bahan gunakan tanda |',
-                '', '', '', '', '', '',
+                '', '', '', '', '',
             ]);
             // Baris contoh data nyata
-            fputcsv($file, ['Nasi Putih', 'siang', '1', 'Nasi putih pulen', '130', '2.7', '28', '0.3', '0.4', 'BB-BER-01:0.1']);
-            fputcsv($file, ['Telur Dadar', 'pagi', '1', 'Telur dadar goreng', '150', '10', '1', '11', '0', 'BB-TLR-01:1|BB-MYK-01:0.01']);
+            fputcsv($file, ['Nasi Putih Anak', 'anak_anak', '1', 'Nasi putih pulen porsi anak', '130', '2.7', '28', '0.3', '0.4', 'BB-BER-01:0.08']);
+            fputcsv($file, ['Telur Dadar Dewasa', 'dewasa', '1', 'Telur dadar goreng porsi dewasa', '150', '10', '1', '11', '0', 'BB-TLR-01:1|BB-MYK-01:0.01']);
             fclose($file);
         }, 200, $headers);
     }

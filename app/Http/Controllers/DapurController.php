@@ -22,6 +22,8 @@ class DapurController extends Controller
      */
     public function create()
     {
+        abort_if(! auth()->user()->hasRole('superadmin'), 403, 'Hanya superadmin yang dapat menambah Dapur.');
+
         return view('dapurs.create');
     }
 
@@ -30,6 +32,7 @@ class DapurController extends Controller
      */
     public function store(DapurRequest $request)
     {
+        abort_if(! auth()->user()->hasRole('superadmin'), 403, 'Akses ditolak.');
         Dapur::create($request->validated());
 
         return redirect()->route('dapurs.index')
@@ -49,6 +52,8 @@ class DapurController extends Controller
      */
     public function edit(Dapur $dapur)
     {
+        abort_if(! auth()->user()->hasRole('superadmin'), 403, 'Hanya superadmin yang dapat mengubah Dapur.');
+
         return view('dapurs.edit', compact('dapur'));
     }
 
@@ -57,6 +62,7 @@ class DapurController extends Controller
      */
     public function update(DapurRequest $request, Dapur $dapur)
     {
+        abort_if(! auth()->user()->hasRole('superadmin'), 403, 'Akses ditolak.');
         $dapur->update($request->validated());
 
         return redirect()->route('dapurs.index')
@@ -68,6 +74,7 @@ class DapurController extends Controller
      */
     public function destroy(Dapur $dapur)
     {
+        abort_if(! auth()->user()->hasRole('superadmin'), 403, 'Akses ditolak.');
         $dapur->delete();
 
         return redirect()->route('dapurs.index')

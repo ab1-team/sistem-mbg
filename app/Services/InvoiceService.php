@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\PurchaseOrder;
+use App\Services\Finance\FinancialRecordService;
 use Illuminate\Support\Facades\DB;
 
 class InvoiceService
@@ -66,16 +66,8 @@ class InvoiceService
                     ]);
                 }
 
-                // 4. Create separate Expense record for this supplier
-                Expense::create([
-                    'dapur_id' => $purchaseOrder->dapur_id,
-                    'period_id' => $purchaseOrder->menuPeriod->period_id ?? 1,
-                    'category' => 'bahan_baku',
-                    'amount' => $supplierTotal,
-                    'notes' => "Tagihan otomatis dari {$invoice->invoice_number} (Supplier ID: {$supplierId}, PO: {$purchaseOrder->po_number})",
-                    'created_by' => auth()->id() ?? $purchaseOrder->created_by ?? 1,
-                    'expense_date' => now(),
-                ]);
+                // 4. Create separate Payment record (replacement for Expense)
+                app(FinancialRecordService::class)->recordPaymentFromInvoice($invoice, '1.1.01.01'); // Default cash account
 
                 $invoices[] = $invoice;
             }

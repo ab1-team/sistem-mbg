@@ -2,74 +2,54 @@
 
 namespace App\Services\Finance;
 
-use App\Models\Expense;
 use App\Models\Invoice;
-use App\Models\Period;
-use App\Models\Revenue;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class FinancialRecordService
 {
     /**
-     * Create a manual revenue record.
+     * Create a payment record (Replacement for Revenue/Expense).
      */
-    public function createRevenue(array $data): Revenue
+    public function createPayment(array $data): Payment
     {
-        return Revenue::create([
+        return Payment::create([
             'dapur_id' => $data['dapur_id'],
-            'period_id' => $data['period_id'],
-            'reference_type' => $data['reference_type'] ?? null,
-            'reference_id' => $data['reference_id'] ?? null,
-            'amount' => $data['amount'],
-            'notes' => $data['notes'] ?? null,
+            'user_id' => Auth::id() ?? 1,
+            'no_pembayaran' => $data['no_pembayaran'] ?? 'PYM-'.now()->format('YmdHis'),
+            'tanggal_pembayaran' => $data['tanggal_pembayaran'] ?? now(),
+            'jenis_transaksi' => $data['jenis_transaksi'] ?? 'lainnya',
+            'invoice_id' => $data['invoice_id'] ?? null,
+            'total_harga' => $data['total_harga'],
+            'catatan' => $data['catatan'] ?? null,
+            'rekening_debit' => $data['rekening_debit'],
+            'rekening_kredit' => $data['rekening_kredit'],
+            'created_by' => Auth::id() ?? 1,
         ]);
     }
 
     /**
-     * Create a manual expense record.
+     * Record an expense automatically from a finalized invoice using the Payment model.
+     * This replaces the old recordExpenseFromInvoice.
      */
-    public function createExpense(array $data): Expense
+    public function recordPaymentFromInvoice(Invoice $invoice, string $cashAccountCode): ?Payment
     {
-        return Expense::create([
-            'dapur_id' => $data['dapur_id'],
-            'period_id' => $data['period_id'],
-            'category' => $data['category'],
-            'amount' => $data['amount'],
-            'notes' => $data['notes'] ?? null,
-            'attachment' => $data['attachment'] ?? null,
-            'created_by' => Auth::id(),
-        ]);
-    }
-
-    /**
-     * Record an expense automatically from a finalized invoice.
-     */
-    public function recordExpenseFromInvoice(Invoice $invoice): ?Expense
-    {
-        // Prevent duplicate expense for the same invoice
-        $exists = Expense::where('notes', 'LIKE', "%Invoice: {$invoice->invoice_number}%")->exists();
+        // Prevent duplicate payment for the same invoice
+        $exists = Payment::where('invoice_id', $invoice->id)->exists();
         if ($exists) {
             return null;
         }
 
-        // Get period from invoice date or current active period
-        $period = Period::where('start_date', '<=', $invoice->created_at)
-            ->where('end_date', '>=', $invoice->created_at)
-            ->first() ?? Period::getActive();
-
-        if (! $period) {
-            return null;
-        }
-
-        return DB::transaction(function () use ($invoice, $period) {
-            return Expense::create([
+        return DB::transaction(function () use ($invoice, $cashAccountCode) {
+            return $this->createPayment([
                 'dapur_id' => $invoice->dapur_id,
-                'period_id' => $period->id,
-                'category' => 'bahan_baku',
-                'amount' => $invoice->grand_total,
-                'notes' => "Otomatis dari Invoice: {$invoice->invoice_number}",
-                'created_by' => Auth::id() ?? 1, // Default to system user if no auth
+                'jenis_transaksi' => 'pembelian_bahan',
+                'invoice_id' => $invoice->id,
+                'total_harga' => $invoice->grand_total,
+                'catatan' => "Pembayaran otomatis dari Invoice: {$invoice->invoice_number}",
+                'rekening_debit' => '5.1.01.01', // Example default: Beban Pokok Pendapatan
+                'rekening_kredit' => $cashAccountCode, // Provided from settings or form
             ]);
         });
     }

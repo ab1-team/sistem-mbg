@@ -17,7 +17,12 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with(['roles', 'dapur', 'supplier'])->latest()->paginate(10);
+        $users = User::with(['roles', 'dapur', 'supplier'])
+            ->whereDoesntHave('roles', function ($q) {
+                $q->where('name', 'superadmin');
+            })
+            ->latest()
+            ->paginate(10);
 
         return view('users.index', compact('users'));
     }
@@ -27,7 +32,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = Role::all();
+        $roles = Role::where('name', '!=', 'superadmin')->get();
         $dapurs = Dapur::where('is_active', true)->get();
         $suppliers = Supplier::where('is_active', true)->get();
 
@@ -39,6 +44,8 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
+        abort_if($request->role === 'superadmin', 403, 'Akses ditolak. Tidak dapat mendaftarkan peran superadmin.');
+
         $user = User::create([
             'uuid' => (string) Str::uuid(),
             'name' => $request->name,
@@ -68,7 +75,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $roles = Role::all();
+        $roles = Role::where('name', '!=', 'superadmin')->get();
         $dapurs = Dapur::where('is_active', true)->get();
         $suppliers = Supplier::where('is_active', true)->get();
 
@@ -80,6 +87,8 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, User $user)
     {
+        abort_if($request->role === 'superadmin' && ! $user->hasRole('superadmin'), 403, 'Akses ditolak. Tidak dapat mempromosikan ke superadmin.');
+
         $data = [
             'name' => $request->name,
             'email' => $request->email,

@@ -13,6 +13,9 @@ class UserTable extends Component
     public function render()
     {
         $users = User::query()
+            ->whereDoesntHave('roles', function ($q) {
+                $q->where('name', 'superadmin');
+            })
             ->when($this->search, function ($query) {
                 $query->where('name', 'like', '%'.$this->search.'%')
                     ->orWhere('email', 'like', '%'.$this->search.'%');

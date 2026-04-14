@@ -6,21 +6,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Revenue extends Model
+class Jurnal extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'dapur_id',
-        'period_id',
-        'reference_type',
-        'reference_id',
-        'amount',
-        'notes',
+        'tanggal',
+        'keterangan',
+        'relasi',
+        'jumlah',
+        'urutan',
+        'user_id',
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2',
+        'tanggal' => 'date', // Considering casting to date as it's a date string in DB
+        'jumlah' => 'decimal:2',
     ];
 
     public function dapur(): BelongsTo
@@ -28,8 +30,8 @@ class Revenue extends Model
         return $this->belongsTo(Dapur::class);
     }
 
-    public function period(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Period::class);
+        return $this->belongsTo(User::class);
     }
 }

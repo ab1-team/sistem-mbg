@@ -75,17 +75,29 @@ class MenuItemsImport implements ToCollection, WithHeadingRow, WithValidation
 
     private function mapTipeMakan($tipe)
     {
-        $tipe = strtolower($tipe);
-
-        if (str_contains($tipe, 'anak') || str_contains($tipe, 'child') || str_contains($tipe, 'kid')) {
-            return 'anak_anak';
-        }
-
-        if (str_contains($tipe, 'dewasa') || str_contains($tipe, 'adult')) {
+        if (empty($tipe)) {
             return 'dewasa';
         }
 
-        return 'dewasa'; // Default
+        $tipe = strtolower(trim($tipe));
+
+        // Mapping variations for 'anak_anak'
+        $anakKeywords = ['anak', 'child', 'kid', 'balita', 'bayi'];
+        foreach ($anakKeywords as $kw) {
+            if (str_contains($tipe, $kw)) {
+                return 'anak_anak';
+            }
+        }
+
+        // Mapping variations for 'dewasa'
+        $dewasaKeywords = ['dewasa', 'adult', 'ortu', 'umum', 'pagi', 'siang', 'malam'];
+        foreach ($dewasaKeywords as $kw) {
+            if (str_contains($tipe, $kw)) {
+                return 'dewasa';
+            }
+        }
+
+        return 'dewasa'; // Default fallback
     }
 
     public function rules(): array

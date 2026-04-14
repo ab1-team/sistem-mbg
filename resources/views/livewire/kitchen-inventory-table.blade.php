@@ -9,13 +9,16 @@
                         ->toArray()" />
             @endif
 
-            <select wire:model.live="category"
-                class="text-[13px] border-slate-200 rounded-xl focus:ring-emerald-500/20 focus:border-emerald-500 transition-all bg-white text-slate-700 px-4 py-2.5 font-bold shadow-sm">
-                <option value="">Semua Kategori</option>
-                @foreach ($categories as $cat)
-                    <option value="{{ $cat }}">{{ Str::headline($cat) }}</option>
-                @endforeach
-            </select>
+            <x-form-searchable-select 
+                wire:model.live="category" 
+                class="w-48 text-[13px]" 
+                placeholder="Semua Kategori"
+                :selected="$category" 
+                :options="collect($categories)
+                    ->map(fn($c) => ['value' => $c, 'label' => Str::headline($c)])
+                    ->prepend(['value' => '', 'label' => 'Semua Kategori'])
+                    ->toArray()" 
+            />
         </div>
     </x-smart-table-actions>
 

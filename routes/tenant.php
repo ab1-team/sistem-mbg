@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 use App\Http\Controllers\DapurController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Finance\ExpenseController;
 use App\Http\Controllers\Finance\FinancialPeriodController;
 use App\Http\Controllers\Finance\InvoiceController;
 use App\Http\Controllers\Finance\KitchenInvoiceController;
-use App\Http\Controllers\Finance\RevenueController;
+use App\Http\Controllers\Finance\ReportController;
 use App\Http\Controllers\InvestorController;
 use App\Http\Controllers\Kitchen\CookingController;
 use App\Http\Controllers\MaterialController;
@@ -23,7 +22,9 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Warehouse\GrController;
 use App\Http\Middleware\ScopeDapurBySubdomain;
+use App\Livewire\Finance\Journal;
 use App\Livewire\Finance\ProfitSharing;
+use App\Livewire\Finance\Reporting;
 use App\Livewire\Finance\WithdrawalManagement;
 use App\Livewire\Investor\WithdrawalRequestForm;
 use App\Livewire\InvestorDashboard;
@@ -101,11 +102,12 @@ Route::middleware([
         // Finance Module
         Route::prefix('finance')->group(function () {
             Route::name('finance.')->group(function () {
-                Route::resource('revenues', RevenueController::class);
-                Route::resource('expenses', ExpenseController::class);
+                Route::get('journal', Journal::class)->name('journal.index');
                 Route::get('periods', [FinancialPeriodController::class, 'index'])->name('periods.index');
                 Route::get('profit-sharing', ProfitSharing::class)->name('profit-sharing.index');
                 Route::get('withdrawals', WithdrawalManagement::class)->name('withdrawals.index');
+                Route::get('reports', Reporting::class)->name('reports.index');
+                Route::get('reports/preview', [ReportController::class, 'preview'])->name('reports.preview');
 
                 // Invoices
                 Route::prefix('invoices')->name('invoices.')->group(function () {
