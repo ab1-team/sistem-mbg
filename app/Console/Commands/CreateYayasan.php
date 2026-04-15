@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Stancl\Tenancy\Database\Models\Domain;
@@ -60,6 +61,8 @@ class CreateYayasan extends Command
                     'uuid' => (string) Str::uuid(),
                 ]
             );
+
+            Artisan::call('db:seed');
 
             // Assign Super Admin Role
             $user->assignRole('superadmin');

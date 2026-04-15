@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Stancl\Tenancy\Database\Models\Domain;
@@ -63,6 +64,8 @@ class YayasanController extends Controller
                     'uuid' => (string) Str::uuid(),
                 ]
             );
+
+            Artisan::call('db:seed');
 
             $user->assignRole('superadmin');
         });
