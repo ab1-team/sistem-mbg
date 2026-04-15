@@ -29,7 +29,6 @@ class User extends Authenticatable
         'supplier_id',
         'is_active',
         'last_login_at',
-        'fcm_token',
     ];
 
     protected static function booted()
