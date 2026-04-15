@@ -16,9 +16,10 @@ class FcmChannel
      */
     public function send($notifiable, Notification $notification): void
     {
-        $token = $notifiable->routeNotificationFor('fcm', $notification);
+        $tokens = $notifiable->routeNotificationFor('fcm', $notification);
+        $tokens = is_array($tokens) ? $tokens : [$tokens];
 
-        if (! $token) {
+        if (empty($tokens)) {
             return;
         }
 
@@ -32,12 +33,18 @@ class FcmChannel
             return;
         }
 
-        $this->fcmService->sendNotification(
-            $token,
-            $payload['title'],
-            $payload['body'],
-            $payload['url'] ?? null,
-            $payload['data'] ?? []
-        );
+        foreach ($tokens as $token) {
+            if (! $token) {
+                continue;
+            }
+
+            $this->fcmService->sendNotification(
+                $token,
+                $payload['title'],
+                $payload['body'],
+                $payload['url'] ?? null,
+                $payload['data'] ?? []
+            );
+        }
     }
 }

@@ -5,19 +5,35 @@
     }" 
     x-init="
         permission = Notification.permission;
-        // Only show if user is authenticated and fcm_token is missing
-        if (!{{ Auth::user()->fcm_token ? 'true' : 'false' }}) {
+        const storageKey = 'fcm_token_registered_user_{{ Auth::id() }}';
+        const isRegistered = localStorage.getItem(storageKey);
+        
+        console.log('FCM Setup - Permission:', permission, 'Registered on this device:', !!isRegistered);
+        
+        // Show modal if not registered on THIS device
+        if (!isRegistered) {
             show = true;
+            
+            // Auto-trigger token generation if permission is already granted
+            if (permission === 'granted') {
+                window.requestPushPermission();
+            }
         }
         
         // Listen for token saved event
         window.addEventListener('fcm-token-saved', () => {
+            console.log('FCM Token Saved - Setting localStorage and hiding modal');
+            localStorage.setItem(storageKey, 'true');
             show = false;
         });
 
         // Update state periodically or on interaction
         setInterval(() => {
             permission = Notification.permission;
+            // If user manually allowed, trigger permission request
+            if (show && permission === 'granted' && !localStorage.getItem(storageKey)) {
+                window.requestPushPermission();
+            }
         }, 1000);
     "
     x-show="show" 

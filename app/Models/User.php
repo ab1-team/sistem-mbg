@@ -81,10 +81,18 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the push notification tokens for the user.
+     */
+    public function fcmTokens()
+    {
+        return $this->hasMany(FcmToken::class);
+    }
+
+    /**
      * Route notifications for the FCM channel.
      */
     public function routeNotificationForFcm()
     {
-        return $this->fcm_token;
+        return $this->fcmTokens->pluck('token')->toArray();
     }
 }

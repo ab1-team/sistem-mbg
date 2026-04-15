@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FcmToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,9 +19,15 @@ class FcmController extends Controller
 
         $user = Auth::user();
         if ($user) {
-            $user->update([
-                'fcm_token' => $request->token,
-            ]);
+            FcmToken::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'token' => $request->token,
+                ],
+                [
+                    'last_used_at' => now(),
+                ]
+            );
 
             return response()->json(['message' => 'Token saved successfully.']);
         }
