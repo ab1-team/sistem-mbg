@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Stock;
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Messages\BroadcastMessage;
@@ -18,7 +19,7 @@ class LowStockAlert extends Notification implements ShouldBroadcast
 
     public function via($notifiable): array
     {
-        return ['database', 'broadcast'];
+        return ['database', 'broadcast', FcmChannel::class];
     }
 
     public function toBroadcast($notifiable): BroadcastMessage
@@ -33,7 +34,19 @@ class LowStockAlert extends Notification implements ShouldBroadcast
             'material_name' => $this->stock->material->name,
             'title' => 'Peringatan Stok Rendah!',
             'message' => "Stok {$this->stock->material->name} di {$this->stock->dapur->name} mencapai batas kritis: ".number_format($this->stock->current_stock, 1)." {$this->stock->material->unit}.",
-            'url' => route('kitchen.inventory'), // Fixed route name
+            'url' => route('kitchen.inventory', [], false), // Fixed route name
+        ];
+    }
+
+    /**
+     * Get the push notification representation of the notification.
+     */
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => 'Peringatan Stok Rendah!',
+            'body' => "Stok {$this->stock->material->name} mencapai batas kritis: ".number_format($this->stock->current_stock, 1)." {$this->stock->material->unit}.",
+            'url' => route('kitchen.inventory', [], false),
         ];
     }
 }

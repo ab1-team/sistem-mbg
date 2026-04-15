@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\DapurController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FcmController;
 use App\Http\Controllers\Finance\FinancialPeriodController;
 use App\Http\Controllers\Finance\InvoiceController;
 use App\Http\Controllers\Finance\KitchenInvoiceController;
@@ -53,6 +54,9 @@ Route::middleware([
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
+    // Dynamic Firebase Service Worker
+    Route::get('/firebase-messaging-sw.js', [FcmController::class, 'serviceWorker']);
+
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -61,6 +65,9 @@ Route::middleware([
         // Adaptive System Settings
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update');
+
+        // FCM Token management
+        Route::post('/api/save-fcm-token', [FcmController::class, 'saveToken'])->name('fcm.save-token');
 
         Route::middleware('role:admin_yayasan|superadmin')->group(function () {
             Route::resource('dapurs', DapurController::class);

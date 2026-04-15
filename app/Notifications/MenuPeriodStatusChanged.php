@@ -44,7 +44,7 @@ class MenuPeriodStatusChanged extends Notification
             'title' => 'Update Status Perencanaan',
             'message' => $messages[$this->status] ?? "Status rencana menu berubah menjadi {$this->status}.",
             'status' => $this->status,
-            'url' => route('menu-periods.show', $this->menuPeriod),
+            'url' => route('menu-periods.show', $this->menuPeriod, false),
         ];
     }
 }

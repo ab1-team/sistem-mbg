@@ -51,7 +51,7 @@
                                     {{ $notification->created_at->diffForHumans() }}
                                 </span>
                                 @if(isset($notification->data['url']))
-                                    <a href="{{ $notification->data['url'] }}" class="text-[11px] font-bold text-green-600 hover:underline">
+                                    <a href="{{ url($notification->data['url']) }}" class="text-[11px] font-bold text-green-600 hover:underline">
                                         Lihat detail
                                     </a>
                                 @endif

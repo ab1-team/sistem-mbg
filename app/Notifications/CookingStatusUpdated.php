@@ -35,7 +35,7 @@ class CookingStatusUpdated extends Notification implements ShouldBroadcast
             'cooking_schedule_id' => $this->schedule->id,
             'title' => 'Update Operasional Dapur',
             'message' => "Proses masak [{$menuName}] di {$this->schedule->dapur->name} kini berstatus: {$this->statusLabel}.",
-            'url' => route('kitchen.inventory'), // Link to operational dashboard
+            'url' => route('kitchen.index', [], false),
         ];
     }
 }

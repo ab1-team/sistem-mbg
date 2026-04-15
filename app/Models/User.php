@@ -29,6 +29,7 @@ class User extends Authenticatable
         'supplier_id',
         'is_active',
         'last_login_at',
+        'fcm_token',
     ];
 
     protected static function booted()
@@ -77,5 +78,13 @@ class User extends Authenticatable
     public function supplier()
     {
         return $this->belongsTo(Supplier::class, 'supplier_id');
+    }
+
+    /**
+     * Route notifications for the FCM channel.
+     */
+    public function routeNotificationForFcm()
+    {
+        return $this->fcm_token;
     }
 }

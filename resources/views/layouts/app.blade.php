@@ -184,6 +184,7 @@
     @livewireScriptConfig
     @vite(['resources/js/app.js'])
     @livewire('notifications')
+    <x-push-mandatory-modal />
 </body>
 
 </html>
