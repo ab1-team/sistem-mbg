@@ -62,7 +62,7 @@ class CreateYayasan extends Command
                 ]
             );
 
-            Artisan::call('db:seed');
+            Artisan::call('db:seed', ['--force' => true]);
 
             // Assign Super Admin Role
             $user->assignRole('superadmin');

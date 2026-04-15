@@ -65,7 +65,7 @@ class YayasanController extends Controller
                 ]
             );
 
-            Artisan::call('db:seed');
+            Artisan::call('db:seed', ['--force' => true]);
 
             $user->assignRole('superadmin');
         });
