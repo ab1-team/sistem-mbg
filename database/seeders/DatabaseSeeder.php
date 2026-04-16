@@ -13,9 +13,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            AccountSeeder::class, // Establishing Level 1-3 categories
             MaterialSeeder::class,
             RoleSeeder::class,
             PermissionSeeder::class,
+            DapurSeeder::class,    // Optional: Creates default Dapurs
         ]);
     }
 }
