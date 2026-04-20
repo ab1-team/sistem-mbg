@@ -21,8 +21,8 @@
     <textarea id="{{ $id }}" name="{{ $name }}" rows="{{ $rows }}" {{ $required ? 'required' : '' }}
         {{ $attributes->merge([
             'class' => 'block w-full bg-slate-50 border border-slate-200 text-slate-900 text-[13px] font-bold rounded-xl px-4 py-2.5
-                                placeholder:text-slate-300 placeholder:font-normal focus:bg-white focus:border-green-900 focus:ring-4 focus:ring-green-900/5
-                                transition-all outline-none resize-none',
+                                        placeholder:text-slate-300 placeholder:font-normal focus:bg-white focus:border-green-900 focus:ring-4 focus:ring-green-900/5
+                                        transition-all outline-none resize-none',
         ]) }}>{{ $slot }}</textarea>
 
     @if ($hint)

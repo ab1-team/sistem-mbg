@@ -42,7 +42,7 @@
                 <tr class="hover:bg-slate-50/50 transition-colors group">
                     <x-table-td>
                         <p class="font-black text-slate-900 tracking-tight leading-none">{{ $po->po_number }}</p>
-                        <p class="text-[11px] text-slate-400 mt-1">{{ $po->created_at->translatedFormat('d M Y, H:i') }}</p>
+                        <p class="text-[11px] text-slate-400 mt-1">{{ ($po->po_date ?? $po->created_at)->translatedFormat('d M Y') }}</p>
                     </x-table-td>
                     <x-table-td>
                         <span class="font-bold text-slate-700">{{ $po->dapur->name }}</span>

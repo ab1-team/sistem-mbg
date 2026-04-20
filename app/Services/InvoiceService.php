@@ -59,10 +59,9 @@ class InvoiceService
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
                         'po_item_id' => $item->id,
-                        'material_id' => $item->material_id,
                         'quantity' => $item->quantity_received,
                         'unit_price' => $price,
-                        'total_price' => (float) $item->quantity_received * (float) $price,
+                        'subtotal' => (float) $item->quantity_received * (float) $price,
                     ]);
                 }
 

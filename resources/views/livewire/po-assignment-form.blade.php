@@ -69,8 +69,13 @@
                                                 </svg>
                                             </div>
                                             <div>
-                                                <p class="text-[13px] font-black text-slate-900 leading-none">{{ ucwords($assignment->supplier->name) }}</p>
-                                                <p class="text-[11px] text-slate-400 mt-1 font-bold tracking-tight">Rp {{ number_format($assignment->unit_price_agreed, 0, ',', '.') }}</p>
+                                                <p class="text-[13px] font-black text-slate-900 leading-none">
+                                                    {{ $assignment->subSupplier ? ucwords($assignment->subSupplier->name) : ucwords($assignment->supplier->name) }}
+                                                </p>
+                                                @if($assignment->subSupplier)
+                                                    <p class="text-[10px] text-slate-400 mt-1 font-bold">via {{ ucwords($assignment->supplier->name) }}</p>
+                                                @endif
+                                                <p class="text-[11px] text-emerald-600 mt-1 font-bold tracking-tight">Rp {{ number_format($assignment->unit_price_agreed, 0, ',', '.') }}</p>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3">
@@ -100,7 +105,7 @@
                     </div>
 
                     {{-- ADD NEW FORM --}}
-                    @if($this->remainingQuantity > 0 || $item->assignments->count() === 0)
+                    @if($this->remainingQuantity > 0 || $item->assignments->count() === 0 || auth()->user()->hasRole('superadmin'))
                         <div class="relative pt-10 border-t border-slate-100 space-y-6">
                             @if($item->quantity_to_order <= 0)
                                 <div class="p-5 bg-amber-50 border border-amber-100 rounded-[32px] flex items-start gap-4">
@@ -118,12 +123,12 @@
 
                             <div class="space-y-5">
                                 <x-form-searchable-select 
-                                    label="Pilih Supplier" 
-                                    id="side_supplier_{{ $item->id }}" 
-                                    name="supplier_id" 
-                                    wire:model="supplier_id" 
-                                    :options="$suppliers->map(fn($s) => ['value' => (string)$s->id, 'label' => ucwords($s->name)])"
-                                    placeholder="Cari supplier..."
+                                    label="Pilih Sub-Supplier" 
+                                    id="side_sub_supplier_{{ $item->id }}" 
+                                    name="sub_supplier_id" 
+                                    wire:model="sub_supplier_id" 
+                                    :options="$suppliers->flatMap(fn($s) => $s->subSuppliers->map(fn($ss) => ['value' => (string)$ss->id, 'label' => ucwords($s->name) . ' - ' . ucwords($ss->name)]))"
+                                    placeholder="Cari sub-supplier..."
                                     required 
                                 />
 
@@ -140,7 +145,7 @@
                                 Tambahkan Penugasan
                             </x-btn>
                             
-                            @error('supplier_id') <p class="text-[11px] text-red-500 font-bold px-2">{{ $message }}</p> @enderror
+                            @error('sub_supplier_id') <p class="text-[11px] text-red-500 font-bold px-2">{{ $message }}</p> @enderror
                             @error('quantity') <p class="text-[11px] text-red-500 font-bold px-2">{{ $message }}</p> @enderror
                         </div>
                     @endif

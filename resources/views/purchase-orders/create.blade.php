@@ -28,6 +28,8 @@
                         <x-form-searchable-select label="Unit Dapur" name="dapur_id" required
                             :options="$dapurs->map(fn($d) => ['value' => $d->id, 'label' => $d->name])->toArray()" />
                     @endif
+                    
+                    <x-datepicker label="Tanggal Purchase Order" name="po_date" required value="{{ date('Y-m-d') }}" />
 
                     <x-form-textarea label="Catatan Tambahan (Opsional)" name="notes" placeholder="Contoh: Pesanan mendadak untuk acara gathering..." />
 

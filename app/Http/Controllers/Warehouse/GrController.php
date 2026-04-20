@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Warehouse;
 use App\Enums\PoStatus;
 use App\Http\Controllers\Controller;
 use App\Models\GoodsReceipt;
+use App\Models\PoSupplierAssignment;
 use App\Models\PurchaseOrder;
 use App\Services\StockService;
 use Illuminate\Http\Request;
@@ -62,7 +63,7 @@ class GrController extends Controller
             PoStatus::DITERIMA_SEBAGIAN,
         ];
 
-        if (! in_array($purchaseOrder->status, $allowedStatuses)) {
+        if (! in_array($purchaseOrder->status, $allowedStatuses) && ! auth()->user()->hasRole('superadmin')) {
             return redirect()->route('purchase-orders.show', $purchaseOrder)
                 ->with('error', 'Status PO tidak mengizinkan penerimaan barang saat ini.');
         }
@@ -80,7 +81,7 @@ class GrController extends Controller
         $user = auth()->user();
 
         // Cek akses jika user terikat dapur tertentu
-        if ($user->dapur_id && $purchaseOrder->dapur_id !== $user->dapur_id) {
+        if ($user->dapur_id && $purchaseOrder->dapur_id !== $user->dapur_id && ! auth()->user()->hasRole('superadmin')) {
             abort(403, 'Anda tidak memiliki akses ke Purchase Order ini.');
         }
 
@@ -89,6 +90,7 @@ class GrController extends Controller
             'notes' => 'nullable|string',
             'items' => 'required|array',
             'items.*.po_item_id' => 'required|exists:po_items,id',
+            'items.*.po_supplier_assignment_id' => 'required|exists:po_supplier_assignments,id',
             'items.*.quantity_received' => 'required|numeric|min:0',
             'items.*.qc_status' => 'required|in:sesuai,kurang,rusak,retur',
             'items.*.qc_notes' => 'nullable|string',
@@ -139,17 +141,20 @@ class GrController extends Controller
                     );
                 }
 
-                // 4. Update qty diterima di level item PO (kumulatif untuk cek completion)
+                // 4. Update qty diterima di level item PO (kumulatif) dan level assignment
                 $poItem->increment('quantity_received', $itemData['quantity_received']);
+
+                $assignment = PoSupplierAssignment::find($itemData['po_supplier_assignment_id']);
+                $assignment->increment('quantity_received', $itemData['quantity_received']);
 
                 if ($poItem->quantity_received < $poItem->quantity_to_order) {
                     $allCompleted = false;
                 }
             }
 
-            // 5. Update Status PO
-            $newStatus = $allCompleted ? PoStatus::DITERIMA_LENGKAP : PoStatus::DITERIMA_SEBAGIAN;
-            $purchaseOrder->changeStatus($newStatus, "Penerimaan barang real-time via {$gr->gr_number}");
+            // 5. Update Status PO (Masuk alur verifikasi dapur)
+            $newStatus = $allCompleted ? PoStatus::MENUNGGU_VERIFIKASI_DAPUR : PoStatus::DITERIMA_SEBAGIAN;
+            $purchaseOrder->changeStatus($newStatus, "Penerimaan barang real-time via {$gr->gr_number}. Menunggu verifikasi Kap dapur.");
 
             return redirect()->route('purchase-orders.show', $purchaseOrder)
                 ->with('success', "Penerimaan {$gr->gr_number} berhasil diproses. Stok dapur diperbarui.");

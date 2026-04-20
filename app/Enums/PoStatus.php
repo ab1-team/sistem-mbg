@@ -12,6 +12,7 @@ enum PoStatus: string
     case DALAM_PENGIRIMAN = 'dalam_pengiriman';
     case DITERIMA_SEBAGIAN = 'diterima_sebagian';
     case DITERIMA_LENGKAP = 'diterima_lengkap';
+    case MENUNGGU_VERIFIKASI_DAPUR = 'menunggu_verifikasi_dapur';
     case DITOLAK_YAYASAN = 'ditolak_yayasan';
     case DIBATALKAN = 'dibatalkan';
     case SELESAI = 'selesai';
@@ -29,8 +30,10 @@ enum PoStatus: string
             self::DITERUSKAN_KE_SUPPLIER => [self::DIPROSES_SUPPLIER, self::DIBATALKAN, self::DITERIMA_SEBAGIAN, self::DITERIMA_LENGKAP],
             self::DIPROSES_SUPPLIER => [self::DALAM_PENGIRIMAN, self::DIBATALKAN, self::DITERIMA_SEBAGIAN, self::DITERIMA_LENGKAP],
             self::DALAM_PENGIRIMAN => [self::DITERIMA_SEBAGIAN, self::DITERIMA_LENGKAP],
-            self::DITERIMA_SEBAGIAN => [self::DITERIMA_LENGKAP, self::SELESAI],
-            self::DITERIMA_LENGKAP => [self::SELESAI],
+            self::DITERIMA_SEBAGIAN => [self::DITERIMA_LENGKAP, self::MENUNGGU_VERIFIKASI_DAPUR],
+            self::DITERIMA_LENGKAP => [self::MENUNGGU_VERIFIKASI_DAPUR],
+            self::MENUNGGU_VERIFIKASI_DAPUR => [self::SELESAI, self::DITERIMA_SEBAGIAN],
+            self::SELESAI => [],
             default => []
         };
     }
@@ -46,6 +49,7 @@ enum PoStatus: string
             self::DALAM_PENGIRIMAN => 'Dalam Pengiriman',
             self::DITERIMA_SEBAGIAN => 'Diterima Sebagian',
             self::DITERIMA_LENGKAP => 'Diterima Lengkap',
+            self::MENUNGGU_VERIFIKASI_DAPUR => 'Tunggu Verifikasi Dapur',
             self::DITOLAK_YAYASAN => 'Ditolak Yayasan',
             self::DIBATALKAN => 'Dibatalkan',
             self::SELESAI => 'Selesai',
@@ -62,7 +66,8 @@ enum PoStatus: string
             self::DIPROSES_SUPPLIER => 'bg-orange-50 text-orange-700 border-orange-100',
             self::DALAM_PENGIRIMAN => 'bg-emerald-100 text-emerald-800 border-emerald-200',
             self::DITERIMA_SEBAGIAN => 'bg-teal-50 text-teal-700 border-teal-100',
-            self::DITERIMA_LENGKAP => 'bg-green-50 text-green-700 border-green-100',
+            self::DITERIMA_LENGKAP => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+            self::MENUNGGU_VERIFIKASI_DAPUR => 'bg-brand-soft text-brand border-brand-soft',
             self::DITOLAK_YAYASAN => 'bg-red-50 text-red-700 border-red-100',
             self::DIBATALKAN => 'bg-red-50 text-red-700 border-red-100',
             self::SELESAI => 'bg-emerald-50 text-emerald-700 border-emerald-100',

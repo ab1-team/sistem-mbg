@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\PoSupplierAssignment;
 use App\Models\PurchaseOrderItem;
+use App\Models\SubSupplier;
 use App\Models\Supplier;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -16,8 +17,10 @@ class PoAssignmentForm extends Component
 
     public $suppliers;
 
+    public $sub_suppliers;
+
     // Form fields
-    public $supplier_id = '';
+    public $sub_supplier_id = '';
 
     public $quantity = 0;
 
@@ -26,7 +29,11 @@ class PoAssignmentForm extends Component
     public function mount(?PurchaseOrderItem $item = null)
     {
         $this->item = $item;
-        $this->suppliers = Supplier::where('is_active', true)->orderBy('name')->get();
+        $this->suppliers = Supplier::where('is_active', true)
+            ->with(['subSuppliers' => fn ($q) => $q->where('is_active', true)])
+            ->orderBy('name')
+            ->get();
+
         if ($this->item) {
             $this->initForm();
         }
@@ -35,7 +42,7 @@ class PoAssignmentForm extends Component
     #[On('open-assignment')]
     public function loadItem($itemId)
     {
-        $this->item = PurchaseOrderItem::with(['material', 'assignments.supplier'])->find($itemId);
+        $this->item = PurchaseOrderItem::with(['material', 'assignments.supplier', 'assignments.subSupplier'])->find($itemId);
         $this->initForm();
         $this->isOpen = true;
     }
@@ -57,36 +64,46 @@ class PoAssignmentForm extends Component
         if (! $this->item) {
             return 0;
         }
-        $assigned = $this->item->assignments()->sum('quantity_assigned');
 
-        return $this->item->quantity_to_order - $assigned;
+        // Menghitung alokasi yang sudah 'terpakai':
+        // 1. Jika penugasan sudah ditutup (is_fulfillment_closed), yang dihitung adalah jml yang BENAR-BENAR DITERIMA.
+        // 2. Jika penugasan masih aktif, yang dihitung adalah jml yang DITUGASKAN (reservasi).
+        $used = $this->item->assignments->sum(function ($a) {
+            return $a->is_fulfillment_closed ? $a->quantity_received : $a->quantity_assigned;
+        });
+
+        return max(0, $this->item->quantity_to_order - $used);
     }
 
     public function addAssignment()
     {
         $this->validate([
-            'supplier_id' => 'required|exists:suppliers,id',
+            'sub_supplier_id' => 'required|exists:sub_suppliers,id',
             'quantity' => 'required|numeric|min:0',
             'unit_price' => 'required|numeric|min:0',
         ], [
             'quantity.min' => 'Kuantitas minimal adalah 0.',
         ]);
 
+        $subSupplier = SubSupplier::find($this->sub_supplier_id);
+
         PoSupplierAssignment::create([
             'po_item_id' => $this->item->id,
-            'supplier_id' => $this->supplier_id,
+            'supplier_id' => $subSupplier->supplier_id,
+            'sub_supplier_id' => $this->sub_supplier_id,
             'assigned_by' => auth()->id(),
             'quantity_assigned' => $this->quantity,
             'unit_price_agreed' => $this->unit_price,
             'status' => 'diteruskan',
+            'is_fulfillment_closed' => false,
         ]);
 
-        $this->reset(['supplier_id', 'quantity']);
+        $this->reset(['sub_supplier_id', 'quantity']);
         $this->quantity = $this->remainingQuantity;
 
         $this->dispatch('assignment-updated');
         $this->close();
-        session()->flash('success', 'Supplier berhasil ditugaskan.');
+        session()->flash('success', 'Sub-Supplier berhasil ditugaskan.');
     }
 
     public function removeAssignment(PoSupplierAssignment $assignment)

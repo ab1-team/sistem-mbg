@@ -28,16 +28,16 @@
     <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" x-cloak>
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto" x-cloak>
         {{-- Dialog --}}
         <div x-show="open" x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
             x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
             @click.away="if(!$event.target.closest('.searchable-select-menu')) open = false"
-            class="bg-white rounded-2xl shadow-2xl w-full {{ $widths[$maxWidth] ?? $widths['md'] }}">
+            class="bg-white rounded-2xl shadow-2xl w-full {{ $widths[$maxWidth] ?? $widths['md'] }} max-h-[90vh] flex flex-col">
             {{-- Header --}}
-            <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100 shrink-0">
                 <h3 class="text-[15px] font-bold text-slate-900">{{ $title }}</h3>
                 <button @click="open = false" class="text-slate-400 hover:text-slate-600 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -47,7 +47,7 @@
             </div>
 
             {{-- Body --}}
-            <div class="px-6 py-5">
+            <div class="px-6 py-5 overflow-y-auto custom-scrollbar">
                 {{ $slot }}
             </div>
 

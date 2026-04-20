@@ -17,7 +17,7 @@
 
                 @if ($invoice->status === 'diverifikasi')
                     <x-btn @click="$dispatch('open-modal', 'modal-pay')"
-                        class="bg-green-600 hover:bg-green-700 text-white">Bayar Tagihan</x-btn>
+                        class="bg-emerald-600 hover:bg-emerald-700 text-white">Bayar Tagihan</x-btn>
                 @endif
             </x-slot:actions>
         </x-page-header>
@@ -39,7 +39,7 @@
                         <tr class="hover:bg-slate-50/50 transition-colors">
                             <x-table-td>
                                 <p class="font-semibold text-slate-900 tracking-tight leading-none mb-1">
-                                    {{ $item->material->name }}</p>
+                                    {{ $item->poItem->material->name }}</p>
                                 <p class="font-mono text-[10px] text-slate-400 font-medium uppercase tracking-tighter">
                                     {{ $item->poItem->unit }}</p>
                             </x-table-td>
@@ -50,7 +50,7 @@
                                 Rp {{ number_format($item->unit_price, 0, ',', '.') }}
                             </x-table-td>
                             <x-table-td class="text-right font-bold text-slate-900">
-                                Rp {{ number_format($item->total_price, 0, ',', '.') }}
+                                Rp {{ number_format($item->subtotal, 0, ',', '.') }}
                             </x-table-td>
                         </tr>
                     @endforeach
@@ -73,16 +73,8 @@
         <div class="lg:col-span-1 space-y-6">
             <x-card title="Informasi Supplier" subtitle="Pihak yang harus dibayarkan tagihannya.">
                 <div class="space-y-4">
-                    <div>
-                        <p class="text-[11px] font-medium text-slate-400 uppercase tracking-widest mb-1">Nama Supplier
-                        </p>
-                        <p class="text-[14px] font-medium text-slate-900">{{ $invoice->supplier->name }}</p>
-                    </div>
-                    <div>
-                        <p class="text-[11px] font-medium text-slate-400 uppercase tracking-widest mb-1">Dapur Pemesan
-                        </p>
-                        <p class="text-[14px] font-medium text-slate-900">{{ $invoice->dapur->name }}</p>
-                    </div>
+                    <x-show-field label="Nama Supplier" value="{{ $invoice->supplier->name }}" />
+                    <x-show-field label="Dapur Pemesan" value="{{ $invoice->dapur->name }}" />
                 </div>
             </x-card>
 
@@ -112,7 +104,7 @@
             <div class="flex gap-3 mt-8">
                 <x-btn @click="$dispatch('close-modal', 'modal-pay')" type="button" variant="secondary"
                     class="flex-1">Tutup</x-btn>
-                <x-btn type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white">Konfirmasi Lunas</x-btn>
+                <x-btn type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white">Konfirmasi Lunas</x-btn>
             </div>
         </form>
     </x-dialog>

@@ -11,6 +11,8 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\User;
 use App\Notifications\NewPOAssigned;
+use App\Services\InvoiceService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -35,6 +37,7 @@ class PoController extends Controller
     {
         $request->validate([
             'dapur_id' => 'required|exists:dapurs,id',
+            'po_date' => 'required|date',
             'notes' => 'nullable|string|max:500',
         ]);
 
@@ -43,10 +46,12 @@ class PoController extends Controller
             return back()->with('error', 'Anda hanya dapat membuat PO untuk dapur Anda sendiri.');
         }
 
-        $poNumber = 'PO/'.now()->format('Y/m').'/'.str_pad(PurchaseOrder::count() + 1, 3, '0', STR_PAD_LEFT);
+        $poDate = Carbon::parse($request->po_date);
+        $poNumber = 'PO/'.$poDate->format('Y/m').'/'.str_pad(PurchaseOrder::count() + 1, 3, '0', STR_PAD_LEFT);
 
         $purchaseOrder = PurchaseOrder::create([
             'po_number' => $poNumber,
+            'po_date' => $poDate,
             'dapur_id' => $request->dapur_id,
             'status' => PoStatus::DRAF,
             'notes' => $request->notes,
@@ -83,7 +88,7 @@ class PoController extends Controller
             $purchaseOrder->changeStatus(PoStatus::DIREVIEW_YAYASAN, 'Mulai proses review Yayasan');
         }
 
-        $purchaseOrder->load(['dapur', 'menuPeriod.period', 'items.material', 'items.assignments.supplier', 'creator', 'statusHistory.user']);
+        $purchaseOrder->load(['dapur', 'menuPeriod.period', 'items.material', 'items.assignments.supplier', 'items.assignments.subSupplier', 'creator', 'statusHistory.user']);
 
         return view('purchase-orders.show', compact('purchaseOrder'));
     }
@@ -140,6 +145,47 @@ class PoController extends Controller
         }
     }
 
+    public function verify(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        try {
+            if ($purchaseOrder->status !== PoStatus::SELESAI) {
+                $purchaseOrder->changeStatus(PoStatus::SELESAI, $request->notes ?: 'Diverifikasi oleh Kepala Dapur.');
+                $purchaseOrder->update([
+                    'verified_at' => now(),
+                    'verified_by' => auth()->id(),
+                ]);
+            } else {
+                // Retry generation if previously failed but status is already SELESAI
+                if ($purchaseOrder->invoices()->count() === 0) {
+                    app(InvoiceService::class)->generateFromPo($purchaseOrder);
+                }
+            }
+
+            return redirect()->route('purchase-orders.show', $purchaseOrder)
+                ->with('success', 'PO berhasil diverifikasi. Invoice telah diterbitkan.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function markDeficit(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        try {
+            foreach ($purchaseOrder->items as $item) {
+                foreach ($item->assignments as $assignment) {
+                    $assignment->update(['is_fulfillment_closed' => true]);
+                }
+            }
+
+            $purchaseOrder->changeStatus(PoStatus::DITERIMA_SEBAGIAN, 'Terdeteksi defisit oleh Kepala Dapur. Menunggu alokasi susulan.');
+
+            return redirect()->route('purchase-orders.show', $purchaseOrder)
+                ->with('warning', 'Defisit dilaporkan. Anda dapat mengalokasikan kekurangan ke supplier lain.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
     public function generateFromMenu(MenuPeriod $menuPeriod)
     {
         $user = auth()->user();
@@ -184,10 +230,12 @@ class PoController extends Controller
             }
 
             // 3. Create PO Header
-            $poNumber = 'PO/'.now()->format('Y/m').'/'.str_pad(PurchaseOrder::count() + 1, 3, '0', STR_PAD_LEFT);
+            $poDate = now();
+            $poNumber = 'PO/'.$poDate->format('Y/m').'/'.str_pad(PurchaseOrder::count() + 1, 3, '0', STR_PAD_LEFT);
 
             $purchaseOrder = PurchaseOrder::create([
                 'po_number' => $poNumber,
+                'po_date' => $poDate,
                 'dapur_id' => $menuPeriod->dapur_id,
                 'menu_period_id' => $menuPeriod->id,
                 'status' => PoStatus::DRAF,

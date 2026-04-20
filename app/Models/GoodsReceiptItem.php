@@ -10,6 +10,7 @@ class GoodsReceiptItem extends Model
     protected $fillable = [
         'goods_receipt_id',
         'po_item_id',
+        'po_supplier_assignment_id',
         'material_id',
         'quantity_ordered',
         'quantity_received',
@@ -27,6 +28,11 @@ class GoodsReceiptItem extends Model
     public function poItem(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrderItem::class, 'po_item_id');
+    }
+
+    public function assignment(): BelongsTo
+    {
+        return $this->belongsTo(PoSupplierAssignment::class, 'po_supplier_assignment_id');
     }
 
     public function material(): BelongsTo

@@ -98,6 +98,8 @@ Route::middleware([
         Route::post('menu-periods/{menuPeriod}/generate-po', [PoController::class, 'generateFromMenu'])->name('menu-periods.generate-po');
         Route::post('purchase-orders/{purchaseOrder}/submit-to-supplier', [PoController::class, 'submitToSupplier'])->name('purchase-orders.submit-to-supplier');
         Route::post('purchase-orders/{purchaseOrder}/cancel', [PoController::class, 'cancel'])->name('purchase-orders.cancel');
+        Route::post('purchase-orders/{purchaseOrder}/verify', [PoController::class, 'verify'])->name('purchase-orders.verify');
+        Route::post('purchase-orders/{purchaseOrder}/deficit', [PoController::class, 'markDeficit'])->name('purchase-orders.deficit');
         Route::resource('purchase-orders', PoController::class);
 
         // Warehouse / Goods Receipt

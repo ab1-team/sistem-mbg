@@ -12,7 +12,7 @@
 
 <div class="space-y-1.5">
     @if ($label)
-        <label for="{{ $id }}" class="block text-[11px] font-semibold text-slate-500 tracking-wider mb-1">
+        <label for="{{ $id }}" class="block text-[11px] font-semibold text-slate-500 tracking-wider">
             {{ $label }}@if ($required)
                 <span class="text-red-500 ml-0.5">*</span>
             @endif
@@ -41,8 +41,8 @@
                     'block w-full bg-slate-50 border border-slate-100 text-slate-900 text-[13px] font-bold rounded-xl ' .
                     (isset($icon) ? 'pl-10 pr-4' : ($prefix ? 'pl-10 pr-4' : 'px-4')) .
                     ' py-2.5
-                                                                placeholder:text-slate-300 placeholder:font-normal focus:bg-white focus:border-green-900 focus:ring-2 focus:ring-green-900/10
-                                                                transition-all outline-none',
+                                                                            placeholder:text-slate-300 placeholder:font-normal focus:bg-white focus:border-green-900 focus:ring-2 focus:ring-green-900/10
+                                                                            transition-all outline-none',
             ]) }}>
     </div>
 

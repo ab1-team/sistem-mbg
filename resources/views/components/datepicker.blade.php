@@ -5,10 +5,14 @@
     'value'    => '',
     'required' => false,
     'placeholder' => 'Pilih tanggal...',
+    'enableTime'  => false,
+    'dateFormat'  => 'Y-m-d',
 ])
 
 @php 
     $id = $id ?? $name; 
+    $finalDateFormat = $enableTime ? ($dateFormat === 'Y-m-d' ? 'Y-m-d H:i' : $dateFormat) : $dateFormat;
+    $finalAltFormat = $enableTime ? 'j F Y, H:i' : 'j F Y';
 @endphp
 
 <div class="space-y-1.5"
@@ -18,9 +22,10 @@
         instance: null,
         init() {
             this.instance = flatpickr(this.$refs.input, {
-                dateFormat: 'Y-m-d',
+                enableTime: {{ $enableTime ? 'true' : 'false' }},
+                dateFormat: '{{ $finalDateFormat }}',
                 altInput: true,
-                altFormat: 'j F Y',
+                altFormat: '{{ $finalAltFormat }}',
                 defaultDate: this.value,
                 onChange: (selectedDates, dateStr) => {
                     this.value = dateStr;

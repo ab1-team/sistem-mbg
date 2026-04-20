@@ -70,11 +70,7 @@
             </div>
         </div>
 
-        @if(session('success'))
-            <div class="mb-6 p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 text-[13px] font-bold">
-                {{ session('success') }}
-            </div>
-        @endif
+
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {{-- LEFT: ITEM DETAILS --}}

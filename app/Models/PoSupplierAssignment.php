@@ -12,6 +12,7 @@ class PoSupplierAssignment extends Model
     protected $fillable = [
         'po_item_id',
         'supplier_id',
+        'sub_supplier_id',
         'assigned_by',
         'quantity_assigned',
         'unit_price_agreed',
@@ -19,11 +20,15 @@ class PoSupplierAssignment extends Model
         'rejection_reason',
         'responded_at',
         'shipped_at',
+        'quantity_received',
+        'is_fulfillment_closed',
     ];
 
     protected $casts = [
         'responded_at' => 'datetime',
         'shipped_at' => 'datetime',
+        'is_fulfillment_closed' => 'boolean',
+        'quantity_received' => 'decimal:3',
     ];
 
     public function item()
@@ -36,8 +41,18 @@ class PoSupplierAssignment extends Model
         return $this->belongsTo(Supplier::class);
     }
 
+    public function subSupplier()
+    {
+        return $this->belongsTo(SubSupplier::class);
+    }
+
     public function assigner()
     {
         return $this->belongsTo(User::class, 'assigned_by');
+    }
+
+    public function goodsReceiptItems()
+    {
+        return $this->hasMany(GoodsReceiptItem::class);
     }
 }

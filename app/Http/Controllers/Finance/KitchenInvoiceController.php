@@ -13,18 +13,7 @@ class KitchenInvoiceController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
-        $query = PurchaseOrder::with(['dapur', 'menuPeriod'])
-            ->whereIn('status', ['submitted', 'processing', 'completed'])
-            ->latest();
-
-        if ($user->dapur_id) {
-            $query->where('dapur_id', $user->dapur_id);
-        }
-
-        $invoices = $query->paginate(15);
-
-        return view('finance.kitchen-invoices.index', compact('invoices'));
+        return view('finance.kitchen-invoices.index');
     }
 
     /**

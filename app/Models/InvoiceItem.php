@@ -10,10 +10,10 @@ class InvoiceItem extends Model
     protected $fillable = [
         'invoice_id',
         'po_item_id',
-        'material_id',
+        'goods_receipt_item_id',
         'quantity',
         'unit_price',
-        'total_price',
+        'subtotal',
     ];
 
     public function invoice(): BelongsTo

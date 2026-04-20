@@ -75,7 +75,7 @@
                 @foreach($invoice->items as $item)
                     <tr>
                         <td>
-                            <div class="item-name">{{ $item->material->name }}</div>
+                            <div class="item-name">{{ $item->poItem->material->name }}</div>
                             <div class="item-meta">Ref PO: {{ $invoice->purchaseOrder->po_number }}</div>
                         </td>
                         <td style="text-align: center;">
@@ -86,7 +86,7 @@
                             <div class="value">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</div>
                         </td>
                         <td style="text-align: right;">
-                            <div class="value">Rp {{ number_format($item->total_price, 0, ',', '.') }}</div>
+                            <div class="value">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</div>
                         </td>
                     </tr>
                 @endforeach

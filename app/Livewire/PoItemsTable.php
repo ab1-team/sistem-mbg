@@ -32,7 +32,7 @@ class PoItemsTable extends Component
 
     public function mount(PurchaseOrder $purchaseOrder)
     {
-        $this->purchaseOrder = $purchaseOrder->load(['items.material', 'items.assignments.supplier']);
+        $this->purchaseOrder = $purchaseOrder->load(['items.material', 'items.assignments.supplier', 'items.assignments.subSupplier']);
         $this->loadMaterials();
     }
 
@@ -123,7 +123,7 @@ class PoItemsTable extends Component
     #[On('item-added')]
     public function refreshTable()
     {
-        $this->purchaseOrder->load(['items.material', 'items.assignments.supplier']);
+        $this->purchaseOrder->load(['items.material', 'items.assignments.supplier', 'items.assignments.subSupplier']);
         $this->loadMaterials();
     }
 

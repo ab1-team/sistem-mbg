@@ -79,7 +79,7 @@
     @resize.window="if(open) updatePosition()" class="relative">
 
     @if ($label)
-        <label for="{{ $id }}" class="block text-[11px] font-semibold text-slate-500 tracking-wider mb-1">
+        <label for="{{ $id }}" class="block text-[11px] font-semibold text-slate-500 tracking-wider">
             {{ $label }}@if ($required)
                 <span class="text-red-500 ml-0.5">*</span>
             @endif
@@ -92,8 +92,7 @@
         <div class="relative">
             <input type="text" x-model="search" x-ref="searchInput" @click="if(!open) toggle()"
                 @focus="if(!open) toggle()" @keydown.escape="open = false"
-                @keydown.enter.prevent="if(filteredOptions.length > 0) select(filteredOptions[0])"
-                @input.stop
+                @keydown.enter.prevent="if(filteredOptions.length > 0) select(filteredOptions[0])" @input.stop
                 :placeholder="value ? selectedLabel : '{{ $placeholder }}'"
                 class="block w-full bg-slate-50 border border-slate-200 text-slate-900 text-[13px] rounded-xl px-4 py-2.5 
                           focus:bg-white focus:border-green-900 focus:ring-4 focus:ring-green-900/5 

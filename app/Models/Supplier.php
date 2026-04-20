@@ -23,4 +23,9 @@ class Supplier extends Model
         'category',
         'is_active',
     ];
+
+    public function subSuppliers()
+    {
+        return $this->hasMany(SubSupplier::class);
+    }
 }

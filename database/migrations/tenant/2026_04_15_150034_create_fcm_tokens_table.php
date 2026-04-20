@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('fcm_tokens', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('token', 500);
-            $table->timestamp('last_used_at')->nullable();
-            $table->timestamps();
+        if (! Schema::hasTable('fcm_tokens')) {
+            Schema::create('fcm_tokens', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->string('token', 500);
+                $table->timestamp('last_used_at')->nullable();
+                $table->timestamps();
 
-            // Allow unique combination of user and token
-            $table->unique(['user_id', 'token']);
-        });
+                // Allow unique combination of user and token
+                $table->unique(['user_id', 'token']);
+            });
+        }
     }
 
     public function down(): void

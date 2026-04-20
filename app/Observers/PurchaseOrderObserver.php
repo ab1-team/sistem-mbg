@@ -23,8 +23,8 @@ class PurchaseOrderObserver
     public function updated(PurchaseOrder $purchaseOrder): void
     {
         // Trigger Invoicing Otomatis (Roadmap 4.2)
-        // Jika status berubah menjadi DITERIMA_LENGKAP
-        if ($purchaseOrder->isDirty('status') && $purchaseOrder->status === PoStatus::DITERIMA_LENGKAP) {
+        // Jika status berubah menjadi SELESAI (Berarti sudah melewati Verifikasi Dapur)
+        if ($purchaseOrder->isDirty('status') && $purchaseOrder->status === PoStatus::SELESAI) {
             // Pastikan belum ada invoice untuk PO ini agar tidak duplikat
             if ($purchaseOrder->invoices()->count() === 0) {
                 $this->invoiceService->generateFromPo($purchaseOrder);

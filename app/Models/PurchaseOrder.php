@@ -22,12 +22,17 @@ class PurchaseOrder extends Model
         'notes',
         'cancellation_reason',
         'created_by',
+        'po_date',
         'submitted_at',
+        'verified_at',
+        'verified_by',
     ];
 
     protected $casts = [
         'status' => PoStatus::class,
         'submitted_at' => 'datetime',
+        'verified_at' => 'datetime',
+        'po_date' => 'date',
         'total_estimated_cost' => 'decimal:2',
         'total_actual_cost' => 'decimal:2',
     ];
@@ -113,5 +118,10 @@ class PurchaseOrder extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function verifier()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 }
