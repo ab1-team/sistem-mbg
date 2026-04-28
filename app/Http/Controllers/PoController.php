@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\PoStatus;
 use App\Imports\PoItemsImport;
+use App\Imports\PurchaseOrderBulkImport;
 use App\Models\Dapur;
 use App\Models\MenuPeriod;
 use App\Models\PoSupplierAssignment;
@@ -332,6 +333,66 @@ class PoController extends Controller
     }
 
     /**
+     * Show form for bulk PO import.
+     */
+    public function bulkImport()
+    {
+        $user = auth()->user();
+        $dapurs = $user->dapur_id ? collect([$user->dapur]) : Dapur::where('is_active', true)->orderBy('name')->get();
+
+        return view('purchase-orders.bulk-import', compact('dapurs'));
+    }
+
+    /**
+     * Process the bulk PO import from CSV/Excel.
+     */
+    public function processBulkImport(Request $request)
+    {
+        $request->validate([
+            'dapur_id' => 'required|exists:dapurs,id',
+            'po_date' => 'required|date',
+            'file' => 'required|file|max:10240',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            return DB::transaction(function () use ($request) {
+                $poDate = Carbon::parse($request->po_date);
+                $poNumber = 'PO/'.$poDate->format('Y/m').'/'.str_pad(PurchaseOrder::count() + 1, 3, '0', STR_PAD_LEFT);
+
+                $purchaseOrder = PurchaseOrder::create([
+                    'po_number' => $poNumber,
+                    'po_date' => $poDate,
+                    'dapur_id' => $request->dapur_id,
+                    'status' => PoStatus::DRAF,
+                    'notes' => $request->notes,
+                    'created_by' => auth()->id(),
+                    'total_estimated_cost' => 0,
+                ]);
+
+                // Catat histori awal
+                $purchaseOrder->statusHistory()->create([
+                    'from_status' => null,
+                    'to_status' => PoStatus::DRAF,
+                    'changed_by' => auth()->id(),
+                    'ip_address' => $request->ip(),
+                    'reason' => 'Import massal dari file',
+                ]);
+
+                Excel::import(new PurchaseOrderBulkImport($purchaseOrder), $request->file('file'));
+
+                // Recalculate total after import
+                $purchaseOrder->recalculateTotal();
+
+                return redirect()->route('purchase-orders.show', $purchaseOrder)
+                    ->with('success', "PO {$poNumber} berhasil di-import.");
+            });
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal meng-import PO: '.$e->getMessage());
+        }
+    }
+
+    /**
      * Download template for PO item import.
      */
     public function downloadTemplate(): StreamedResponse
@@ -341,19 +402,15 @@ class PoController extends Controller
             'Content-Disposition' => 'attachment; filename="template_item_po.csv"',
         ];
 
-        $columns = ['kode_material', 'jumlah', 'catatan'];
+        $columns = ['No', 'Uraian Jenis Bahan Makanan', 'Kuantitas', 'Satuan', 'Harga Satuan', 'Jumlah', 'Keterangan'];
 
         return response()->stream(function () use ($columns) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
 
-            // Instructions
-            fputcsv($file, ['--- PETUNJUK ---', '', '']);
-            fputcsv($file, ['kode_material wajib diisi dan harus terdaftar di sistem', '', '']);
-            fputcsv($file, ['jumlah harus angka positif', '', '']);
-
             // Example row
-            fputcsv($file, ['BHR-001', '10.5', 'Catatan pesanan']);
+            fputcsv($file, ['1', 'Beras Ramos', '20', 'Karung', '375000', '7500000', '1 karung 25 kg']);
+            fputcsv($file, ['2', 'Minyak Goreng', '150', 'Pouch', '42500', '6375000', 'Kemasan 2 liter']);
 
             fclose($file);
         }, 200, $headers);

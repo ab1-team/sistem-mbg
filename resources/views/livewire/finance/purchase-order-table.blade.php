@@ -19,6 +19,12 @@
         </div>
 
         @if (auth()->user()->hasRole(['admin', 'superadmin', 'logistik']))
+            <x-btn href="{{ route('purchase-orders.bulk-import') }}" variant="secondary">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Import PO
+            </x-btn>
             <x-btn href="{{ route('purchase-orders.create') }}">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path d="M12 5v14M5 12h14" />

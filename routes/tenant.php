@@ -94,6 +94,8 @@ Route::middleware([
 
         // SCM - Purchase Orders
         Route::get('purchase-orders/download-template', [PoController::class, 'downloadTemplate'])->name('purchase-orders.download-template');
+        Route::get('purchase-orders/bulk-import', [PoController::class, 'bulkImport'])->name('purchase-orders.bulk-import');
+        Route::post('purchase-orders/bulk-import', [PoController::class, 'processBulkImport'])->name('purchase-orders.bulk-import.process');
         Route::post('purchase-orders/{purchaseOrder}/import', [PoController::class, 'importItems'])->name('purchase-orders.import');
         Route::post('menu-periods/{menuPeriod}/generate-po', [PoController::class, 'generateFromMenu'])->name('menu-periods.generate-po');
         Route::post('purchase-orders/{purchaseOrder}/submit-to-supplier', [PoController::class, 'submitToSupplier'])->name('purchase-orders.submit-to-supplier');
