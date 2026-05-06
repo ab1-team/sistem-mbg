@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Supplier;
 use App\Enums\PoStatus;
 use App\Http\Controllers\Controller;
 use App\Models\PoSupplierAssignment;
+use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 
 class PoController extends Controller
@@ -17,26 +18,51 @@ class PoController extends Controller
             return redirect()->route('dashboard')->with('error', 'Profil user Anda tidak terikat dengan supplier manapun.');
         }
 
-        $assignments = PoSupplierAssignment::where('supplier_id', $supplierId)
-            ->with(['item.purchaseOrder', 'item.material'])
+        // Ambil PO unik yang memiliki item yang ditugaskan ke supplier ini
+        // Sembunyikan yang masih internal (Draf/Review Yayasan)
+        $purchaseOrders = PurchaseOrder::whereNotIn('status', [
+            PoStatus::DRAF,
+            PoStatus::DIKIRIM_KE_YAYASAN,
+            PoStatus::DIREVIEW_YAYASAN,
+        ])
+            ->whereHas('items.assignments', function ($q) use ($supplierId) {
+                $q->where('supplier_id', $supplierId);
+            })
+            ->with(['dapur', 'items' => function ($q) use ($supplierId) {
+                $q->whereHas('assignments', function ($sq) use ($supplierId) {
+                    $sq->where('supplier_id', $supplierId);
+                })->with(['assignments' => function ($sq) use ($supplierId) {
+                    $sq->where('supplier_id', $supplierId);
+                }, 'material']);
+            }])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('supplier.purchase-orders.index', compact('assignments'));
+        return view('supplier.purchase-orders.index', compact('purchaseOrders'));
     }
 
-    public function show(PoSupplierAssignment $purchaseOrder) // Route model binding using assignment ID
+    public function show(PurchaseOrder $purchaseOrder)
     {
-        $assignment = $purchaseOrder; // Rename for clarity
         $supplierId = auth()->user()->supplier_id;
 
-        if ($assignment->supplier_id !== $supplierId) {
+        // Jangan izinkan akses jika PO masih status internal/review
+        if (in_array($purchaseOrder->status, [PoStatus::DRAF, PoStatus::DIKIRIM_KE_YAYASAN, PoStatus::DIREVIEW_YAYASAN])) {
+            abort(403, 'Pesanan ini belum tersedia untuk dilihat (masih dalam review internal Yayasan).');
+        }
+
+        // Load semua penugasan untuk supplier ini dalam PO tersebut
+        $assignments = PoSupplierAssignment::whereHas('item', function ($q) use ($purchaseOrder) {
+            $q->where('purchase_order_id', $purchaseOrder->id);
+        })
+            ->where('supplier_id', $supplierId)
+            ->with(['item.material', 'item.purchaseOrder.dapur'])
+            ->get();
+
+        if ($assignments->isEmpty()) {
             abort(403, 'Anda tidak memiliki akses ke pesanan ini.');
         }
 
-        $assignment->load(['item.purchaseOrder', 'item.material']);
-
-        return view('supplier.purchase-orders.show', compact('assignment'));
+        return view('supplier.purchase-orders.show', compact('purchaseOrder', 'assignments'));
     }
 
     public function respond(Request $request, PoSupplierAssignment $assignment)

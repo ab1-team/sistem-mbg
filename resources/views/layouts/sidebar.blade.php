@@ -28,6 +28,7 @@
                 ],
                 [
                     'label' => 'SCM & Perencanaan',
+                    'role' => ['admin_yayasan', 'logistik', 'superadmin'],
                     'items' => [
                         [
                             'route' => 'materials.index',
@@ -154,6 +155,7 @@
                 ],
                 [
                     'label' => 'Manajemen Data',
+                    'role' => ['admin_yayasan', 'superadmin'],
                     'items' => [
                         ['route' => 'dapurs.index', 'match' => 'dapurs.*', 'label' => 'Data Dapur', 'icon' => 'dapur'],
                         [
@@ -179,7 +181,13 @@
                 [
                     'label' => 'Sistem',
                     'items' => [
-                        ['route' => 'users.index', 'match' => 'users.*', 'label' => 'Data Pengguna', 'icon' => 'team'],
+                        [
+                            'route' => 'users.index', 
+                            'match' => 'users.*', 
+                            'label' => 'Data Pengguna', 
+                            'icon' => 'team',
+                            'role' => ['admin_yayasan', 'superadmin']
+                        ],
                         [
                             'route' => 'profile.edit',
                             'match' => 'profile.edit',
@@ -191,6 +199,7 @@
                             'match' => 'settings.*',
                             'label' => 'Pengaturan',
                             'icon' => 'settings',
+                            'role' => 'superadmin'
                         ],
                     ],
                 ],
@@ -232,18 +241,29 @@
         <nav class="flex flex-col gap-1 pb-10">
             @foreach ($navGroups as $group)
                 @php
-                    $visible =
-                        !isset($group['role']) ||
-                        (is_array($group['role'])
-                            ? auth()->user()->hasAnyRole($group['role'])
+                    // Check if group is visible based on role
+                    $groupVisible = !isset($group['role']) || 
+                        (is_array($group['role']) 
+                            ? auth()->user()->hasAnyRole($group['role']) 
                             : auth()->user()->hasRole($group['role']));
+
+                    if (!$groupVisible) continue;
+
+                    // Filter items based on role
+                    $visibleItems = array_filter($group['items'], function($item) {
+                        return !isset($item['role']) || 
+                            (is_array($item['role']) 
+                                ? auth()->user()->hasAnyRole($item['role']) 
+                                : auth()->user()->hasRole($item['role']));
+                    });
                 @endphp
-                @if ($visible)
+
+                @if (count($visibleItems) > 0)
                     <div class="px-5 pt-5 pb-2">
                         <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
                             {{ $group['label'] }}</p>
                     </div>
-                    @foreach ($group['items'] as $item)
+                    @foreach ($visibleItems as $item)
                         @php $isActive = request()->routeIs($item['match']); @endphp
                         <a href="{{ route($item['route']) }}"
                             class="flex items-center gap-3 px-5 py-2.5 text-[13px] font-medium border-l-[3px] transition-all

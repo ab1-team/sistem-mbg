@@ -14,7 +14,7 @@
                         <div class="flex items-start gap-3">
                             <div class="mt-1">
                                 @if ($item->assignments->count() > 0)
-                                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                    <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
                                 @else
                                     <div class="w-2 h-2 rounded-full bg-slate-300"></div>
                                 @endif
@@ -24,7 +24,7 @@
                                 <div class="flex items-center gap-2 mb-1.5">
                                     <p class="text-[14px] font-bold text-slate-800 leading-none">
                                         {{ ucwords($item->material->name) }}</p>
-                                    @if($item->notes)
+                                    @if ($item->notes)
                                         <p class="text-[11px] text-slate-400 mt-1 italic">{{ $item->notes }}</p>
                                     @endif
                                     @if ($item->assignments->count() == 0)
@@ -69,7 +69,7 @@
                         @endphp
                         <div class="inline-block text-right">
                             <p
-                                class="text-[14px] font-bold {{ $isComplete ? 'text-green-700' : 'text-slate-900' }} tracking-tight leading-none">
+                                class="text-[14px] font-bold {{ $isComplete ? 'text-emerald-700' : 'text-slate-900' }} tracking-tight leading-none">
                                 {{ number_format($item->quantity_to_order, 2) }}
                             </p>
                             <p class="text-[10px] font-semibold text-slate-400 uppercase mt-1">{{ $item->unit }}</p>
@@ -81,8 +81,10 @@
                     </td>
                     <td class="px-6 py-5 text-right whitespace-nowrap">
                         <div class="flex items-center justify-end gap-2">
-                             @if (auth()->user()->hasRole(['admin', 'superadmin', 'logistik']) && 
-                                    ($purchaseOrder->status->value === 'draf' || (auth()->user()->hasRole('superadmin') && !in_array($purchaseOrder->status->value, ['selesai', 'dibatalkan', 'menunggu_verifikasi_dapur']))))
+                            @if (auth()->user()->hasRole(['admin', 'superadmin', 'logistik']) &&
+                                    ($purchaseOrder->status->value === 'draf' ||
+                                        (auth()->user()->hasRole('superadmin') &&
+                                            !in_array($purchaseOrder->status->value, ['selesai', 'dibatalkan', 'menunggu_verifikasi_dapur']))))
                                 <button @click="confirmingDelete = {{ $item->id }}"
                                     class="p-1.5 text-slate-400 hover:text-rose-600 transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
@@ -94,8 +96,14 @@
                             @endif
 
                             @if (auth()->user()->hasRole(['admin', 'superadmin']) &&
-                                    (in_array($purchaseOrder->status->value, ['dikirim_ke_yayasan', 'direview_yayasan', 'diteruskan_ke_supplier', 'diterima_sebagian']) || 
-                                    (auth()->user()->hasRole('superadmin') && !in_array($purchaseOrder->status->value, ['selesai', 'dibatalkan', 'menunggu_verifikasi_dapur']))))
+                                    (in_array($purchaseOrder->status->value, [
+                                        'dikirim_ke_yayasan',
+                                        'direview_yayasan',
+                                        'diteruskan_ke_supplier',
+                                        'diterima_sebagian',
+                                    ]) ||
+                                        (auth()->user()->hasRole('superadmin') &&
+                                            !in_array($purchaseOrder->status->value, ['selesai', 'dibatalkan', 'menunggu_verifikasi_dapur']))))
                                 <x-btn @click.stop="$dispatch('open-assignment', { itemId: {{ $item->id }} })"
                                     variant="secondary" class="py-1.5! px-3! text-[11px]! font-bold">
                                     Kelola Supplier
@@ -110,7 +118,9 @@
 
     {{-- FOOTER: ADD ITEM --}}
     @if (auth()->user()->hasRole(['admin', 'superadmin', 'logistik']) &&
-            ($purchaseOrder->status->value === 'draf' || (auth()->user()->hasRole('superadmin') && !in_array($purchaseOrder->status->value, ['selesai', 'dibatalkan', 'menunggu_verifikasi_dapur']))))
+            ($purchaseOrder->status->value === 'draf' ||
+                (auth()->user()->hasRole('superadmin') &&
+                    !in_array($purchaseOrder->status->value, ['selesai', 'dibatalkan', 'menunggu_verifikasi_dapur']))))
         <div class="p-6 bg-slate-50/50 border-t border-slate-100 flex justify-center gap-4">
             <button @click="$dispatch('open-modal', 'po-add-item-manual')"
                 class="inline-flex items-center gap-2 text-[13px] font-bold text-emerald-700 hover:text-emerald-800 transition-colors py-2 px-4 rounded-xl hover:bg-emerald-50">
@@ -155,8 +165,8 @@
 
                     <x-form-currency label="Harga Satuan" name="unit_price" wire:model="unit_price" />
                 </div>
-                
-                <x-form-textarea label="Keterangan / Spesifikasi" name="notes" wire:model="notes" rows="2" 
+
+                <x-form-textarea label="Keterangan / Spesifikasi" name="notes" wire:model="notes" rows="2"
                     placeholder="Contoh: Grade A, ukuran jumbo, dll..." />
             @endif
 
