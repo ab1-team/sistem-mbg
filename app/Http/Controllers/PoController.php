@@ -39,6 +39,9 @@ class PoController extends Controller
         $request->validate([
             'dapur_id' => 'required|exists:dapurs,id',
             'po_date' => 'required|date',
+            'delivery_date' => 'nullable|date',
+            'delivery_time_start' => 'nullable',
+            'delivery_time_end' => 'nullable',
             'notes' => 'nullable|string|max:500',
         ]);
 
@@ -50,12 +53,24 @@ class PoController extends Controller
         $poDate = Carbon::parse($request->po_date);
         $poNumber = 'PO/'.$poDate->format('Y/m').'/'.str_pad(PurchaseOrder::count() + 1, 3, '0', STR_PAD_LEFT);
 
+        $notes = $request->notes;
+        if ($request->delivery_date) {
+            $deliveryInfo = "\n\nPermintaan Pengiriman: ".Carbon::parse($request->delivery_date)->translatedFormat('d F Y');
+            if ($request->delivery_time_start || $request->delivery_time_end) {
+                $deliveryInfo .= ' ('.($request->delivery_time_start ?: '').' - '.($request->delivery_time_end ?: '').')';
+            }
+            $notes .= $deliveryInfo;
+        }
+
         $purchaseOrder = PurchaseOrder::create([
             'po_number' => $poNumber,
             'po_date' => $poDate,
+            'delivery_date' => $request->delivery_date,
+            'delivery_time_start' => $request->delivery_time_start,
+            'delivery_time_end' => $request->delivery_time_end,
             'dapur_id' => $request->dapur_id,
             'status' => PoStatus::DRAF,
-            'notes' => $request->notes,
+            'notes' => trim($notes),
             'created_by' => auth()->id(),
             'total_estimated_cost' => 0,
         ]);
@@ -351,6 +366,9 @@ class PoController extends Controller
         $request->validate([
             'dapur_id' => 'required|exists:dapurs,id',
             'po_date' => 'required|date',
+            'delivery_date' => 'nullable|date',
+            'delivery_time_start' => 'nullable',
+            'delivery_time_end' => 'nullable',
             'file' => 'required|file|max:10240',
             'notes' => 'nullable|string|max:500',
         ]);
@@ -360,12 +378,24 @@ class PoController extends Controller
                 $poDate = Carbon::parse($request->po_date);
                 $poNumber = 'PO/'.$poDate->format('Y/m').'/'.str_pad(PurchaseOrder::count() + 1, 3, '0', STR_PAD_LEFT);
 
+                $notes = $request->notes;
+                if ($request->delivery_date) {
+                    $deliveryInfo = "\n\nPermintaan Pengiriman: ".Carbon::parse($request->delivery_date)->translatedFormat('d F Y');
+                    if ($request->delivery_time_start || $request->delivery_time_end) {
+                        $deliveryInfo .= ' ('.($request->delivery_time_start ?: '').' - '.($request->delivery_time_end ?: '').')';
+                    }
+                    $notes .= $deliveryInfo;
+                }
+
                 $purchaseOrder = PurchaseOrder::create([
                     'po_number' => $poNumber,
                     'po_date' => $poDate,
+                    'delivery_date' => $request->delivery_date,
+                    'delivery_time_start' => $request->delivery_time_start,
+                    'delivery_time_end' => $request->delivery_time_end,
                     'dapur_id' => $request->dapur_id,
                     'status' => PoStatus::DRAF,
-                    'notes' => $request->notes,
+                    'notes' => trim($notes),
                     'created_by' => auth()->id(),
                     'total_estimated_cost' => 0,
                 ]);

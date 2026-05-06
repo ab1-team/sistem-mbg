@@ -6,13 +6,23 @@
     'required' => false,
     'placeholder' => 'Pilih tanggal...',
     'enableTime'  => false,
+    'noCalendar'  => false,
     'dateFormat'  => 'Y-m-d',
 ])
 
 @php 
     $id = $id ?? $name; 
-    $finalDateFormat = $enableTime ? ($dateFormat === 'Y-m-d' ? 'Y-m-d H:i' : $dateFormat) : $dateFormat;
+    $finalDateFormat = $dateFormat;
+    if ($noCalendar) {
+        $finalDateFormat = 'H:i';
+    } elseif ($enableTime) {
+        $finalDateFormat = ($dateFormat === 'Y-m-d' ? 'Y-m-d H:i' : $dateFormat);
+    }
+    
     $finalAltFormat = $enableTime ? 'j F Y, H:i' : 'j F Y';
+    if ($noCalendar) {
+        $finalAltFormat = 'H:i';
+    }
 @endphp
 
 <div class="space-y-1.5"
@@ -22,7 +32,8 @@
         instance: null,
         init() {
             this.instance = flatpickr(this.$refs.input, {
-                enableTime: {{ $enableTime ? 'true' : 'false' }},
+                enableTime: {{ ($enableTime || $noCalendar) ? 'true' : 'false' }},
+                noCalendar: {{ $noCalendar ? 'true' : 'false' }},
                 dateFormat: '{{ $finalDateFormat }}',
                 altInput: true,
                 altFormat: '{{ $finalAltFormat }}',

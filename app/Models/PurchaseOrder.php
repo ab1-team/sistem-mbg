@@ -23,6 +23,9 @@ class PurchaseOrder extends Model
         'cancellation_reason',
         'created_by',
         'po_date',
+        'delivery_date',
+        'delivery_time_start',
+        'delivery_time_end',
         'submitted_at',
         'verified_at',
         'verified_by',
@@ -33,6 +36,7 @@ class PurchaseOrder extends Model
         'submitted_at' => 'datetime',
         'verified_at' => 'datetime',
         'po_date' => 'date',
+        'delivery_date' => 'date',
         'total_estimated_cost' => 'decimal:2',
         'total_actual_cost' => 'decimal:2',
     ];
@@ -65,7 +69,16 @@ class PurchaseOrder extends Model
             throw new \Exception("Transisi status dari {$oldStatus->value} ke {$newStatus->value} tidak diizinkan.");
         }
 
-        $this->update(['status' => $newStatus]);
+        $updateData = ['status' => $newStatus];
+
+        // Update delivery details if Selesai as per user request
+        if ($newStatus === PoStatus::SELESAI) {
+            $updateData['delivery_date'] = now();
+            $updateData['delivery_time_start'] = now()->toTimeString();
+            $updateData['delivery_time_end'] = now()->toTimeString();
+        }
+
+        $this->update($updateData);
 
         // Catat histori audit trail (Schema 4.4)
         $this->statusHistory()->create([

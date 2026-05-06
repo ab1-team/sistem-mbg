@@ -229,6 +229,19 @@
                     <div class="space-y-5">
                         <x-show-field label="Unit Dapur" :value="ucwords($purchaseOrder->dapur->name)" />
                         <x-show-field label="Tanggal Purchase Order" :value="$purchaseOrder->po_date?->translatedFormat('d F Y') ?? '-'" />
+                        
+                        @if($purchaseOrder->delivery_date)
+                            <x-show-field label="Jadwal Pengiriman">
+                                <span class="text-[13px] font-bold text-slate-700">
+                                    {{ $purchaseOrder->delivery_date->translatedFormat('d F Y') }}
+                                    @if($purchaseOrder->delivery_time_start || $purchaseOrder->delivery_time_end)
+                                        <span class="text-slate-400 font-medium ml-1">
+                                            ({{ $purchaseOrder->delivery_time_start ? \Carbon\Carbon::parse($purchaseOrder->delivery_time_start)->format('H:i') : '' }} - {{ $purchaseOrder->delivery_time_end ? \Carbon\Carbon::parse($purchaseOrder->delivery_time_end)->format('H:i') : '' }})
+                                        </span>
+                                    @endif
+                                </span>
+                            </x-show-field>
+                        @endif
 
                         <x-show-field label="Tujuan Rencana Menu">
                             @if ($purchaseOrder->menuPeriod)

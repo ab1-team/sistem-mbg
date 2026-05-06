@@ -30,6 +30,12 @@
                     @endif
                     
                     <x-datepicker label="Tanggal Purchase Order" name="po_date" required value="{{ date('Y-m-d') }}" />
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <x-datepicker label="Tanggal Permintaan Pengiriman" name="delivery_date" value="{{ old('delivery_date') }}" placeholder="Pilih tanggal..." />
+                        <x-datepicker label="Jam Mulai" name="delivery_time_start" noCalendar="true" value="{{ old('delivery_time_start') }}" placeholder="08:00" />
+                        <x-datepicker label="Jam Selesai" name="delivery_time_end" noCalendar="true" value="{{ old('delivery_time_end') }}" placeholder="12:00" />
+                    </div>
 
                     <x-form-textarea label="Catatan Tambahan (Opsional)" name="notes" placeholder="Contoh: Pesanan mendadak untuk acara gathering..." />
 
