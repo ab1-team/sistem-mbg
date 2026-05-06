@@ -43,12 +43,14 @@ class PurchaseOrderBulkImport implements ToCollection
             $quantity = $this->parseNumber($row[2] ?? 0);
             $unit = trim($row[3] ?? '');
             $price = $this->parseNumber($row[4] ?? 0);
+            $notes = trim($row[6] ?? '');
 
             $parsedRows[] = [
                 'name' => $name,
                 'quantity' => $quantity,
                 'unit' => $unit,
                 'price' => $price,
+                'notes' => $notes,
             ];
 
             $materialNames[] = $name;
@@ -115,6 +117,7 @@ class PurchaseOrderBulkImport implements ToCollection
                     'quantity_to_order' => $data['quantity'],
                     'unit' => $data['unit'] ?: $materialUnit,
                     'estimated_unit_price' => $data['price'],
+                    'notes' => $data['notes'] ?: null,
                     'item_status' => 'pending',
                     'created_at' => $now,
                     'updated_at' => $now,

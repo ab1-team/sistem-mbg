@@ -23,6 +23,7 @@ class PurchaseOrderItem extends Model
         'quantity_received',
         'item_status',
         'rejection_reason',
+        'notes',
     ];
 
     public function purchaseOrder()

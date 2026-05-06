@@ -22,12 +22,15 @@ class PoItemsTable extends Component
 
     public $unit = '';
 
+    public $notes = '';
+
     public array $materialOptions = [];
 
     protected $rules = [
         'selectedMaterialId' => 'required',
         'quantity' => 'required|numeric|min:0.001',
         'unit_price' => 'required|numeric|min:0',
+        'notes' => 'nullable|string|max:255',
     ];
 
     public function mount(PurchaseOrder $purchaseOrder)
@@ -54,7 +57,7 @@ class PoItemsTable extends Component
 
     public function openAddItem()
     {
-        $this->reset(['selectedMaterialId', 'quantity', 'unit_price', 'unit']);
+        $this->reset(['selectedMaterialId', 'quantity', 'unit_price', 'unit', 'notes']);
         $this->loadMaterials();
         $this->isOpen = true;
         $this->dispatch('open-modal', name: 'po-add-item-manual');
@@ -92,6 +95,7 @@ class PoItemsTable extends Component
                 'quantity_to_order' => $this->quantity,
                 'unit' => $this->unit ?: 'unit',
                 'estimated_unit_price' => $this->unit_price,
+                'notes' => $this->notes,
                 'item_status' => 'pending',
             ]);
         }

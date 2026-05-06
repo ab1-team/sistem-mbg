@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+@php \Carbon\Carbon::setLocale('id'); @endphp
 <html>
 
 <head>
@@ -10,7 +11,37 @@
             font-size: 11px;
             color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 0 20px 20px 20px;
+        }
+
+        .kop {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .kop h1 {
+            margin: 0;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .kop h2 {
+            margin: 0;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .kop p {
+            margin: 5px 0 0 0;
+            font-size: 11px;
+        }
+
+        .kop hr {
+            border: 0;
+            border-top: 1px solid #000;
+            border-bottom: 3px solid #000;
+            height: 4px;
+            margin-top: 10px;
         }
 
         .header {
@@ -135,33 +166,51 @@
 </head>
 
 <body>
-    <div class="header">
+    <div class="kop">
         <h1>{{ $dapur->name }}</h1>
-        <h2>YAYASAN MBG</h2>
-        <p>{{ $dapur->address }}, {{ $dapur->city }}, {{ $dapur->province }}</p>
+        <h2>{{ tenant('name') ?? 'YAYASAN PIJAR PERJUANGAN NASIONAL' }}</h2>
+        <p>{{ $dapur->address }}{{ $dapur->city ? ', ' . $dapur->city : '' }}{{ $dapur->province ? ', ' . $dapur->province : '' }}
+        </p>
+        <hr>
     </div>
 
-    <div class="po-number">
+    <div style="font-weight: bold; margin-bottom: 20px;">
         {{ $po->po_number }}
     </div>
 
     <div class="title">
-        INVOICE DAPUR (KONSOLIDASI)
+        FORM PERMINTAAN BAHAN BAKU MAKANAN
     </div>
 
     <div class="info-section">
-        <div class="info-row">
-            <span class="info-label">Dari</span>
-            <span>: {{ $dapur->name }}</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">Kepada</span>
-            <span>: Yayasan MBG</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">Waktu</span>
-            <span>: {{ optional($po->submitted_at)->format('d F Y') ?? now()->format('d F Y') }}</span>
-        </div>
+        <table style="border: none; margin-bottom: 0;">
+            <tr style="border: none;">
+                <td style="border: none; padding: 2px 0; width: 240px;">Dari</td>
+                <td style="border: none; padding: 2px 0;">: {{ $dapur->name }}</td>
+            </tr>
+            <tr style="border: none;">
+                <td style="border: none; padding: 2px 0;">Kepada</td>
+                <td style="border: none; padding: 2px 0;">: {{ tenant('name') ?? 'Yayasan Pijar Perjuangan Nasional' }}
+                </td>
+            </tr>
+            <tr style="border: none;">
+                <td style="border: none; padding: 2px 0;">Tanggal Pesan Bahan Baku</td>
+                <td style="border: none; padding: 2px 0;">: {{ $po->po_date?->translatedFormat('l, j F Y') ?? '-' }}
+                </td>
+            </tr>
+            <tr style="border: none;">
+                <td style="border: none; padding: 2px 0; font-weight: bold;">Tanggal Kirim Bahan Baku ke
+                    {{ $dapur->name }}</td>
+                <td style="border: none; padding: 2px 0; font-weight: bold;">:
+                    {{ $po->delivery_date?->translatedFormat('l, j F Y') ?? '-' }}</td>
+            </tr>
+            <tr style="border: none;">
+                <td style="border: none; padding: 2px 0; font-weight: bold;">Waktu</td>
+                <td style="border: none; padding: 2px 0; font-weight: bold;">: Pukul
+                    {{ $po->delivery_time_start ? \Carbon\Carbon::parse($po->delivery_time_start)->format('H.i') : '' }}{{ $po->delivery_time_end ? '-' . \Carbon\Carbon::parse($po->delivery_time_end)->format('H.i') : '' }}
+                </td>
+            </tr>
+        </table>
     </div>
 
     <table>
@@ -196,7 +245,7 @@
                         <span class="currency">Rp</span>
                         <span class="amount">{{ number_format($lineTotal, 0, ',', '.') }}</span>
                     </td>
-                    <td class="col-note">{{ $item->material->notes ?? '-' }}</td>
+                    <td class="col-note">{{ $item->notes ?? '-' }}</td>
                 </tr>
             @endforeach
         </tbody>

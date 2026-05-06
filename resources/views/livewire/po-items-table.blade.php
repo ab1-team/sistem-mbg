@@ -24,6 +24,9 @@
                                 <div class="flex items-center gap-2 mb-1.5">
                                     <p class="text-[14px] font-bold text-slate-800 leading-none">
                                         {{ ucwords($item->material->name) }}</p>
+                                    @if($item->notes)
+                                        <p class="text-[11px] text-slate-400 mt-1 italic">{{ $item->notes }}</p>
+                                    @endif
                                     @if ($item->assignments->count() == 0)
                                         <span
                                             class="text-[9px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full uppercase tracking-wider border border-rose-100">Butuh
@@ -152,6 +155,9 @@
 
                     <x-form-currency label="Harga Satuan" name="unit_price" wire:model="unit_price" />
                 </div>
+                
+                <x-form-textarea label="Keterangan / Spesifikasi" name="notes" wire:model="notes" rows="2" 
+                    placeholder="Contoh: Grade A, ukuran jumbo, dll..." />
             @endif
 
             <div class="flex items-center gap-3 mt-6">
