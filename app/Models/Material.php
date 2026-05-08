@@ -49,4 +49,14 @@ class Material extends Model
     {
         return $this->hasMany(MenuBom::class);
     }
+
+    /**
+     * Get the suppliers for this material.
+     */
+    public function suppliers()
+    {
+        return $this->belongsToMany(Supplier::class, 'material_suppliers')
+            ->withPivot('is_active')
+            ->withTimestamps();
+    }
 }

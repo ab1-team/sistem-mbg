@@ -3,53 +3,65 @@
 namespace App\Imports;
 
 use App\Models\Material;
-use Illuminate\Database\Eloquent\Model;
-use Maatwebsite\Excel\Concerns\ToModel;
+use App\Models\Supplier;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 
-class MaterialsImport implements ToModel, WithHeadingRow, WithValidation
+class MaterialsImport implements ToCollection, WithHeadingRow
 {
-    /**
-     * @return Model|null
-     */
-    public function model(array $row)
+    public function collection(Collection $rows)
     {
-        // Skip baris instruksi atau baris kosong
-        if (empty($row['kode']) || str_contains($row['kode'], '---') || str_contains($row['kode'], 'PETUNJUK')) {
-            return null;
+        foreach ($rows as $row) {
+            // Skip baris instruksi atau baris kosong
+            if (empty($row['kode']) || str_contains($row['kode'], '---') || str_contains($row['kode'], 'PETUNJUK')) {
+                continue;
+            }
+
+            // 1. Create/Update Material
+            $material = Material::updateOrCreate(
+                ['code' => $row['kode']],
+                [
+                    'name' => $row['nama'],
+                    'category' => strtolower($row['kategori'] ?? 'lainnya'),
+                    'unit' => $row['satuan'] ?? 'Pcs',
+                    'calories' => $row['kalori'] ?? 0,
+                    'protein' => $row['protein'] ?? 0,
+                    'carbs' => $row['karbo'] ?? 0,
+                    'fat' => $row['lemak'] ?? 0,
+                    'fiber' => $row['serat'] ?? 0,
+                    'price_estimate' => $row['estimasi_harga'] ?? 0,
+                    'min_stock_threshold' => $row['min_stok'] ?? 0,
+                    'is_active' => true,
+                ]
+            );
+
+            // 2. Handle Dynamic Suppliers
+            $supplierIds = [];
+
+            // Loop through all keys that start with 'supplier_'
+            foreach ($row as $key => $value) {
+                if (str_starts_with($key, 'supplier_') && ! empty($value)) {
+                    $supplierCode = trim($value);
+
+                    // Find or create supplier by CODE
+                    $supplier = Supplier::firstOrCreate(
+                        ['code' => $supplierCode],
+                        [
+                            'name' => $supplierCode, // Nama disamakan dengan kode jika baru
+                            'category' => 'lainnya',
+                            'is_active' => true,
+                        ]
+                    );
+
+                    $supplierIds[] = $supplier->id;
+                }
+            }
+
+            // Sync suppliers to material
+            if (! empty($supplierIds)) {
+                $material->suppliers()->syncWithoutDetaching($supplierIds);
+            }
         }
-
-        return new Material([
-            'code' => $row['kode'],
-            'name' => $row['nama'],
-            'category' => strtolower($row['kategori']),
-            'unit' => $row['satuan'],
-            'calories' => $row['kalori'] ?? 0,
-            'protein' => $row['protein'] ?? 0,
-            'carbs' => $row['karbo'] ?? 0,
-            'fat' => $row['lemak'] ?? 0,
-            'fiber' => $row['serat'] ?? 0,
-            'price_estimate' => $row['estimasi_harga'] ?? 0,
-            'min_stock_threshold' => $row['min_stok'] ?? 0,
-            'is_active' => true,
-        ]);
-    }
-
-    public function rules(): array
-    {
-        return [
-            'kode' => 'nullable', // Boleh null untuk baris instruksi
-            'nama' => 'required|string|max:150',
-            'kategori' => 'nullable', // Boleh null untuk baris instruksi
-            'satuan' => 'nullable', // Boleh null untuk baris instruksi
-            'kalori' => 'nullable|numeric|min:0',
-            'protein' => 'nullable|numeric|min:0',
-            'karbo' => 'nullable|numeric|min:0',
-            'lemak' => 'nullable|numeric|min:0',
-            'serat' => 'nullable|numeric|min:0',
-            'estimasi_harga' => 'nullable|numeric|min:0',
-            'min_stok' => 'nullable|numeric|min:0',
-        ];
     }
 }

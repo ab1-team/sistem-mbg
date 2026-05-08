@@ -6,6 +6,7 @@ use App\Http\Requests\MaterialRequest;
 use App\Imports\MaterialsImport;
 use App\Models\Dapur;
 use App\Models\Material;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -50,7 +51,7 @@ class MaterialController extends Controller
             'Content-Disposition' => 'attachment; filename="template_bahan_baku.csv"',
         ];
 
-        $columns = ['kode', 'nama', 'kategori', 'satuan', 'kalori', 'protein', 'karbo', 'lemak', 'serat', 'estimasi_harga', 'min_stok'];
+        $columns = ['kode', 'nama', 'kategori', 'satuan', 'kalori', 'protein', 'karbo', 'lemak', 'serat', 'estimasi_harga', 'min_stok', 'supplier_1', 'supplier_2', 'supplier_3'];
 
         return response()->stream(function () use ($columns) {
             $file = fopen('php://output', 'w');
@@ -58,12 +59,12 @@ class MaterialController extends Controller
             // Tambahkan baris instruksi
             fputcsv($file, [
                 '--- PETUNJUK PENGISIAN ---',
-                'Semua kolom nutrisi (kalori-serat) opsional',
-                'Kategori harus sesuai: sayuran,daging,ikan,bumbu,sembako,minuman,lainnya',
-                '', '', '', '', '', '', '', '',
+                'Kolom nutrisi opsional. Kategori: sayuran,daging,ikan,bumbu,sembako,minuman,lainnya',
+                'Supplier: Isi dengan KODE supplier (otomatis terdaftar jika belum ada)',
+                '', '', '', '', '', '', '', '', '', '', '',
             ]);
             // Add example row
-            fputcsv($file, ['BB-BER-01', 'Beras Ramos', 'sembako', 'Kg', '365', '7', '80', '0.6', '1.3', '15000', '50']);
+            fputcsv($file, ['BB-BER-01', 'Beras Ramos', 'sembako', 'Kg', '365', '7', '80', '0.6', '1.3', '15000', '50', 'SUP001', 'SUP002', '']);
             fclose($file);
         }, 200, $headers);
     }
@@ -124,8 +125,9 @@ class MaterialController extends Controller
         $dapurs = $user->dapur_id
             ? Dapur::where('id', $user->dapur_id)->get()
             : Dapur::orderBy('name')->get();
+        $suppliers = Supplier::orderBy('name')->get();
 
-        return view('materials.edit', compact('material', 'categories', 'dapurs'));
+        return view('materials.edit', compact('material', 'categories', 'dapurs', 'suppliers'));
     }
 
     /**
@@ -147,6 +149,12 @@ class MaterialController extends Controller
         }
 
         $material->update($validated);
+
+        if ($request->has('suppliers')) {
+            $material->suppliers()->sync($request->input('suppliers'));
+        } else {
+            $material->suppliers()->sync([]);
+        }
 
         return redirect()->route('materials.index')
             ->with('success', 'Bahan baku berhasil diperbarui.');

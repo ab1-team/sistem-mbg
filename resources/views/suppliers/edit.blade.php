@@ -59,6 +59,38 @@
                     </div>
                 </div>
 
+                {{-- Konfigurasi Material --}}
+                <div class="space-y-4 pt-4">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Katalog Produk (Bahan Baku)</p>
+                        <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold">Dapat menyuplai:</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        @foreach($materials as $material)
+                            <label class="flex items-start gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:border-green-600 hover:bg-green-50/30 transition-all cursor-pointer group">
+                                <div class="relative flex items-center pt-0.5">
+                                    <input type="checkbox" name="materials[]" value="{{ $material->id }}" 
+                                        {{ in_array($material->id, old('materials', $supplier->materials->pluck('id')->toArray())) ? 'checked' : '' }}
+                                        class="w-4 h-4 rounded border-slate-300 text-green-700 focus:ring-green-900/20 transition-all cursor-pointer">
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[13px] font-bold text-slate-700 group-hover:text-green-900 transition-colors">{{ $material->name }}</span>
+                                    <span class="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">{{ $material->unit }} • {{ $material->category }}</span>
+                                </div>
+                            </label>
+                        @endforeach
+
+                        @if($materials->isEmpty())
+                            <div class="col-span-full py-6 text-center">
+                                <p class="text-[12px] text-slate-400 font-bold italic">Belum ada data bahan baku yang tersedia.</p>
+                                <a href="{{ route('materials.create') }}" class="text-green-700 hover:underline text-[11px] font-bold mt-1 inline-block">Tambah Bahan Baru</a>
+                            </div>
+                        @endif
+                    </div>
+                    <p class="text-[10px] text-slate-400 font-medium italic">Centang bahan baku yang dapat disediakan oleh supplier ini.</p>
+                </div>
+
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-4 border-t border-slate-100">
                     <label class="inline-flex items-center gap-3 cursor-pointer">
                         <input type="checkbox" name="is_active" id="is_active" value="1"

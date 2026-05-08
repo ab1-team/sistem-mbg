@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SupplierRequest;
+use App\Models\Material;
 use App\Models\Supplier;
 
 class SupplierController extends Controller
@@ -49,7 +50,9 @@ class SupplierController extends Controller
      */
     public function edit(Supplier $supplier)
     {
-        return view('suppliers.edit', compact('supplier'));
+        $materials = Material::orderBy('name')->get();
+
+        return view('suppliers.edit', compact('supplier', 'materials'));
     }
 
     /**
@@ -58,6 +61,12 @@ class SupplierController extends Controller
     public function update(SupplierRequest $request, Supplier $supplier)
     {
         $supplier->update($request->validated());
+
+        if ($request->has('materials')) {
+            $supplier->materials()->sync($request->input('materials'));
+        } else {
+            $supplier->materials()->sync([]);
+        }
 
         return redirect()->route('suppliers.index')
             ->with('success', 'Supplier berhasil diperbarui.');

@@ -28,4 +28,14 @@ class Supplier extends Model
     {
         return $this->hasMany(SubSupplier::class);
     }
+
+    /**
+     * Get the materials supplied by this supplier.
+     */
+    public function materials()
+    {
+        return $this->belongsToMany(Material::class, 'material_suppliers')
+            ->withPivot('is_active')
+            ->withTimestamps();
+    }
 }
