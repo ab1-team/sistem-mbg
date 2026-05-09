@@ -79,6 +79,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the investor associated with the user.
+     */
+    public function investor()
+    {
+        return $this->hasOne(Investor::class);
+    }
+
+    /**
      * Get the push notification tokens for the user.
      */
     public function fcmTokens()

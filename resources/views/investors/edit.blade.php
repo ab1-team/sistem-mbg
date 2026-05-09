@@ -29,12 +29,11 @@
                     <x-form-input label="Kode Investor" name="code" :value="old('code', $investor->code)" required />
                     <x-form-input label="Nama Lengkap Investor" name="name" :value="old('name', $investor->name)" required />
                     <x-form-input label="No. KTP / Identitas" name="identity_number" :value="old('identity_number', $investor->identity_number)" />
-                    <x-form-input
-                        label="Porsi Saham (%)"
-                        name="share_percentage"
-                        type="number"
-                        step="0.0001"
-                        :value="old('share_percentage', $investor->share_percentage)"
+                    <x-form-currency
+                        label="Nominal Investasi"
+                        name="investment_amount"
+                        prefix="Rp"
+                        :value="old('investment_amount', $investor->investment_amount)"
                         required
                     />
                 </div>

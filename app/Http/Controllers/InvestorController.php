@@ -38,7 +38,7 @@ class InvestorController extends Controller
             'code' => 'required|string|max:20|unique:investors',
             'name' => 'required|string|max:150',
             'identity_number' => 'nullable|string|max:30',
-            'share_percentage' => 'required|numeric|min:0|max:100',
+            'investment_amount' => 'required|numeric|min:0',
             'join_date' => 'required|date',
             'bank_name' => 'nullable|string|max:100',
             'bank_account' => 'nullable|string|max:50',
@@ -46,7 +46,11 @@ class InvestorController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        // Create the investor with 0 share_percentage initially
+        $validated['share_percentage'] = 0;
         Investor::create($validated);
+
+        $this->recalculateSharePercentages();
 
         return redirect()->route('investors.index')
             ->with('success', 'Investor berhasil ditambahkan.');
@@ -80,7 +84,7 @@ class InvestorController extends Controller
             'code' => 'required|string|max:20|unique:investors,code,'.$investor->id,
             'name' => 'required|string|max:150',
             'identity_number' => 'nullable|string|max:30',
-            'share_percentage' => 'required|numeric|min:0|max:100',
+            'investment_amount' => 'required|numeric|min:0',
             'join_date' => 'required|date',
             'exit_date' => 'nullable|date|after_or_equal:join_date',
             'bank_name' => 'nullable|string|max:100',
@@ -90,6 +94,8 @@ class InvestorController extends Controller
         ]);
 
         $investor->update($validated);
+
+        $this->recalculateSharePercentages();
 
         return redirect()->route('investors.index')
             ->with('success', 'Investor berhasil diperbarui.');
@@ -102,7 +108,31 @@ class InvestorController extends Controller
     {
         $investor->delete();
 
+        $this->recalculateSharePercentages();
+
         return redirect()->route('investors.index')
             ->with('success', 'Investor berhasil dihapus.');
+    }
+
+    /**
+     * Recalculate share percentage for all active investors based on their investment amount.
+     */
+    protected function recalculateSharePercentages()
+    {
+        $totalInvestment = Investor::where('is_active', true)->sum('investment_amount');
+
+        $investors = Investor::all();
+        foreach ($investors as $inv) {
+            if ($inv->is_active && $totalInvestment > 0) {
+                $percentage = ($inv->investment_amount / $totalInvestment) * 100;
+            } else {
+                $percentage = 0;
+            }
+
+            // Only update if changed to avoid unnecessary queries
+            if (round($inv->share_percentage, 4) !== round($percentage, 4)) {
+                $inv->updateQuietly(['share_percentage' => $percentage]);
+            }
+        }
     }
 }

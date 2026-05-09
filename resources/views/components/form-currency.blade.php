@@ -6,6 +6,7 @@
     'required'    => false,
     'prefix'      => 'Rp',
     'placeholder' => '0',
+    'value'       => null,
 ])
 
 @php
@@ -19,7 +20,7 @@
         @if($wireModel)
         value: @entangle($wireModel),
         @else
-        value: null,
+        value: {{ $value !== null && $value !== '' ? $value : 'null' }},
         @endif
         fmt(v) {
             if (v === null || v === undefined || v === '') return '';
@@ -80,6 +81,9 @@
                             transition-all outline-none font-bold'
             ]) }}
         >
+        @if($name && !$wireModel)
+            <input type="hidden" name="{{ $name }}" x-bind:value="value" />
+        @endif
     </div>
 
     @if($hint)

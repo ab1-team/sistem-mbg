@@ -28,12 +28,11 @@
                     <x-form-input label="Kode Investor" name="code" :value="old('code')" placeholder="INV-001" required />
                     <x-form-input label="Nama Lengkap Investor" name="name" :value="old('name')" placeholder="Nama sesuai identitas" required />
                     <x-form-input label="No. KTP / Identitas" name="identity_number" :value="old('identity_number')" placeholder="330xxx" />
-                    <x-form-input
-                        label="Porsi Saham (%)"
-                        name="share_percentage"
-                        type="number"
-                        step="0.0001"
-                        :value="old('share_percentage', 0)"
+                    <x-form-currency
+                        label="Nominal Investasi"
+                        name="investment_amount"
+                        prefix="Rp"
+                        :value="old('investment_amount', 0)"
                         required
                     />
                 </div>

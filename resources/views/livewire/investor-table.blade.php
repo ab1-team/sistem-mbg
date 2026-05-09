@@ -33,9 +33,12 @@
                         </div>
                     </x-table-td>
                     <x-table-td>
-                        <div class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 rounded-lg border border-slate-200">
-                             <span class="text-[14px] font-black text-slate-900">{{ number_format($investor->share_percentage, 2) }}</span>
-                             <span class="text-[10px] text-slate-400 font-bold">%</span>
+                        <div class="flex flex-col">
+                            <span class="text-[13px] font-bold text-slate-700">Rp {{ number_format($investor->investment_amount, 0, ',', '.') }}</span>
+                            <div class="inline-flex items-center gap-1 mt-1">
+                                <span class="text-[11px] font-black text-slate-500">{{ number_format($investor->share_percentage, 2) }}</span>
+                                <span class="text-[9px] text-slate-400 font-bold">%</span>
+                            </div>
                         </div>
                     </x-table-td>
                     <x-table-td>

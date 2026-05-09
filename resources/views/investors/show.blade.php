@@ -38,10 +38,15 @@
 
             <x-card title="Data Pendanaan & Saham">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
+                    <x-show-field label="Nominal Investasi">
+                         <div class="flex items-center gap-2">
+                             <span class="text-[20px] font-black text-slate-900 tracking-tighter">Rp {{ number_format($investor->investment_amount, 0, ',', '.') }}</span>
+                         </div>
+                    </x-show-field>
                     <x-show-field label="Persentase Saham">
                          <div class="flex items-center gap-2">
                              <div class="flex items-baseline gap-1">
-                                 <span class="text-[24px] font-black text-slate-900 tracking-tighter">{{ number_format($investor->share_percentage, 2) }}</span>
+                                 <span class="text-[20px] font-black text-slate-900 tracking-tighter">{{ number_format($investor->share_percentage, 2) }}</span>
                                  <span class="text-[12px] font-bold text-slate-400 uppercase tracking-widest">%</span>
                              </div>
                          </div>

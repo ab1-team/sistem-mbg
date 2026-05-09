@@ -16,6 +16,7 @@ class Investor extends Model
         'code',
         'name',
         'identity_number',
+        'investment_amount',
         'share_percentage',
         'join_date',
         'exit_date',
@@ -26,6 +27,7 @@ class Investor extends Model
     ];
 
     protected $casts = [
+        'investment_amount' => 'decimal:2',
         'share_percentage' => 'decimal:4',
         'join_date' => 'date',
         'exit_date' => 'date',
