@@ -285,6 +285,6 @@ class Journal extends Component
             'jenisTransaksiOptions' => $jenisTransaksiOptions,
             'showRelasi' => $showRelasi,
             'showInventaris' => $showInventaris,
-        ])->layout('layouts.app');
+        ])->layout('layouts.app', ['title' => 'Input Jurnal Umum']);
     }
 }

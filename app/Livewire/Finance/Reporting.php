@@ -125,6 +125,6 @@ class Reporting extends Component
 
     public function render()
     {
-        return view('livewire.finance.reporting')->layout('layouts.app');
+        return view('livewire.finance.reporting')->layout('layouts.app', ['title' => 'Pusat Pelaporan Keuangan']);
     }
 }

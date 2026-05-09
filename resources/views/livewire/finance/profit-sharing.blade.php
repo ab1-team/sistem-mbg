@@ -1,4 +1,5 @@
-<div class="animate-reveal">
+<x-container>
+    <div class="animate-reveal">
     <x-page-header title="Manajemen Bagi Hasil"
         subtitle="Pantau rincian laba, pembagian yayasan, dan distribusi dividen investor secara transparan.">
     </x-page-header>
@@ -68,6 +69,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     {{-- Main Table Section --}}
@@ -173,3 +175,4 @@
         @endif
     </x-dialog>
 </div>
+</x-container>

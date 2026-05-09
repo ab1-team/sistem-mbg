@@ -87,6 +87,6 @@ class WithdrawalManagement extends Component
 
         return view('livewire.finance.withdrawal-management', [
             'withdrawals' => $requests,
-        ]);
+        ])->layout('layouts.app', ['title' => 'Manajemen Penarikan Dana']);
     }
 }

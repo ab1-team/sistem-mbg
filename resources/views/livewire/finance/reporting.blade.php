@@ -1,4 +1,4 @@
-<x-container class="max-w-4xl" x-data="{
+<x-container x-data="{
     jenis_laporan: @entangle('jenis_laporan'),
     sub_laporan: @entangle('sub_laporan')
 }">

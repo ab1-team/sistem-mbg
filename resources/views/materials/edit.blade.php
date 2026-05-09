@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <x-form-input label="Estimasi Harga" name="price_estimate" type="number" :value="old('price_estimate', $material->price_estimate)" required hint="Estimasi harga per satuan." />
+                    <x-form-currency label="Estimasi Harga" name="price_estimate" :value="old('price_estimate', $material->price_estimate)" required prefix="Rp" hint="Estimasi harga per satuan." />
                     <x-form-input label="Batas Minimum Stok" name="min_stock_threshold" type="number" step="0.001" :value="old('min_stock_threshold', $material->min_stock_threshold)" required hint="Alert akan muncul jika stok di bawah ini." />
                 </div>
 

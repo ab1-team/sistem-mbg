@@ -1,4 +1,4 @@
-<x-container class="max-w-6xl">
+<x-container>
     <x-page-header title="Input Jurnal Umum"
         subtitle="Catat transaksi keuangan (Aset Masuk, Keluar, atau Pemindahan Saldo) untuk laporan buku besar." />
 

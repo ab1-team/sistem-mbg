@@ -33,7 +33,7 @@
                     <x-form-input label="Serat (g)" name="fiber" type="number" step="0.01" :value="old('fiber', 0)" />
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <x-form-input label="Estimasi Harga" name="price_estimate" type="number" :value="old('price_estimate', 0)" required hint="Estimasi harga per satuan." />
+                    <x-form-currency label="Estimasi Harga" name="price_estimate" :value="old('price_estimate', 0)" required prefix="Rp" hint="Estimasi harga per satuan." />
                     <x-form-input label="Batas Minimum Stok" name="min_stock_threshold" type="number" step="0.001" :value="old('min_stock_threshold', 0)" required hint="Alert akan muncul jika stok di bawah ini." />
                 </div>
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">

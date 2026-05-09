@@ -17,9 +17,8 @@
             </div>
 
             <div class="space-y-4">
-                <x-form-input 
-                    label="Jumlah Penarikan (IDR)" 
-                    type="number" 
+                <x-form-currency 
+                    label="Jumlah Penarikan" 
                     wire:model="amount" 
                     id="amount" 
                     name="amount" 

@@ -35,6 +35,6 @@ class ProfitSharing extends Component
 
         return view('livewire.finance.profit-sharing', [
             'calculations' => $calculations,
-        ]);
+        ])->layout('layouts.app', ['title' => 'Manajemen Bagi Hasil']);
     }
 }
