@@ -2,6 +2,12 @@
     <div class="animate-reveal">
     <x-page-header title="Manajemen Bagi Hasil"
         subtitle="Pantau rincian laba, pembagian yayasan, dan distribusi dividen investor secara transparan.">
+        <x-slot name="actions">
+            <x-btn href="{{ route('finance.profit-sharing.create') }}" variant="primary">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                Tambah Distribusi
+            </x-btn>
+        </x-slot>
     </x-page-header>
 
     {{-- Dashboard Summary --}}

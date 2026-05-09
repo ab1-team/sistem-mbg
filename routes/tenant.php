@@ -24,6 +24,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Warehouse\GrController;
 use App\Http\Middleware\ScopeDapurBySubdomain;
 use App\Livewire\Finance\Journal;
+use App\Livewire\Finance\ProfitDistributionForm;
 use App\Livewire\Finance\ProfitSharing;
 use App\Livewire\Finance\Reporting;
 use App\Livewire\Finance\WithdrawalManagement;
@@ -116,6 +117,7 @@ Route::middleware([
                 Route::get('journal', Journal::class)->name('journal.index');
                 Route::get('periods', [FinancialPeriodController::class, 'index'])->name('periods.index');
                 Route::get('profit-sharing', ProfitSharing::class)->name('profit-sharing.index');
+                Route::get('profit-sharing/create', ProfitDistributionForm::class)->name('profit-sharing.create');
                 Route::get('withdrawals', WithdrawalManagement::class)->name('withdrawals.index');
                 Route::get('reports', Reporting::class)->name('reports.index');
                 Route::get('reports/preview', [ReportController::class, 'preview'])->name('reports.preview');
