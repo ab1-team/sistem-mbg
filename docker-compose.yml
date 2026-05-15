@@ -23,7 +23,7 @@ services:
         container_name: sim-sppg-nginx
         restart: unless-stopped
         ports:
-            - "8000:80"
+            - "8003:80"
         volumes:
             - ./:/var/www:z
             - php_framework_cache:/var/www/storage/framework:z
@@ -34,27 +34,6 @@ services:
             - web-network
         depends_on:
             - php
-
-    # MySQL Service
-    mysql:
-        image: mysql:8.0
-        container_name: sim-sppg-mysql
-        restart: unless-stopped
-        environment:
-            MYSQL_DATABASE: ${DB_DATABASE}
-            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
-            MYSQL_PASSWORD: ${DB_PASSWORD}
-            MYSQL_USER: ${DB_USERNAME}
-            MYSQL_ALLOW_EMPTY_PASSWORD: "no"
-            SERVICE_TAGS: dev
-            SERVICE_NAME: mysql
-        ports:
-            - "3307:3306"
-        volumes:
-            - mysql-db:/var/lib/mysql:z
-        networks:
-            - sim-sppg-network
-            - web-network
 
     # Redis Service
     redis:
@@ -72,8 +51,6 @@ networks:
         external: true
 
 volumes:
-    mysql-db:
-        driver: local
     php_framework_cache:
         driver: local
     php_bootstrap_cache:
