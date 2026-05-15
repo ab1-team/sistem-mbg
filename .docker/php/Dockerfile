@@ -30,6 +30,9 @@ RUN pecl install redis && docker-php-ext-enable redis
 # Copy Opcache configuration
 COPY .docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
