@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     libicu-dev \
+    && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+    && apt-get install -y nodejs \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl
 
