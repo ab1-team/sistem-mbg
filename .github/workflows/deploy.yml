@@ -18,10 +18,11 @@ jobs:
           script: |
             cd /var/www/sim-sppg.com
             git pull origin main
-            composer install --no-dev --optimize-autoloader --no-interaction
-            npm install
-            npm run build
-            php artisan migrate --force
-            php artisan tenants:migrate --force
-            php artisan optimize:clear
-            php artisan optimize
+            docker-compose up -d --build
+            docker-compose exec -T php composer install --no-dev --optimize-autoloader --no-interaction
+            docker-compose exec -T php npm install
+            docker-compose exec -T php npm run build
+            docker-compose exec -T php php artisan migrate --force
+            docker-compose exec -T php php artisan tenants:migrate --force
+            docker-compose exec -T php php artisan optimize:clear
+            docker-compose exec -T php php artisan optimize
